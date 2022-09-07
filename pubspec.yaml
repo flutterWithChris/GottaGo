@@ -42,6 +42,10 @@ dependencies:
   anim_search_bar: ^2.0.2
   flutter_dotenv: ^5.0.2
   flex_color_scheme: ^6.0.0
+  bloc: ^8.1.0
+  flutter_bloc: ^8.1.1
+  equatable: ^2.0.5
+  flutter_rating_bar: ^4.0.1
 
 dev_dependencies:
   flutter_test:

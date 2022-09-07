@@ -1,7 +1,11 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
 import 'package:google_place/google_place.dart';
+import 'package:leggo/bloc/bloc/place_search_bloc.dart';
 
 class CategoryPage extends StatefulWidget {
   const CategoryPage({super.key});
@@ -20,51 +24,12 @@ class _CategoryPageState extends State<CategoryPage> {
     return Scaffold(
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          showDialog(
+          showModalBottomSheet(
+              isScrollControlled: true,
               context: context,
               builder: (context) {
-                return Dialog(
-                    child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 12.0),
-                  child: TypeAheadField(
-                    textFieldConfiguration:
-                        const TextFieldConfiguration(autofocus: true),
-                    suggestionsCallback: (pattern) async {
-                      List<AutocompletePrediction> predictions = [];
-                      if (pattern.isEmpty) return predictions;
-                      var place = await googlePlace.autocomplete.get(pattern);
-                      predictions = place!.predictions!;
-                      return predictions;
-                    },
-                    itemBuilder: (context, itemData) {
-                      return Padding(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 4.0, vertical: 2.0),
-                        child: ListTile(
-                          title: Text(itemData.description!),
-                        ),
-                      );
-                    },
-                    onSuggestionSelected: (suggestion) async {
-                      Navigator.pop(context);
-                      await Future.delayed(const Duration(milliseconds: 500));
-                      if (!mounted) return;
-                      Scaffold.of(context).showBottomSheet(
-                        (context) {
-                          return DraggableScrollableSheet(
-                            builder: (context, scrollController) {
-                              return Column(
-                                children: [
-                                  Text(suggestion.description!),
-                                ],
-                              );
-                            },
-                          );
-                        },
-                      );
-                    },
-                  ),
-                ));
+                return SearchPlacesSheet(
+                    googlePlace: googlePlace, mounted: mounted);
               });
         },
       ),
@@ -166,6 +131,184 @@ class _CategoryPageState extends State<CategoryPage> {
         ],
       ),
     );
+  }
+}
+
+class SearchPlacesSheet extends StatelessWidget {
+  const SearchPlacesSheet({
+    Key? key,
+    required this.googlePlace,
+    required this.mounted,
+  }) : super(key: key);
+
+  final GooglePlace googlePlace;
+  final bool mounted;
+
+  @override
+  Widget build(BuildContext context) {
+    return DraggableScrollableSheet(
+      initialChildSize: 0.65,
+      expand: false,
+      builder: (context, scrollController) {
+        return Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 12.0),
+          child: ListView(
+            shrinkWrap: true,
+            // mainAxisSize: MainAxisSize.min,
+            children: [
+              Padding(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 4.0, vertical: 8.0),
+                child: TypeAheadField(
+                  textFieldConfiguration: TextFieldConfiguration(
+                      //  autofocus: true,
+                      decoration: InputDecoration(
+                          border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(25)),
+                          hintText: 'Search Places...',
+                          prefixIcon: const Icon(Icons.search_rounded))),
+                  suggestionsCallback: (pattern) async {
+                    List<AutocompletePrediction> predictions = [];
+                    if (pattern.isEmpty) return predictions;
+                    var place = await googlePlace.autocomplete.get(pattern);
+                    predictions = place!.predictions!;
+                    return predictions;
+                  },
+                  itemBuilder: (context, itemData) {
+                    return Padding(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 4.0, vertical: 2.0),
+                      child: ListTile(
+                        title: Text(itemData.description!),
+                      ),
+                    );
+                  },
+                  onSuggestionSelected: (suggestion) async {
+                    var placeDetails =
+                        await googlePlace.details.get(suggestion.placeId!);
+                    placeDetails!.result!.name;
+                    if (!mounted) return;
+                    context.read<PlaceSearchBloc>().add(
+                        PlaceSelected(detailsResult: placeDetails.result!));
+                  },
+                ),
+              ),
+              Card(
+                child: BlocBuilder<PlaceSearchBloc, PlaceSearchState>(
+                  builder: (context, state) {
+                    if (state.status == Status.loaded) {
+                      var placeDetails = state.detailsResult;
+                      Future<Uint8List?> getPhotos() async {
+                        var photo = await googlePlace.photos.get(
+                            placeDetails!.photos!.first.photoReference!,
+                            1080,
+                            1920);
+                        return photo;
+                      }
+
+                      return Padding(
+                        padding: const EdgeInsets.all(12.0),
+                        child: Column(
+                          children: [
+                            Text(
+                              placeDetails!.name!,
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .titleLarge!
+                                  .copyWith(fontWeight: FontWeight.bold),
+                            ),
+                            Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(vertical: 8.0),
+                              child: FutureBuilder(
+                                  future: getPhotos(),
+                                  builder: (context, snapshot) {
+                                    if (snapshot.hasData) {
+                                      return AspectRatio(
+                                        aspectRatio: 16 / 9,
+                                        child: Image.memory(snapshot.data!),
+                                      );
+                                    } else {
+                                      return const Center(
+                                        child: CircularProgressIndicator(),
+                                      );
+                                    }
+                                  }),
+                            ),
+                            Wrap(
+                              spacing: 6.0,
+                              crossAxisAlignment: WrapCrossAlignment.center,
+                              children: [
+                                const Icon(Icons.web_rounded),
+                                Text(placeDetails.website!),
+                              ],
+                            ),
+                            Wrap(
+                              spacing: 6.0,
+                              crossAxisAlignment: WrapCrossAlignment.center,
+                              children: [
+                                const Icon(Icons.place_rounded),
+                                Text(placeDetails.formattedAddress!),
+                              ],
+                            ),
+                            Wrap(
+                              spacing: 6.0,
+                              crossAxisAlignment: WrapCrossAlignment.center,
+                              children: [
+                                RatingBar.builder(
+                                  ignoreGestures: true,
+                                  itemSize: 20.0,
+                                  allowHalfRating: true,
+                                  initialRating: placeDetails.rating!,
+                                  itemBuilder: (context, index) {
+                                    return const Icon(
+                                      Icons.star,
+                                      size: 12.0,
+                                      color: Colors.amber,
+                                    );
+                                  },
+                                  onRatingUpdate: (value) {},
+                                ),
+                                Text(placeDetails.rating.toString()),
+                              ],
+                            ),
+                            Chip(
+                              label:
+                                  Text(placeDetails.types!.first.capitalize()),
+                              avatar: Image.network(
+                                placeDetails.icon!,
+                                height: 18,
+                              ),
+                            ),
+                          ],
+                        ),
+                      );
+                    } else {
+                      return const Center(
+                        child: Text('Something Went Wrong..'),
+                      );
+                    }
+                  },
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: ElevatedButton.icon(
+                    onPressed: () {},
+                    icon: const Icon(Icons.add),
+                    label: const Text('Add to Breakfast Ideas')),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+}
+
+extension StringExtension on String {
+  String capitalize() {
+    return "${this[0].toUpperCase()}${substring(1).toLowerCase()}";
   }
 }
 

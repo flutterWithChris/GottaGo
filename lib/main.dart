@@ -1,7 +1,9 @@
 import 'package:flex_color_scheme/flex_color_scheme.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:go_router/go_router.dart';
+import 'package:leggo/bloc/bloc/place_search_bloc.dart';
 import 'package:leggo/category_page.dart';
 
 void main() async {
@@ -33,15 +35,18 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return MaterialApp.router(
-      darkTheme: FlexThemeData.dark(
-          scheme: FlexScheme.blumineBlue, useMaterial3: true),
-      routeInformationParser: router.routeInformationParser,
-      routeInformationProvider: router.routeInformationProvider,
-      routerDelegate: router.routerDelegate,
-      title: 'Flutter Demo',
-      theme: FlexThemeData.light(
-          scheme: FlexScheme.bahamaBlue, useMaterial3: true),
+    return BlocProvider(
+      create: (context) => PlaceSearchBloc(),
+      child: MaterialApp.router(
+        darkTheme: FlexThemeData.dark(
+            scheme: FlexScheme.blumineBlue, useMaterial3: true),
+        routeInformationParser: router.routeInformationParser,
+        routeInformationProvider: router.routeInformationProvider,
+        routerDelegate: router.routerDelegate,
+        title: 'Flutter Demo',
+        theme: FlexThemeData.light(
+            scheme: FlexScheme.aquaBlue, useMaterial3: true),
+      ),
     );
   }
 }
