@@ -41,6 +41,7 @@ dependencies:
   flutter_typeahead: ^4.1.0
   anim_search_bar: ^2.0.2
   flutter_dotenv: ^5.0.2
+  flex_color_scheme: ^6.0.0
 
 dev_dependencies:
   flutter_test:

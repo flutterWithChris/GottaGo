@@ -1,3 +1,4 @@
+import 'package:flex_color_scheme/flex_color_scheme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:go_router/go_router.dart';
@@ -33,38 +34,20 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp.router(
+      darkTheme: FlexThemeData.dark(
+          scheme: FlexScheme.blumineBlue, useMaterial3: true),
       routeInformationParser: router.routeInformationParser,
       routeInformationProvider: router.routeInformationProvider,
       routerDelegate: router.routerDelegate,
       title: 'Flutter Demo',
-      theme: ThemeData.from(
-          // This is the theme of your application.
-          //
-          // Try running your application with "flutter run". You'll see the
-          // application has a blue toolbar. Then, without quitting the app, try
-          // changing the primarySwatch below to Colors.green and then invoke
-          // "hot reload" (press "r" in the console where you ran "flutter run",
-          // or simply save your changes to "hot reload" in a Flutter IDE).
-          // Notice that the counter didn't reset back to zero; the application
-          // is not restarted.
-          //primarySwatch: Colors.blue,
-          colorScheme: ColorScheme.fromSeed(seedColor: Colors.teal),
-          useMaterial3: true),
+      theme: FlexThemeData.light(
+          scheme: FlexScheme.bahamaBlue, useMaterial3: true),
     );
   }
 }
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key, required this.title});
-
-  // This widget is the home page of your application. It is stateful, meaning
-  // that it has a State object (defined below) that contains fields that affect
-  // how it looks.
-
-  // This class is the configuration for the state. It holds the values (in this
-  // case the title) provided by the parent (in this case the App widget) and
-  // used by the build method of the State. Fields in a Widget subclass are
-  // always marked "final".
 
   final String title;
 
@@ -75,12 +58,6 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
-    // This method is rerun every time setState is called, for instance as done
-    // by the _incrementCounter method above.
-    //
-    // The Flutter framework has been optimized to make rerunning build methods
-    // fast, so that you can just rebuild anything that needs updating rather
-    // than having to individually change instances of widgets.
     return Scaffold(
       body: CustomScrollView(
         slivers: [
@@ -134,7 +111,7 @@ class _MyHomePageState extends State<MyHomePage> {
         onPressed: () {},
         tooltip: 'Increment',
         child: const Icon(Icons.add),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
+      ),
     );
   }
 }
@@ -174,48 +151,50 @@ class CategoryCard extends StatelessWidget {
             ),
             Padding(
               padding: const EdgeInsets.all(8.0),
-              child: ListTile(
-                onTap: () {
-                  context.go('/category-page');
-                },
-                contentPadding: const EdgeInsets.symmetric(
-                    vertical: 12.0, horizontal: 24.0),
-                minLeadingWidth: 40,
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12.0)),
-                tileColor: categoryColor,
-                title: Text('$totalPlaces Saved Places'),
-                subtitle: Text('$openPlaces Open Now'),
-                leading: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 12.0),
-                  child: Stack(clipBehavior: Clip.none, children: [
-                    Positioned(
-                      right: 20,
-                      bottom: 10,
-                      child: ClipRRect(
+              child: Card(
+                child: ListTile(
+                  onTap: () {
+                    context.go('/category-page');
+                  },
+                  contentPadding: const EdgeInsets.symmetric(
+                      vertical: 12.0, horizontal: 24.0),
+                  minLeadingWidth: 40,
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12.0)),
+                  //tileColor: categoryColor,
+                  title: Text('$totalPlaces Saved Places'),
+                  subtitle: Text('$openPlaces Open Now'),
+                  leading: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 12.0),
+                    child: Stack(clipBehavior: Clip.none, children: [
+                      Positioned(
+                        right: 20,
+                        bottom: 10,
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(10.0),
+                          child: SizedBox(
+                            height: 42,
+                            width: 42,
+                            child: Image.network(
+                              'https://www.google.com/maps/uv?pb=!1s0x89e8287866d3ffff:0xa6734768501a1e3f!3m1!7e115!4shttps://lh5.googleusercontent.com/p/AF1QipNcnaL0OxmWX4zTLo_frU6Pa7eqglkMZcEcK9xe%3Dw258-h160-k-no!5shatch+huntington+-+Google+Search!15zQ2dJZ0FRPT0&imagekey=!1e10!2sAF1QipNcnaL0OxmWX4zTLo_frU6Pa7eqglkMZcEcK9xe&hl=en&sa=X&ved=2ahUKEwiwmoaj84D6AhWWkIkEHfHKDhUQoip6BAhREAM',
+                              fit: BoxFit.cover,
+                            ),
+                          ),
+                        ),
+                      ),
+                      ClipRRect(
                         borderRadius: BorderRadius.circular(10.0),
                         child: SizedBox(
                           height: 42,
                           width: 42,
                           child: Image.network(
-                            'https://www.google.com/maps/uv?pb=!1s0x89e8287866d3ffff:0xa6734768501a1e3f!3m1!7e115!4shttps://lh5.googleusercontent.com/p/AF1QipNcnaL0OxmWX4zTLo_frU6Pa7eqglkMZcEcK9xe%3Dw258-h160-k-no!5shatch+huntington+-+Google+Search!15zQ2dJZ0FRPT0&imagekey=!1e10!2sAF1QipNcnaL0OxmWX4zTLo_frU6Pa7eqglkMZcEcK9xe&hl=en&sa=X&ved=2ahUKEwiwmoaj84D6AhWWkIkEHfHKDhUQoip6BAhREAM',
+                            'https://www.google.com/maps/uv?pb=!1s0x89e82b9897a768f9:0x2853132db2dacf1b!3m1!7e115!4shttps://lh5.googleusercontent.com/p/AF1QipPYj58DyJv2NTqWJItryUFImbcTUfqe67FHBrur%3Dw168-h160-k-no!5sdown+diner+-+Google+Search!15zQ2dJZ0FRPT0&imagekey=!1e10!2sAF1QipPYj58DyJv2NTqWJItryUFImbcTUfqe67FHBrur&hl=en&sa=X&ved=2ahUKEwjwieGP9ID6AhVslokEHRRnBuIQoip6BAhnEAM',
                             fit: BoxFit.cover,
                           ),
                         ),
                       ),
-                    ),
-                    ClipRRect(
-                      borderRadius: BorderRadius.circular(10.0),
-                      child: SizedBox(
-                        height: 42,
-                        width: 42,
-                        child: Image.network(
-                          'https://www.google.com/maps/uv?pb=!1s0x89e82b9897a768f9:0x2853132db2dacf1b!3m1!7e115!4shttps://lh5.googleusercontent.com/p/AF1QipPYj58DyJv2NTqWJItryUFImbcTUfqe67FHBrur%3Dw168-h160-k-no!5sdown+diner+-+Google+Search!15zQ2dJZ0FRPT0&imagekey=!1e10!2sAF1QipPYj58DyJv2NTqWJItryUFImbcTUfqe67FHBrur&hl=en&sa=X&ved=2ahUKEwjwieGP9ID6AhVslokEHRRnBuIQoip6BAhnEAM',
-                          fit: BoxFit.cover,
-                        ),
-                      ),
-                    ),
-                  ]),
+                    ]),
+                  ),
                 ),
               ),
             ),

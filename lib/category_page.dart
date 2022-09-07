@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
 import 'package:google_place/google_place.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class CategoryPage extends StatefulWidget {
   const CategoryPage({super.key});
@@ -215,47 +215,49 @@ class PlaceCard extends StatelessWidget {
     return SliverToBoxAdapter(
       child: Padding(
         padding: const EdgeInsets.all(8.0),
-        child: ListTile(
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)),
-          contentPadding: const EdgeInsets.all(12.0),
-          tileColor: Colors.white,
-          leading: ClipRRect(
-            borderRadius: BorderRadius.circular(12.0),
-            child: SizedBox(
-              height: 100,
-              width: 100,
-              child: Image.network(
-                imageUrl,
-                fit: BoxFit.cover,
+        child: Card(
+          child: ListTile(
+            shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12.0)),
+            contentPadding: const EdgeInsets.all(12.0),
+            //tileColor: Colors.white,
+            leading: ClipRRect(
+              borderRadius: BorderRadius.circular(12.0),
+              child: SizedBox(
+                height: 100,
+                width: 100,
+                child: Image.network(
+                  imageUrl,
+                  fit: BoxFit.cover,
+                ),
               ),
             ),
-          ),
-          title: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(placeName),
-              Row(
-                children: [
-                  Text(
-                    'Open \'Til $closingTime',
-                    style: Theme.of(context).textTheme.bodyMedium,
-                  ),
-                  const SizedBox(
-                    width: 4.0,
-                  ),
-                  const CircleAvatar(
-                    radius: 3,
-                    backgroundColor: Colors.lightGreen,
-                  )
-                ],
-              ),
-            ],
-          ),
-          subtitle: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisSize: MainAxisSize.min,
-            children: [Text(placeLocation), Text(placeDescription)],
+            title: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(placeName),
+                Row(
+                  children: [
+                    Text(
+                      'Open \'Til $closingTime',
+                      style: Theme.of(context).textTheme.bodyMedium,
+                    ),
+                    const SizedBox(
+                      width: 4.0,
+                    ),
+                    const CircleAvatar(
+                      radius: 3,
+                      backgroundColor: Colors.lightGreen,
+                    )
+                  ],
+                ),
+              ],
+            ),
+            subtitle: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [Text(placeLocation), Text(placeDescription)],
+            ),
           ),
         ),
       ),
