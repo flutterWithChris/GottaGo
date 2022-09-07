@@ -1,11 +1,73 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_typeahead/flutter_typeahead.dart';
+import 'package:google_place/google_place.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
-class CategoryPage extends StatelessWidget {
+class CategoryPage extends StatefulWidget {
   const CategoryPage({super.key});
 
   @override
+  State<CategoryPage> createState() => _CategoryPageState();
+}
+
+class _CategoryPageState extends State<CategoryPage> {
+  @override
   Widget build(BuildContext context) {
+    final GooglePlace googlePlace =
+        GooglePlace(dotenv.env['GOOGLE_PLACES_API_KEY']!);
+
+    final TextEditingController textEditingController = TextEditingController();
     return Scaffold(
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          showDialog(
+              context: context,
+              builder: (context) {
+                return Dialog(
+                    child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 12.0),
+                  child: TypeAheadField(
+                    textFieldConfiguration:
+                        const TextFieldConfiguration(autofocus: true),
+                    suggestionsCallback: (pattern) async {
+                      List<AutocompletePrediction> predictions = [];
+                      if (pattern.isEmpty) return predictions;
+                      var place = await googlePlace.autocomplete.get(pattern);
+                      predictions = place!.predictions!;
+                      return predictions;
+                    },
+                    itemBuilder: (context, itemData) {
+                      return Padding(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 4.0, vertical: 2.0),
+                        child: ListTile(
+                          title: Text(itemData.description!),
+                        ),
+                      );
+                    },
+                    onSuggestionSelected: (suggestion) async {
+                      Navigator.pop(context);
+                      await Future.delayed(const Duration(milliseconds: 500));
+                      if (!mounted) return;
+                      Scaffold.of(context).showBottomSheet(
+                        (context) {
+                          return DraggableScrollableSheet(
+                            builder: (context, scrollController) {
+                              return Column(
+                                children: [
+                                  Text(suggestion.description!),
+                                ],
+                              );
+                            },
+                          );
+                        },
+                      );
+                    },
+                  ),
+                ));
+              });
+        },
+      ),
       body: CustomScrollView(
         slivers: [
           SliverAppBar.medium(
@@ -53,7 +115,7 @@ class CategoryPage extends StatelessWidget {
               ],
             ),
             actions: [
-              IconButton(onPressed: () {}, icon: const Icon(Icons.more_vert))
+              IconButton(onPressed: () {}, icon: const Icon(Icons.more_vert)),
             ],
           ),
           const GoButton(),
@@ -90,7 +152,7 @@ class CategoryPage extends StatelessWidget {
             placeLocation: 'Patchogue, NY',
             placeDescription: '"excellent food, coffee and service..."',
             imageUrl:
-                'https://www.google.com/maps/uv?pb=!1s0x89c41f115b12a40f%3A0x1cb4aeb28234535!3m1!7e115!4shttps%3A%2F%2Flh5.googleusercontent.com%2Fp%2FAF1QipPxetTYWtNtyheHagncbjDIbW59m9kKW9pYS9Mk%3Dw120-h160-k-no!5srise%20and%20grind%20cafe%20-%20Google%20Search!15sCgIgAQ&imagekey=!1e10!2sAF1QipPxetTYWtNtyheHagncbjDIbW59m9kKW9pYS9Mk&hl=en&sa=X&ved=2ahUKEwjc4_a6hoH6AhWclIkEHbtlBrMQoip6BAhpEAM#',
+                'https://www.google.com/maps/uv?pb=!1s0x89c41f115b12a40f%3A0x1cb4aeb28234535!3m1!7e115!4shttps%3A%2F%2Flh5.googleusercontent.com%2Fp%2FAF1QipPxetTYWtNtyheHagncbjDIbW59m9kKW9pYS9Mk%3Dw120-h160-k-no!5srise%20and%20grind%20cafe%20-%20Google%20Search!15sCgIgAQ&imagekey=!1e10!2sAF1QipPxetTYWtNtyheHagncbjDIbW59m9kKW9pYS9Mk&hl=en&sa=X&ved=2ahUKEwjc4_a6hoH6AhWclIkEHbtlBrMQoip6BAhpEAM# ',
           ),
           const PlaceCard(
             closingTime: '3PM',
@@ -120,10 +182,9 @@ class GoButton extends StatelessWidget {
         child: ElevatedButton(
           onPressed: () {},
           style: ElevatedButton.styleFrom(
-              fixedSize: const Size(125, 30),
-              minimumSize: const Size(125, 30),
-              foregroundColor: Colors.white,
-              backgroundColor: Colors.lightBlueAccent),
+            fixedSize: const Size(125, 30),
+            minimumSize: const Size(125, 30),
+          ),
           child: const Text(
             'Let\'s Go Somewhere',
             style: TextStyle(fontWeight: FontWeight.bold),
