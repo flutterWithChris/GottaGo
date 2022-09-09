@@ -167,7 +167,7 @@ class SearchPlacesSheet extends StatelessWidget {
   Widget build(BuildContext context) {
     return DraggableScrollableSheet(
       initialChildSize: 0.75,
-      maxChildSize: 0.75,
+      maxChildSize: 0.80,
       expand: false,
       builder: (context, scrollController) {
         return Padding(
@@ -231,6 +231,7 @@ class SearchPlacesSheet extends StatelessWidget {
                                   const EdgeInsets.symmetric(vertical: 4.0),
                               child: Text(
                                 placeDetails!.name!,
+                                textAlign: TextAlign.center,
                                 style: Theme.of(context)
                                     .textTheme
                                     .titleLarge!
@@ -453,24 +454,54 @@ class PlaceCard extends StatelessWidget {
                 ),
               ),
               subtitle: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Padding(
                     padding: const EdgeInsets.symmetric(vertical: 2.0),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
+                    child: Wrap(
+                      crossAxisAlignment: WrapCrossAlignment.center,
+                      alignment: WrapAlignment.spaceBetween,
                       children: [
-                        Text(
-                          'Open \'Til $closingTime',
-                          style: Theme.of(context).textTheme.bodySmall,
+                        Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Text(
+                              'Open \'Til $closingTime',
+                              style: Theme.of(context).textTheme.bodySmall,
+                            ),
+                            const SizedBox(
+                              width: 6.0,
+                            ),
+                            const CircleAvatar(
+                              radius: 3,
+                              backgroundColor: Colors.lightGreen,
+                            ),
+                            const SizedBox(
+                              width: 12.0,
+                            ),
+                          ],
                         ),
-                        const SizedBox(
-                          width: 6.0,
-                        ),
-                        const CircleAvatar(
-                          radius: 3,
-                          backgroundColor: Colors.lightGreen,
+                        SizedBox(
+                          height: 28,
+                          child: FittedBox(
+                            child: Chip(
+                              labelPadding:
+                                  const EdgeInsets.symmetric(horizontal: 12.0),
+                              visualDensity: VisualDensity.compact,
+                              label: Wrap(
+                                  crossAxisAlignment: WrapCrossAlignment.center,
+                                  spacing: 8.0,
+                                  children: const [
+                                    Icon(
+                                      Icons.star,
+                                      size: 18.0,
+                                      color: Colors.amber,
+                                    ),
+                                    Text('4.5')
+                                  ]),
+                            ),
+                          ),
                         )
                       ],
                     ),
