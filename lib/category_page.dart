@@ -1,5 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_animate/animate.dart';
+import 'package:flutter_animate/effects/effects.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
@@ -7,6 +9,7 @@ import 'package:flutter_typeahead/flutter_typeahead.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_place/google_place.dart';
 import 'package:leggo/bloc/bloc/place_search_bloc.dart';
+import 'package:reorderables/reorderables.dart';
 
 class CategoryPage extends StatefulWidget {
   const CategoryPage({super.key});
@@ -16,12 +19,77 @@ class CategoryPage extends StatefulWidget {
 }
 
 class _CategoryPageState extends State<CategoryPage> {
+  List<Widget> rows = [];
+  List<PlaceCard> places = [
+    const PlaceCard(
+      closingTime: '3PM',
+      placeName: 'Hatch',
+      placeLocation: 'Huntington, NY',
+      placeDescription:
+          'An extensive menu of classic & creative American breakfast dishes with contemporary...',
+      imageUrl:
+          'https://www.google.com/maps/uv?pb=!1s0x89e8287866d3ffff:0xa6734768501a1e3f!3m1!7e115!4shttps://lh5.googleusercontent.com/p/AF1QipNcnaL0OxmWX4zTLo_frU6Pa7eqglkMZcEcK9xe%3Dw258-h160-k-no!5shatch+huntington+-+Google+Search!15zQ2dJZ0FRPT0&imagekey=!1e10!2sAF1QipNcnaL0OxmWX4zTLo_frU6Pa7eqglkMZcEcK9xe&hl=en&sa=X&ved=2ahUKEwiwmoaj84D6AhWWkIkEHfHKDhUQoip6BAhREAM',
+    ),
+    const PlaceCard(
+      closingTime: '3PM',
+      placeName: 'Whiskey Down Diner',
+      placeLocation: 'Farmingdale, NY',
+      placeDescription:
+          'Familiar all-day diner offering typical comfort food such as pancakes, eggs, burgers...',
+      imageUrl:
+          'https://www.google.com/maps/uv?pb=!1s0x89e82b9897a768f9%3A0x2853132db2dacf1b!3m1!7e115!4shttps%3A%2F%2Flh5.googleusercontent.com%2Fp%2FAF1QipPYj58DyJv2NTqWJItryUFImbcTUfqe67FHBrur%3Dw168-h160-k-no!5sdown%20diner%20-%20Google%20Search!15sCgIgAQ&imagekey=!1e10!2sAF1QipPYj58DyJv2NTqWJItryUFImbcTUfqe67FHBrur&hl=en&sa=X&ved=2ahUKEwjAmaKshYH6AhXNjYkEHQs5C6IQoip6BAhpEAM#',
+    ),
+    const PlaceCard(
+      closingTime: '3PM',
+      placeName: 'Jardin Cafe',
+      placeLocation: 'Patchogue, NY',
+      placeDescription:
+          '"I was pleasantly surprised to see such a varied menu with meat and tofu options."',
+      imageUrl:
+          'https://www.google.com/maps/uv?pb=!1s0x89e849a3c6fe856d:0xabd40cec3dcf19a6!3m1!7e115!4shttps://lh5.googleusercontent.com/p/AF1QipPOidJNkMv1UYjBKbw5sXQvANFfLayn9uCamtQH%3Dw120-h160-k-no!5sjardin+cafe+-+Google+Search!15zQ2dJZ0FRPT0&imagekey=!1e10!2sAF1QipPOidJNkMv1UYjBKbw5sXQvANFfLayn9uCamtQH&hl=en&sa=X&ved=2ahUKEwjMg7HPhYH6AhURj4kEHf7oBT8Qoip6BAhdEAM',
+    ),
+    const PlaceCard(
+      closingTime: '3PM',
+      placeName: 'Rise & Grind',
+      placeLocation: 'Patchogue, NY',
+      placeDescription: '"excellent food, coffee and service..."',
+      imageUrl:
+          'https://www.google.com/maps/uv?pb=!1s0x89c41f115b12a40f%3A0x1cb4aeb28234535!3m1!7e115!4shttps%3A%2F%2Flh5.googleusercontent.com%2Fp%2FAF1QipPxetTYWtNtyheHagncbjDIbW59m9kKW9pYS9Mk%3Dw120-h160-k-no!5srise%20and%20grind%20cafe%20-%20Google%20Search!15sCgIgAQ&imagekey=!1e10!2sAF1QipPxetTYWtNtyheHagncbjDIbW59m9kKW9pYS9Mk&hl=en&sa=X&ved=2ahUKEwjc4_a6hoH6AhWclIkEHbtlBrMQoip6BAhpEAM# ',
+    ),
+    const PlaceCard(
+      closingTime: '3PM',
+      placeName: 'Hatch',
+      placeLocation: 'Huntington, NY',
+      placeDescription:
+          'An extensive menu of classic & creative American breakfast dishes with contemporary...',
+      imageUrl:
+          'https://www.google.com/maps/uv?pb=!1s0x89e8287866d3ffff:0xa6734768501a1e3f!3m1!7e115!4shttps://lh5.googleusercontent.com/p/AF1QipNcnaL0OxmWX4zTLo_frU6Pa7eqglkMZcEcK9xe%3Dw258-h160-k-no!5shatch+huntington+-+Google+Search!15zQ2dJZ0FRPT0&imagekey=!1e10!2sAF1QipNcnaL0OxmWX4zTLo_frU6Pa7eqglkMZcEcK9xe&hl=en&sa=X&ved=2ahUKEwiwmoaj84D6AhWWkIkEHfHKDhUQoip6BAhREAM',
+    ),
+  ];
+  @override
+  void initState() {
+    // TODO: implement initState
+    rows = List<Widget>.generate(places.length, (index) => places[index]);
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
+    final ScrollController mainScrollController = ScrollController();
     final GooglePlace googlePlace =
         GooglePlace(dotenv.env['GOOGLE_PLACES_API_KEY']!);
 
     final TextEditingController textEditingController = TextEditingController();
+
+    void _onReorder(int oldIndex, int newIndex) {
+      setState(() {
+        Widget row = rows.removeAt(oldIndex);
+        rows.insert(newIndex, row);
+      });
+    }
+
+    // Ma
+
     return SafeArea(
       child: Scaffold(
         floatingActionButton: FloatingActionButton(
@@ -39,6 +107,7 @@ class _CategoryPageState extends State<CategoryPage> {
           },
         ),
         body: CustomScrollView(
+          controller: mainScrollController,
           slivers: [
             SliverAppBar.medium(
               leading: Padding(
@@ -96,50 +165,14 @@ class _CategoryPageState extends State<CategoryPage> {
               ],
             ),
             const GoButton(),
-            const PlaceCard(
-              closingTime: '3PM',
-              placeName: 'Hatch',
-              placeLocation: 'Huntington, NY',
-              placeDescription:
-                  'An extensive menu of classic & creative American breakfast dishes with contemporary...',
-              imageUrl:
-                  'https://www.google.com/maps/uv?pb=!1s0x89e8287866d3ffff:0xa6734768501a1e3f!3m1!7e115!4shttps://lh5.googleusercontent.com/p/AF1QipNcnaL0OxmWX4zTLo_frU6Pa7eqglkMZcEcK9xe%3Dw258-h160-k-no!5shatch+huntington+-+Google+Search!15zQ2dJZ0FRPT0&imagekey=!1e10!2sAF1QipNcnaL0OxmWX4zTLo_frU6Pa7eqglkMZcEcK9xe&hl=en&sa=X&ved=2ahUKEwiwmoaj84D6AhWWkIkEHfHKDhUQoip6BAhREAM',
-            ),
-            const PlaceCard(
-              closingTime: '3PM',
-              placeName: 'Whiskey Down Diner',
-              placeLocation: 'Farmingdale, NY',
-              placeDescription:
-                  'Familiar all-day diner offering typical comfort food such as pancakes, eggs, burgers...',
-              imageUrl:
-                  'https://www.google.com/maps/uv?pb=!1s0x89e82b9897a768f9%3A0x2853132db2dacf1b!3m1!7e115!4shttps%3A%2F%2Flh5.googleusercontent.com%2Fp%2FAF1QipPYj58DyJv2NTqWJItryUFImbcTUfqe67FHBrur%3Dw168-h160-k-no!5sdown%20diner%20-%20Google%20Search!15sCgIgAQ&imagekey=!1e10!2sAF1QipPYj58DyJv2NTqWJItryUFImbcTUfqe67FHBrur&hl=en&sa=X&ved=2ahUKEwjAmaKshYH6AhXNjYkEHQs5C6IQoip6BAhpEAM#',
-            ),
-            const PlaceCard(
-              closingTime: '3PM',
-              placeName: 'Jardin Cafe',
-              placeLocation: 'Patchogue, NY',
-              placeDescription:
-                  '"I was pleasantly surprised to see such a varied menu with meat and tofu options."',
-              imageUrl:
-                  'https://www.google.com/maps/uv?pb=!1s0x89e849a3c6fe856d:0xabd40cec3dcf19a6!3m1!7e115!4shttps://lh5.googleusercontent.com/p/AF1QipPOidJNkMv1UYjBKbw5sXQvANFfLayn9uCamtQH%3Dw120-h160-k-no!5sjardin+cafe+-+Google+Search!15zQ2dJZ0FRPT0&imagekey=!1e10!2sAF1QipPOidJNkMv1UYjBKbw5sXQvANFfLayn9uCamtQH&hl=en&sa=X&ved=2ahUKEwjMg7HPhYH6AhURj4kEHf7oBT8Qoip6BAhdEAM',
-            ),
-            const PlaceCard(
-              closingTime: '3PM',
-              placeName: 'Rise & Grind',
-              placeLocation: 'Patchogue, NY',
-              placeDescription: '"excellent food, coffee and service..."',
-              imageUrl:
-                  'https://www.google.com/maps/uv?pb=!1s0x89c41f115b12a40f%3A0x1cb4aeb28234535!3m1!7e115!4shttps%3A%2F%2Flh5.googleusercontent.com%2Fp%2FAF1QipPxetTYWtNtyheHagncbjDIbW59m9kKW9pYS9Mk%3Dw120-h160-k-no!5srise%20and%20grind%20cafe%20-%20Google%20Search!15sCgIgAQ&imagekey=!1e10!2sAF1QipPxetTYWtNtyheHagncbjDIbW59m9kKW9pYS9Mk&hl=en&sa=X&ved=2ahUKEwjc4_a6hoH6AhWclIkEHbtlBrMQoip6BAhpEAM# ',
-            ),
-            const PlaceCard(
-              closingTime: '3PM',
-              placeName: 'Hatch',
-              placeLocation: 'Huntington, NY',
-              placeDescription:
-                  'An extensive menu of classic & creative American breakfast dishes with contemporary...',
-              imageUrl:
-                  'https://www.google.com/maps/uv?pb=!1s0x89e8287866d3ffff:0xa6734768501a1e3f!3m1!7e115!4shttps://lh5.googleusercontent.com/p/AF1QipNcnaL0OxmWX4zTLo_frU6Pa7eqglkMZcEcK9xe%3Dw258-h160-k-no!5shatch+huntington+-+Google+Search!15zQ2dJZ0FRPT0&imagekey=!1e10!2sAF1QipNcnaL0OxmWX4zTLo_frU6Pa7eqglkMZcEcK9xe&hl=en&sa=X&ved=2ahUKEwiwmoaj84D6AhWWkIkEHfHKDhUQoip6BAhREAM',
-            ),
+            ReorderableSliverList(
+                onReorder: _onReorder,
+                delegate: ReorderableSliverChildBuilderDelegate(
+                  childCount: rows.length,
+                  (context, index) {
+                    return rows[index];
+                  },
+                )),
           ],
         ),
       ),
@@ -182,8 +215,9 @@ class SearchPlacesSheet extends StatelessWidget {
                     const EdgeInsets.symmetric(horizontal: 4.0, vertical: 8.0),
                 child: TypeAheadField(
                   textFieldConfiguration: TextFieldConfiguration(
-                      //  autofocus: true,
+                      autofocus: true,
                       decoration: InputDecoration(
+                          contentPadding: const EdgeInsets.all(0),
                           filled: true,
                           fillColor: Theme.of(context).cardColor,
                           border: OutlineInputBorder(
@@ -216,134 +250,161 @@ class SearchPlacesSheet extends StatelessWidget {
                   },
                 ),
               ),
-              Card(
-                child: BlocBuilder<PlaceSearchBloc, PlaceSearchState>(
-                  builder: (context, state) {
-                    if (state.status == Status.loaded) {
-                      var placeDetails = state.detailsResult;
+              BlocBuilder<PlaceSearchBloc, PlaceSearchState>(
+                builder: (context, state) {
+                  if (state.status == Status.initial) {
+                    return const SizedBox();
+                  }
+                  if (state.status == Status.loaded) {
+                    var placeDetails = state.detailsResult;
 
-                      return Padding(
-                        padding: const EdgeInsets.all(12.0),
-                        child: Column(
-                          children: [
-                            Padding(
-                              padding:
-                                  const EdgeInsets.symmetric(vertical: 4.0),
-                              child: Text(
-                                placeDetails!.name!,
-                                textAlign: TextAlign.center,
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .titleLarge!
-                                    .copyWith(fontWeight: FontWeight.bold),
-                              ),
-                            ),
-                            Padding(
-                              padding:
-                                  const EdgeInsets.symmetric(vertical: 8.0),
-                              child: FutureBuilder(
-                                  future: getPhotos(placeDetails),
-                                  builder: (context, snapshot) {
-                                    if (snapshot.hasData) {
-                                      return AspectRatio(
-                                        aspectRatio: 16 / 9,
-                                        child: Image.memory(snapshot.data!),
-                                      );
-                                    } else {
-                                      return AspectRatio(
-                                        aspectRatio: 16 / 9,
-                                        child: Center(
-                                          child: Container(
-                                              height: 300,
-                                              width: MediaQuery.of(context)
-                                                  .size
-                                                  .width,
-                                              color: Colors.grey.shade200,
-                                              child: const SizedBox(
-                                                  height: 20,
-                                                  child: Center(
-                                                      child:
-                                                          CircularProgressIndicator()))),
-                                        ),
-                                      );
-                                    }
-                                  }),
-                            ),
-                            OutlinedButton.icon(
-                                style: OutlinedButton.styleFrom(
-                                    minimumSize: const Size(150, 30)),
-                                onPressed: () {
-                                  print(placeDetails.website);
-                                },
-                                icon: const Icon(Icons.web_rounded, size: 18),
-                                label: const Text('Visit Website')),
-                            Wrap(
-                              spacing: 4.0,
-                              crossAxisAlignment: WrapCrossAlignment.center,
-                              children: [
-                                const Icon(
-                                  Icons.place_rounded,
-                                  size: 18,
-                                ),
-                                Text(placeDetails.formattedAddress!),
-                              ],
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: Wrap(
-                                spacing: 6.0,
-                                crossAxisAlignment: WrapCrossAlignment.center,
+                    return Padding(
+                      padding: const EdgeInsets.all(2.0),
+                      child: Column(
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.all(4.0),
+                            child: Card(
+                              child: Column(
                                 children: [
-                                  RatingBar.builder(
-                                    ignoreGestures: true,
-                                    itemSize: 20.0,
-                                    allowHalfRating: true,
-                                    initialRating: placeDetails.rating!,
-                                    itemBuilder: (context, index) {
-                                      return const Icon(
-                                        Icons.star,
-                                        size: 12.0,
-                                        color: Colors.amber,
-                                      );
-                                    },
-                                    onRatingUpdate: (value) {},
+                                  Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                        vertical: 10.0),
+                                    child: Text(
+                                      placeDetails!.name!,
+                                      textAlign: TextAlign.center,
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .titleLarge!
+                                          .copyWith(
+                                              fontWeight: FontWeight.bold),
+                                    ),
                                   ),
-                                  Text(placeDetails.rating.toString()),
+                                  Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                        vertical: 8.0),
+                                    child: FutureBuilder(
+                                        future: getPhotos(placeDetails),
+                                        builder: (context, snapshot) {
+                                          if (snapshot.hasData) {
+                                            return AspectRatio(
+                                              aspectRatio: 16 / 9,
+                                              child:
+                                                  Image.memory(snapshot.data!),
+                                            );
+                                          } else {
+                                            return AspectRatio(
+                                              aspectRatio: 16 / 9,
+                                              child: Center(
+                                                child: Animate(
+                                                  onPlay: (controller) {
+                                                    controller.repeat();
+                                                  },
+                                                  effects: const [
+                                                    ShimmerEffect(
+                                                        duration: Duration(
+                                                            seconds: 2))
+                                                  ],
+                                                  child: Container(
+                                                      height: 300,
+                                                      width:
+                                                          MediaQuery.of(context)
+                                                              .size
+                                                              .width,
+                                                      color: Theme.of(context)
+                                                          .primaryColor,
+                                                      child: SizedBox(
+                                                          height: 20,
+                                                          child: Center(
+                                                              child:
+                                                                  CircularProgressIndicator(
+                                                            color: Colors
+                                                                .grey.shade300,
+                                                          )))),
+                                                ),
+                                              ),
+                                            );
+                                          }
+                                        }),
+                                  ),
+                                  OutlinedButton.icon(
+                                      style: OutlinedButton.styleFrom(
+                                          minimumSize: const Size(150, 30)),
+                                      onPressed: () {
+                                        print(placeDetails);
+                                      },
+                                      icon: const Icon(Icons.web_rounded,
+                                          size: 18),
+                                      label: const Text('Visit Website')),
+                                  Wrap(
+                                    spacing: 4.0,
+                                    crossAxisAlignment:
+                                        WrapCrossAlignment.center,
+                                    children: [
+                                      const Icon(
+                                        Icons.place_rounded,
+                                        size: 18,
+                                      ),
+                                      Text(placeDetails.formattedAddress!),
+                                    ],
+                                  ),
+                                  Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: Wrap(
+                                      spacing: 6.0,
+                                      crossAxisAlignment:
+                                          WrapCrossAlignment.center,
+                                      children: [
+                                        RatingBar.builder(
+                                          ignoreGestures: true,
+                                          itemSize: 20.0,
+                                          allowHalfRating: true,
+                                          initialRating: placeDetails.rating!,
+                                          itemBuilder: (context, index) {
+                                            return const Icon(
+                                              Icons.star,
+                                              size: 12.0,
+                                              color: Colors.amber,
+                                            );
+                                          },
+                                          onRatingUpdate: (value) {},
+                                        ),
+                                        Text(placeDetails.rating.toString()),
+                                      ],
+                                    ),
+                                  ),
+                                  Padding(
+                                    padding: const EdgeInsets.only(bottom: 6.0),
+                                    child: Chip(
+                                      label: Text(placeDetails.types!.first
+                                          .capitalize()),
+                                      avatar: Image.network(
+                                        placeDetails.icon!,
+                                        height: 18,
+                                      ),
+                                    ),
+                                  ),
                                 ],
                               ),
                             ),
-                            Chip(
-                              label:
-                                  Text(placeDetails.types!.first.capitalize()),
-                              avatar: Image.network(
-                                placeDetails.icon!,
-                                height: 18,
-                              ),
-                            ),
-                          ],
-                        ),
-                      );
-                    } else {
-                      return const Center(
-                        child: Text('Something Went Wrong..'),
-                      );
-                    }
-                  },
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: ElevatedButton.icon(
-                    onPressed: () {},
-                    icon: const Icon(Icons.add),
-                    label: RichText(
-                      text: const TextSpan(children: [
-                        TextSpan(text: 'Add to'),
-                        TextSpan(
-                            text: ' Breakfast Ideas',
-                            style: TextStyle(fontWeight: FontWeight.bold))
-                      ]),
-                    )),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: ElevatedButton.icon(
+                                onPressed: () {},
+                                icon:
+                                    const Icon(Icons.add_location_alt_outlined),
+                                label: const Text('Add to Breakfast Ideas')),
+                          ),
+                        ],
+                      ),
+                    );
+                  } else {
+                    return const Center(
+                      child: Text('Something Went Wrong..'),
+                    );
+                  }
+                },
               ),
             ],
           ),
@@ -352,6 +413,19 @@ class SearchPlacesSheet extends StatelessWidget {
     );
   }
 }
+
+// RichText(
+//                       text: TextSpan(
+
+//                           children: [
+//                             TextSpan(text: 'Add to'),
+//                             TextSpan(
+//                                 text: ' Breakfast Ideas',
+//                                 style: TextStyle(
+//                                   fontWeight: FontWeight.bold,
+//                                 ))
+//                           ]),
+//                     )
 
 extension StringExtension on String {
   String capitalize() {
@@ -367,17 +441,20 @@ class GoButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SliverToBoxAdapter(
-      child: FractionallySizedBox(
-        widthFactor: 0.65,
-        child: ElevatedButton(
-          onPressed: () {},
-          style: ElevatedButton.styleFrom(
-            fixedSize: const Size(125, 30),
-            minimumSize: const Size(125, 30),
-          ),
-          child: const Text(
-            'Let\'s Go Somewhere',
-            style: TextStyle(fontWeight: FontWeight.bold),
+      child: Padding(
+        padding: const EdgeInsets.only(bottom: 4.0),
+        child: FractionallySizedBox(
+          widthFactor: 0.65,
+          child: ElevatedButton(
+            onPressed: () {},
+            style: ElevatedButton.styleFrom(
+              fixedSize: const Size(125, 40),
+              minimumSize: const Size(125, 40),
+            ),
+            child: const Text(
+              'Let\'s Go Somewhere',
+              style: TextStyle(fontWeight: FontWeight.bold),
+            ),
           ),
         ),
       ),
@@ -385,7 +462,7 @@ class GoButton extends StatelessWidget {
   }
 }
 
-class PlaceCard extends StatelessWidget {
+class PlaceCard extends StatefulWidget {
   final String imageUrl;
   final String placeName;
   final String placeDescription;
@@ -401,114 +478,118 @@ class PlaceCard extends StatelessWidget {
   }) : super(key: key);
 
   @override
+  State<PlaceCard> createState() => _PlaceCardState();
+}
+
+class _PlaceCardState extends State<PlaceCard> {
+  @override
   Widget build(BuildContext context) {
-    return SliverToBoxAdapter(
-      child: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Card(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 4.0),
-            child: ListTile(
-              visualDensity: const VisualDensity(vertical: 4),
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12.0)),
-              contentPadding: const EdgeInsets.all(12.0),
-              //tileColor: Colors.white,
-              leading: ClipRRect(
-                borderRadius: BorderRadius.circular(12.0),
-                child: SizedBox(
-                  height: 100,
-                  width: 100,
-                  child: Image.network(
-                    imageUrl,
-                    fit: BoxFit.cover,
-                  ),
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
+      child: Card(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 4.0),
+          child: ListTile(
+            visualDensity: const VisualDensity(vertical: 4),
+            shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12.0)),
+            contentPadding:
+                const EdgeInsets.symmetric(horizontal: 12.0, vertical: 10.0),
+            //tileColor: Colors.white,
+            leading: ClipRRect(
+              borderRadius: BorderRadius.circular(12.0),
+              child: SizedBox(
+                height: 100,
+                width: 100,
+                child: Image.network(
+                  widget.imageUrl,
+                  fit: BoxFit.cover,
                 ),
               ),
-              title: Padding(
-                padding: const EdgeInsets.symmetric(vertical: 2.0),
-                child: Wrap(
-                  //spacing: 24.0,
-                  alignment: WrapAlignment.spaceBetween,
-                  crossAxisAlignment: WrapCrossAlignment.center,
-                  children: [
-                    Text(placeName),
-                    Wrap(
-                      spacing: 5.0,
-                      crossAxisAlignment: WrapCrossAlignment.center,
-                      children: [
-                        const Icon(
-                          Icons.location_pin,
-                          size: 13,
-                        ),
-                        Text(
-                          placeLocation,
-                          style: Theme.of(context)
-                              .textTheme
-                              .bodySmall!
-                              .copyWith(fontWeight: FontWeight.bold),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-              subtitle: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                mainAxisSize: MainAxisSize.min,
+            ),
+            title: Padding(
+              padding: const EdgeInsets.symmetric(vertical: 2.0),
+              child: Wrap(
+                //spacing: 24.0,
+                alignment: WrapAlignment.spaceBetween,
+                crossAxisAlignment: WrapCrossAlignment.center,
                 children: [
-                  Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 2.0),
-                    child: Wrap(
-                      crossAxisAlignment: WrapCrossAlignment.center,
-                      alignment: WrapAlignment.spaceBetween,
-                      children: [
-                        Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Text(
-                              'Open \'Til $closingTime',
-                              style: Theme.of(context).textTheme.bodySmall,
-                            ),
-                            const SizedBox(
-                              width: 6.0,
-                            ),
-                            const CircleAvatar(
-                              radius: 3,
-                              backgroundColor: Colors.lightGreen,
-                            ),
-                            const SizedBox(
-                              width: 12.0,
-                            ),
-                          ],
-                        ),
-                        SizedBox(
-                          height: 28,
-                          child: FittedBox(
-                            child: Chip(
-                              labelPadding:
-                                  const EdgeInsets.symmetric(horizontal: 12.0),
-                              visualDensity: VisualDensity.compact,
-                              label: Wrap(
-                                  crossAxisAlignment: WrapCrossAlignment.center,
-                                  spacing: 8.0,
-                                  children: const [
-                                    Icon(
-                                      Icons.star,
-                                      size: 18.0,
-                                      color: Colors.amber,
-                                    ),
-                                    Text('4.5')
-                                  ]),
-                            ),
-                          ),
-                        )
-                      ],
-                    ),
+                  Text(widget.placeName),
+                  Wrap(
+                    spacing: 5.0,
+                    crossAxisAlignment: WrapCrossAlignment.center,
+                    children: [
+                      const Icon(
+                        Icons.location_pin,
+                        size: 13,
+                      ),
+                      Text(
+                        widget.placeLocation,
+                        style: Theme.of(context)
+                            .textTheme
+                            .bodySmall!
+                            .copyWith(fontWeight: FontWeight.bold),
+                      ),
+                    ],
                   ),
-                  Text(placeDescription)
                 ],
               ),
+            ),
+            subtitle: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 2.0),
+                  child: Wrap(
+                    crossAxisAlignment: WrapCrossAlignment.center,
+                    alignment: WrapAlignment.spaceBetween,
+                    children: [
+                      Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text(
+                            'Open \'Til ${widget.closingTime}',
+                            style: Theme.of(context).textTheme.bodySmall,
+                          ),
+                          const SizedBox(
+                            width: 6.0,
+                          ),
+                          const CircleAvatar(
+                            radius: 3,
+                            backgroundColor: Colors.lightGreen,
+                          ),
+                          const SizedBox(
+                            width: 12.0,
+                          ),
+                        ],
+                      ),
+                      SizedBox(
+                        height: 28,
+                        child: FittedBox(
+                          child: Chip(
+                            labelPadding:
+                                const EdgeInsets.symmetric(horizontal: 12.0),
+                            visualDensity: VisualDensity.compact,
+                            label: Wrap(
+                                crossAxisAlignment: WrapCrossAlignment.center,
+                                spacing: 8.0,
+                                children: const [
+                                  Icon(
+                                    Icons.star,
+                                    size: 18.0,
+                                    color: Colors.amber,
+                                  ),
+                                  Text('4.5')
+                                ]),
+                          ),
+                        ),
+                      )
+                    ],
+                  ),
+                ),
+                Text(widget.placeDescription)
+              ],
             ),
           ),
         ),

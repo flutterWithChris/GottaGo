@@ -40,7 +40,7 @@ class MyApp extends StatelessWidget {
       create: (context) => PlaceSearchBloc(),
       child: MaterialApp.router(
         darkTheme: FlexThemeData.dark(
-          scheme: FlexScheme.aquaBlue,
+          scheme: FlexScheme.espresso,
           useMaterial3: true,
           useMaterial3ErrorColors: true,
         ),
@@ -49,7 +49,7 @@ class MyApp extends StatelessWidget {
         routerDelegate: router.routerDelegate,
         title: 'Flutter Demo',
         theme: FlexThemeData.light(
-            scheme: FlexScheme.aquaBlue, useMaterial3: true),
+            scheme: FlexScheme.espresso, useMaterial3: true),
       ),
     );
   }
@@ -79,7 +79,16 @@ class _MyHomePageState extends State<MyHomePage> {
                   icon: const Icon(Icons.menu),
                 ),
               ),
-              title: const Text('Leggo'),
+              title: Wrap(
+                spacing: 16.0,
+                children: const [
+                  Icon(FontAwesomeIcons.buildingCircleCheck),
+                  Text(
+                    'GottaGo',
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                ],
+              ),
               expandedHeight: 120,
               actions: [
                 IconButton(onPressed: () {}, icon: const Icon(Icons.more_vert))
@@ -125,7 +134,7 @@ class _MyHomePageState extends State<MyHomePage> {
         floatingActionButton: FloatingActionButton(
           onPressed: () {},
           tooltip: 'Increment',
-          child: const Icon(Icons.add),
+          child: const Icon(Icons.add_circle_outline_rounded),
         ),
       ),
     );
@@ -151,80 +160,87 @@ class CategoryCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return SliverToBoxAdapter(
         child: Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 4.0),
+      padding: const EdgeInsets.fromLTRB(8.0, 0, 8.0, 8.0),
       child: SizedBox(
         child: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Padding(
-              padding: const EdgeInsets.only(left: 16.0),
-              child: Wrap(
-                crossAxisAlignment: WrapCrossAlignment.center,
-                spacing: 10.0,
-                children: [
-                  categoryIcon != null
-                      ? Icon(
-                          categoryIcon,
-                          size: 18,
-                        )
-                      : const SizedBox(),
-                  Text(
-                    '$categoryTitle >',
-                    style: Theme.of(context)
-                        .textTheme
-                        .titleMedium!
-                        .copyWith(fontWeight: FontWeight.bold),
-                  ),
-                ],
-              ),
-            ),
-            Padding(
               padding: const EdgeInsets.all(8.0),
               child: Card(
-                child: ListTile(
-                  onTap: () {
-                    context.go('/category-page');
-                  },
-                  contentPadding: const EdgeInsets.symmetric(
-                      vertical: 12.0, horizontal: 24.0),
-                  minLeadingWidth: 40,
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12.0)),
-                  //tileColor: categoryColor,
-                  title: Text('$totalPlaces Saved Places'),
-                  subtitle: Text('$openPlaces Open Now'),
-                  leading: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 12.0),
-                    child: Stack(clipBehavior: Clip.none, children: [
-                      Positioned(
-                        right: 20,
-                        bottom: 10,
-                        child: ClipRRect(
-                          borderRadius: BorderRadius.circular(10.0),
-                          child: SizedBox(
-                            height: 42,
-                            width: 42,
-                            child: Image.network(
-                              'https://www.google.com/maps/uv?pb=!1s0x89e8287866d3ffff:0xa6734768501a1e3f!3m1!7e115!4shttps://lh5.googleusercontent.com/p/AF1QipNcnaL0OxmWX4zTLo_frU6Pa7eqglkMZcEcK9xe%3Dw258-h160-k-no!5shatch+huntington+-+Google+Search!15zQ2dJZ0FRPT0&imagekey=!1e10!2sAF1QipNcnaL0OxmWX4zTLo_frU6Pa7eqglkMZcEcK9xe&hl=en&sa=X&ved=2ahUKEwiwmoaj84D6AhWWkIkEHfHKDhUQoip6BAhREAM',
-                              fit: BoxFit.cover,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    ListTile(
+                      onTap: () {
+                        context.go('/category-page');
+                      },
+                      contentPadding: const EdgeInsets.symmetric(
+                          vertical: 12.0, horizontal: 24.0),
+                      minLeadingWidth: 20,
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12.0)),
+                      //tileColor: categoryColor,
+                      title: Padding(
+                        padding: const EdgeInsets.only(bottom: 8.0),
+                        child: Wrap(
+                          crossAxisAlignment: WrapCrossAlignment.center,
+                          spacing: 10.0,
+                          children: [
+                            categoryIcon != null
+                                ? Icon(
+                                    categoryIcon,
+                                    size: 18,
+                                  )
+                                : const SizedBox(),
+                            Text(
+                              '$categoryTitle >',
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .titleMedium!
+                                  .copyWith(fontWeight: FontWeight.bold),
+                            ),
+                          ],
+                        ),
+                      ),
+                      subtitle: Padding(
+                        padding: const EdgeInsets.only(left: 24.0),
+                        child: Text('$totalPlaces Saved Places'),
+                      ),
+                      leading: Padding(
+                        padding: const EdgeInsets.only(left: 16.0, top: 8.0),
+                        child: Stack(clipBehavior: Clip.none, children: [
+                          Positioned(
+                            right: 20,
+                            bottom: 10,
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(10.0),
+                              child: SizedBox(
+                                height: 50,
+                                width: 50,
+                                child: Image.network(
+                                  'https://www.google.com/maps/uv?pb=!1s0x89e8287866d3ffff:0xa6734768501a1e3f!3m1!7e115!4shttps://lh5.googleusercontent.com/p/AF1QipNcnaL0OxmWX4zTLo_frU6Pa7eqglkMZcEcK9xe%3Dw258-h160-k-no!5shatch+huntington+-+Google+Search!15zQ2dJZ0FRPT0&imagekey=!1e10!2sAF1QipNcnaL0OxmWX4zTLo_frU6Pa7eqglkMZcEcK9xe&hl=en&sa=X&ved=2ahUKEwiwmoaj84D6AhWWkIkEHfHKDhUQoip6BAhREAM',
+                                  fit: BoxFit.cover,
+                                ),
+                              ),
                             ),
                           ),
-                        ),
-                      ),
-                      ClipRRect(
-                        borderRadius: BorderRadius.circular(10.0),
-                        child: SizedBox(
-                          height: 42,
-                          width: 42,
-                          child: Image.network(
-                            'https://www.google.com/maps/uv?pb=!1s0x89e82b9897a768f9:0x2853132db2dacf1b!3m1!7e115!4shttps://lh5.googleusercontent.com/p/AF1QipPYj58DyJv2NTqWJItryUFImbcTUfqe67FHBrur%3Dw168-h160-k-no!5sdown+diner+-+Google+Search!15zQ2dJZ0FRPT0&imagekey=!1e10!2sAF1QipPYj58DyJv2NTqWJItryUFImbcTUfqe67FHBrur&hl=en&sa=X&ved=2ahUKEwjwieGP9ID6AhVslokEHRRnBuIQoip6BAhnEAM',
-                            fit: BoxFit.cover,
+                          ClipRRect(
+                            borderRadius: BorderRadius.circular(10.0),
+                            child: SizedBox(
+                              height: 50,
+                              width: 50,
+                              child: Image.network(
+                                'https://www.google.com/maps/uv?pb=!1s0x89e82b9897a768f9:0x2853132db2dacf1b!3m1!7e115!4shttps://lh5.googleusercontent.com/p/AF1QipPYj58DyJv2NTqWJItryUFImbcTUfqe67FHBrur%3Dw168-h160-k-no!5sdown+diner+-+Google+Search!15zQ2dJZ0FRPT0&imagekey=!1e10!2sAF1QipPYj58DyJv2NTqWJItryUFImbcTUfqe67FHBrur&hl=en&sa=X&ved=2ahUKEwjwieGP9ID6AhVslokEHRRnBuIQoip6BAhnEAM',
+                                fit: BoxFit.cover,
+                              ),
+                            ),
                           ),
-                        ),
+                        ]),
                       ),
-                    ]),
-                  ),
+                    ),
+                  ],
                 ),
               ),
             ),
