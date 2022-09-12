@@ -5,6 +5,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:go_router/go_router.dart';
 import 'package:leggo/bloc/bloc/place_search_bloc.dart';
+import 'package:leggo/bloc/saved_places/bloc/saved_places_bloc.dart';
 import 'package:leggo/category_page.dart';
 
 void main() async {
@@ -16,16 +17,15 @@ final router = GoRouter(initialLocation: '/', routes: [
   GoRoute(
       name: '/',
       path: '/',
-      pageBuilder: (context, state) => MaterialPage<void>(
-          key: state.pageKey,
-          child: const MyHomePage(
+      pageBuilder: (context, state) => const MaterialPage<void>(
+              child: MyHomePage(
             title: 'Leggo',
           )),
       routes: [
         GoRoute(
           path: 'category-page',
-          pageBuilder: (context, state) => MaterialPage<void>(
-              key: state.pageKey, child: const CategoryPage()),
+          pageBuilder: (context, state) =>
+              const MaterialPage<void>(child: CategoryPage()),
         )
       ]),
 ]);
@@ -36,8 +36,15 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) => PlaceSearchBloc(),
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider(
+          create: (context) => PlaceSearchBloc(),
+        ),
+        BlocProvider(
+          create: (context) => SavedPlacesBloc(),
+        ),
+      ],
       child: MaterialApp.router(
         darkTheme: FlexThemeData.dark(
           scheme: FlexScheme.espresso,
@@ -169,78 +176,73 @@ class CategoryCard extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.all(8.0),
               child: Card(
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    ListTile(
-                      onTap: () {
-                        context.go('/category-page');
-                      },
-                      contentPadding: const EdgeInsets.symmetric(
-                          vertical: 12.0, horizontal: 24.0),
-                      minLeadingWidth: 20,
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12.0)),
-                      //tileColor: categoryColor,
-                      title: Padding(
-                        padding: const EdgeInsets.only(bottom: 8.0),
-                        child: Wrap(
-                          crossAxisAlignment: WrapCrossAlignment.center,
-                          spacing: 10.0,
-                          children: [
-                            categoryIcon != null
-                                ? Icon(
-                                    categoryIcon,
-                                    size: 18,
-                                  )
-                                : const SizedBox(),
-                            Text(
-                              '$categoryTitle >',
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .titleMedium!
-                                  .copyWith(fontWeight: FontWeight.bold),
+                child: ListTile(
+                  onTap: () {
+                    context.read<SavedPlacesBloc>().add(LoadPlaces());
+                    context.go('/category-page');
+                  },
+                  contentPadding: const EdgeInsets.symmetric(
+                      vertical: 12.0, horizontal: 24.0),
+                  minLeadingWidth: 20,
+
+                  //tileColor: categoryColor,
+                  title: Padding(
+                    padding: const EdgeInsets.only(bottom: 8.0),
+                    child: Wrap(
+                      crossAxisAlignment: WrapCrossAlignment.center,
+                      spacing: 10.0,
+                      children: [
+                        categoryIcon != null
+                            ? Icon(
+                                categoryIcon,
+                                size: 18,
+                              )
+                            : const SizedBox(),
+                        Text(
+                          '$categoryTitle >',
+                          style: Theme.of(context)
+                              .textTheme
+                              .titleMedium!
+                              .copyWith(fontWeight: FontWeight.bold),
+                        ),
+                      ],
+                    ),
+                  ),
+                  subtitle: Padding(
+                    padding: const EdgeInsets.only(left: 24.0),
+                    child: Text('$totalPlaces Saved Places'),
+                  ),
+                  leading: Padding(
+                    padding: const EdgeInsets.only(left: 16.0, top: 8.0),
+                    child: Stack(clipBehavior: Clip.none, children: [
+                      Positioned(
+                        right: 20,
+                        bottom: 10,
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(10.0),
+                          child: SizedBox(
+                            height: 50,
+                            width: 50,
+                            child: Image.network(
+                              'https://www.google.com/maps/uv?pb=!1s0x89e8287866d3ffff:0xa6734768501a1e3f!3m1!7e115!4shttps://lh5.googleusercontent.com/p/AF1QipNcnaL0OxmWX4zTLo_frU6Pa7eqglkMZcEcK9xe%3Dw258-h160-k-no!5shatch+huntington+-+Google+Search!15zQ2dJZ0FRPT0&imagekey=!1e10!2sAF1QipNcnaL0OxmWX4zTLo_frU6Pa7eqglkMZcEcK9xe&hl=en&sa=X&ved=2ahUKEwiwmoaj84D6AhWWkIkEHfHKDhUQoip6BAhREAM',
+                              fit: BoxFit.cover,
                             ),
-                          ],
+                          ),
                         ),
                       ),
-                      subtitle: Padding(
-                        padding: const EdgeInsets.only(left: 24.0),
-                        child: Text('$totalPlaces Saved Places'),
-                      ),
-                      leading: Padding(
-                        padding: const EdgeInsets.only(left: 16.0, top: 8.0),
-                        child: Stack(clipBehavior: Clip.none, children: [
-                          Positioned(
-                            right: 20,
-                            bottom: 10,
-                            child: ClipRRect(
-                              borderRadius: BorderRadius.circular(10.0),
-                              child: SizedBox(
-                                height: 50,
-                                width: 50,
-                                child: Image.network(
-                                  'https://www.google.com/maps/uv?pb=!1s0x89e8287866d3ffff:0xa6734768501a1e3f!3m1!7e115!4shttps://lh5.googleusercontent.com/p/AF1QipNcnaL0OxmWX4zTLo_frU6Pa7eqglkMZcEcK9xe%3Dw258-h160-k-no!5shatch+huntington+-+Google+Search!15zQ2dJZ0FRPT0&imagekey=!1e10!2sAF1QipNcnaL0OxmWX4zTLo_frU6Pa7eqglkMZcEcK9xe&hl=en&sa=X&ved=2ahUKEwiwmoaj84D6AhWWkIkEHfHKDhUQoip6BAhREAM',
-                                  fit: BoxFit.cover,
-                                ),
-                              ),
-                            ),
+                      ClipRRect(
+                        borderRadius: BorderRadius.circular(10.0),
+                        child: SizedBox(
+                          height: 50,
+                          width: 50,
+                          child: Image.network(
+                            'https://www.google.com/maps/uv?pb=!1s0x89e82b9897a768f9:0x2853132db2dacf1b!3m1!7e115!4shttps://lh5.googleusercontent.com/p/AF1QipPYj58DyJv2NTqWJItryUFImbcTUfqe67FHBrur%3Dw168-h160-k-no!5sdown+diner+-+Google+Search!15zQ2dJZ0FRPT0&imagekey=!1e10!2sAF1QipPYj58DyJv2NTqWJItryUFImbcTUfqe67FHBrur&hl=en&sa=X&ved=2ahUKEwjwieGP9ID6AhVslokEHRRnBuIQoip6BAhnEAM',
+                            fit: BoxFit.cover,
                           ),
-                          ClipRRect(
-                            borderRadius: BorderRadius.circular(10.0),
-                            child: SizedBox(
-                              height: 50,
-                              width: 50,
-                              child: Image.network(
-                                'https://www.google.com/maps/uv?pb=!1s0x89e82b9897a768f9:0x2853132db2dacf1b!3m1!7e115!4shttps://lh5.googleusercontent.com/p/AF1QipPYj58DyJv2NTqWJItryUFImbcTUfqe67FHBrur%3Dw168-h160-k-no!5sdown+diner+-+Google+Search!15zQ2dJZ0FRPT0&imagekey=!1e10!2sAF1QipPYj58DyJv2NTqWJItryUFImbcTUfqe67FHBrur&hl=en&sa=X&ved=2ahUKEwjwieGP9ID6AhVslokEHRRnBuIQoip6BAhnEAM',
-                                fit: BoxFit.cover,
-                              ),
-                            ),
-                          ),
-                        ]),
+                        ),
                       ),
-                    ),
-                  ],
+                    ]),
+                  ),
                 ),
               ),
             ),
