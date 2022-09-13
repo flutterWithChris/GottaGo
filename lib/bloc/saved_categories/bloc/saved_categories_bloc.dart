@@ -9,8 +9,6 @@ part 'saved_categories_state.dart';
 
 class SavedCategoriesBloc
     extends Bloc<SavedCategoriesEvent, SavedCategoriesState> {
-  final StreamController<String> nameStream =
-      StreamController<String>.broadcast();
   SavedCategoriesBloc() : super(SavedCategoriesLoading()) {
     List<Category> savedCategories = [];
     on<SavedCategoriesEvent>((event, emit) async {
@@ -19,11 +17,8 @@ class SavedCategoriesBloc
         emit(SavedCategoriesLoaded(categories: savedCategories));
       }
       if (event is AddCategory) {
-        Category category = Category(
-            name: event.category.name,
-            contributorIds: event.category.contributorIds);
-        savedCategories.add(category);
-        emit(SavedCategoriesUpdated(category: category));
+        savedCategories.add(event.category);
+        emit(SavedCategoriesUpdated(category: event.category));
         await Future.delayed(const Duration(seconds: 1));
         emit(SavedCategoriesLoaded(categories: savedCategories));
       }

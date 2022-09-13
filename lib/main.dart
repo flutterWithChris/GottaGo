@@ -80,8 +80,29 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+  List<Widget> rows = [];
   @override
   Widget build(BuildContext context) {
+    final List<Category> sampleCategories = [
+      Category(
+          name: 'Breakfast Ideas', icon: Icons.egg, contributorIds: ['userId']),
+      Category(
+          name: 'Lunch Spots',
+          icon: FontAwesomeIcons.bowlFood,
+          contributorIds: ['userId']),
+      Category(
+          name: 'Dinner',
+          icon: FontAwesomeIcons.utensils,
+          contributorIds: ['userId']),
+      Category(
+          name: 'Iceland Trip',
+          icon: FontAwesomeIcons.earthOceania,
+          contributorIds: ['userId']),
+      Category(
+          name: 'Travel',
+          icon: FontAwesomeIcons.earthAmericas,
+          contributorIds: ['userId']),
+    ];
     return SafeArea(
       child: Scaffold(
         body: BlocBuilder<SavedCategoriesBloc, SavedCategoriesState>(
@@ -101,14 +122,28 @@ class _MyHomePageState extends State<MyHomePage> {
             if (state is SavedCategoriesLoaded) {
               final ScrollController mainScrollController = ScrollController();
 
-              List<Widget> rows = [
-                for (Category category in state.categories)
-                  CategoryCard(category: category)
-              ];
+              void addCategoriesToList() {
+                for (Category category in state.categories) {
+                  rows.add(CategoryCard(category: category));
+                }
+              }
+
+              if (state.categories.isNotEmpty) {
+                addCategoriesToList();
+              }
 
               void _onReorder(int oldIndex, int newIndex) {
                 Category category = state.categories.removeAt(oldIndex);
                 state.categories.insert(newIndex, category);
+                setState(() {
+                  Widget row = rows.removeAt(oldIndex);
+                  rows.insert(newIndex, row);
+                });
+              }
+
+              void _onReorderSampleItem(int oldIndex, int newIndex) {
+                Category category = sampleCategories.removeAt(oldIndex);
+                sampleCategories.insert(newIndex, category);
                 setState(() {
                   Widget row = rows.removeAt(oldIndex);
                   rows.insert(newIndex, row);
@@ -148,7 +183,7 @@ class _MyHomePageState extends State<MyHomePage> {
                       delegate: ReorderableSliverChildBuilderDelegate(
                           childCount: state.categories.isNotEmpty
                               ? state.categories.length
-                              : 1, (context, index) {
+                              : 6, (context, index) {
                         if (state.categories.isNotEmpty) {
                           // rows.clear();
                           rows = [
@@ -157,24 +192,17 @@ class _MyHomePageState extends State<MyHomePage> {
                           ];
 
                           return rows[index];
-                        }
-                        // if (state.categories.isEmpty) {
-                        //   rows.add(const BlankCategoryCard());
-
-                        //   return rows[index];
-                        // }
-                        else {
+                        } else {
                           rows.clear();
-                          int sampleCardCount = 5;
                           List<SampleCategoryCard> sampleCategoryCards = [];
-                          for (int i = 0; i < sampleCardCount; i++) {
-                            sampleCategoryCards.add(const SampleCategoryCard());
-                            rows = sampleCategoryCards;
+                          for (Category category in sampleCategories) {
+                            rows.add(SampleCategoryCard(category: category));
                           }
+                          rows.insert(0, const BlankCategoryCard());
                           return rows[index];
                         }
                       }),
-                      onReorder: _onReorder)
+                      onReorder: _onReorderSampleItem)
                 ],
               );
             } else {
@@ -316,7 +344,7 @@ class BlankCategoryCard extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.all(8.0),
               child: Card(
-                color: FlexColor.deepBlueDarkPrimaryContainer.withOpacity(0.6),
+                color: FlexColor.deepBlueDarkPrimaryContainer,
                 child: ListTile(
                   minVerticalPadding: 30.0,
                   onTap: () {
@@ -397,8 +425,10 @@ class BlankCategoryCard extends StatelessWidget {
 }
 
 class SampleCategoryCard extends StatelessWidget {
+  final Category category;
   const SampleCategoryCard({
     Key? key,
+    required this.category,
   }) : super(key: key);
 
   @override
@@ -412,75 +442,81 @@ class SampleCategoryCard extends StatelessWidget {
           children: [
             Padding(
               padding: const EdgeInsets.all(8.0),
-              child: Card(
-                color: FlexColor.deepBlueDarkPrimaryContainer,
-                child: ListTile(
-                  minVerticalPadding: 24.0,
-                  onTap: () {
-                    //context.read<SavedPlacesBloc>().add(LoadPlaces());
-                    // context.go('/category-page');
-                    showDialog(
-                      context: context,
-                      builder: (context) {
-                        return const CreateListDialog();
-                      },
-                    );
-                  },
-                  contentPadding: const EdgeInsets.symmetric(
-                      vertical: 12.0, horizontal: 24.0),
-                  minLeadingWidth: 20,
+              child: Opacity(
+                opacity: 0.5,
+                child: Card(
+                  elevation: 2.0,
+                  color: FlexColor.deepBlueDarkSecondaryContainer,
+                  child: ListTile(
+                    minVerticalPadding: 24.0,
+                    onTap: () {
+                      //context.read<SavedPlacesBloc>().add(LoadPlaces());
+                      // context.go('/category-page');
+                      showDialog(
+                        context: context,
+                        builder: (context) {
+                          return const CreateListDialog();
+                        },
+                      );
+                    },
+                    contentPadding: const EdgeInsets.symmetric(
+                        vertical: 12.0, horizontal: 24.0),
+                    minLeadingWidth: 20,
 
-                  //tileColor: categoryColor,
-                  title: Wrap(
-                    crossAxisAlignment: WrapCrossAlignment.center,
-                    spacing: 10.0,
-                    children: [
-                      const Icon(
-                        FontAwesomeIcons.list,
-                        size: 18,
-                      ),
-                      Text(
-                        'Create a List',
-                        style: Theme.of(context)
-                            .textTheme
-                            .titleMedium!
-                            .copyWith(fontWeight: FontWeight.bold),
-                      ),
-                    ],
-                  ),
-                  // subtitle: const Padding(
-                  //   padding: EdgeInsets.only(left: 24.0),
-                  //   child: Text('0 Saved Places'),
-                  // ),
-                  leading: Padding(
-                    padding: const EdgeInsets.only(left: 16.0, top: 8.0),
-                    child: SizedBox(
-                      child: Stack(clipBehavior: Clip.none, children: [
-                        Positioned(
-                          right: 20,
-                          bottom: 10,
-                          child: ClipRRect(
+                    //tileColor: categoryColor,
+                    title: Wrap(
+                      crossAxisAlignment: WrapCrossAlignment.center,
+                      spacing: 10.0,
+                      children: [
+                        category.icon != null
+                            ? Icon(
+                                category.icon,
+                                size: 16,
+                              )
+                            : const SizedBox(),
+                        Text(
+                          category.name,
+                          style: Theme.of(context)
+                              .textTheme
+                              .titleMedium!
+                              .copyWith(fontWeight: FontWeight.bold),
+                        ),
+                      ],
+                    ),
+                    subtitle: const Padding(
+                      padding: EdgeInsets.only(left: 24.0),
+                      child: Text('12 Saved Places'),
+                    ),
+                    leading: Padding(
+                      padding: const EdgeInsets.only(left: 16.0, top: 8.0),
+                      child: SizedBox(
+                        child: Stack(clipBehavior: Clip.none, children: [
+                          Positioned(
+                            right: 20,
+                            bottom: 10,
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(10.0),
+                              child: SizedBox(
+                                height: 50,
+                                width: 50,
+                                child: Container(
+                                    color:
+                                        FlexColor.deepBlueDarkSecondaryVariant),
+                              ),
+                            ),
+                          ),
+                          ClipRRect(
                             borderRadius: BorderRadius.circular(10.0),
                             child: SizedBox(
                               height: 50,
                               width: 50,
                               child: Container(
-                                  color:
-                                      FlexColor.deepBlueDarkSecondaryVariant),
+                                color: FlexColor.deepBlueDarkPrimaryContainer,
+                              ),
                             ),
                           ),
-                        ),
-                        ClipRRect(
-                          borderRadius: BorderRadius.circular(10.0),
-                          child: SizedBox(
-                            height: 50,
-                            width: 50,
-                            child: Container(
-                              color: FlexColor.deepBlueDarkTertiaryContainer,
-                            ),
-                          ),
-                        ),
-                      ]),
+                        ]),
+                      ),
                     ),
                   ),
                 ),

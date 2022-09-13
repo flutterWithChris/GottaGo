@@ -245,7 +245,7 @@ class SearchPlacesSheet extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return DraggableScrollableSheet(
-      initialChildSize: 0.75,
+      initialChildSize: 0.6,
       maxChildSize: 0.80,
       expand: false,
       builder: (context, scrollController) {
@@ -265,7 +265,8 @@ class SearchPlacesSheet extends StatelessWidget {
                       decoration: InputDecoration(
                           contentPadding: const EdgeInsets.all(0),
                           filled: true,
-                          fillColor: Theme.of(context).cardColor,
+                          fillColor:
+                              Theme.of(context).chipTheme.backgroundColor,
                           border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(25)),
                           hintText: 'Search Places...',
@@ -444,7 +445,7 @@ class SearchPlacesSheet extends StatelessWidget {
                                               ? placeDetails.reviews![0].text
                                               : null,
                                           city:
-                                              '${placeDetails.addressComponents![2].shortName}, ${placeDetails.addressComponents![5].shortName}',
+                                              '${placeDetails.addressComponents![2].shortName}, ${placeDetails.addressComponents![6].shortName}',
                                           type: placeDetails.types![0],
                                           mainPhoto: placeDetails.photos != null
                                               ? placeDetails
