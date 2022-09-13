@@ -61,7 +61,7 @@ class SavedPlacesBloc extends Bloc<SavedPlacesEvent, SavedPlacesState> {
       }
       if (event is AddPlace) {
         emit(SavedPlacesLoading());
-        savedPlaces.add(event.place);
+        savedPlaces.insert(0, event.place);
         emit(SavedPlacesUpdated(places: savedPlaces));
         emit(SavedPlacesLoaded(places: savedPlaces));
       }

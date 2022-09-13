@@ -1,3 +1,4 @@
+import 'package:flex_color_scheme/flex_color_scheme.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/animate.dart';
@@ -95,7 +96,7 @@ class _CategoryPageState extends State<CategoryPage> {
     return SafeArea(
       child: Scaffold(
         floatingActionButton: FloatingActionButton(
-          backgroundColor: Theme.of(context).primaryColor.withOpacity(0.5),
+          // backgroundColor: Theme.of(context).primaryColor.withOpacity(0.5),
           child: const Icon(Icons.add_location_rounded),
           onPressed: () {
             showModalBottomSheet(
@@ -180,7 +181,7 @@ class _CategoryPageState extends State<CategoryPage> {
                             CircleAvatar(
                               child: ClipOval(
                                 child: Image.network(
-                                  'https://scontent-lga3-1.xx.fbcdn.net/v/t39.30808-6/279649796_5507542659278888_8310477287351307005_n.jpg?_nc_cat=108&ccb=1-7&_nc_sid=730e14&_nc_ohc=4Tpv6Bh_tDcAX8C-EJA&_nc_ht=scontent-lga3-1.xx&oh=00_AT9vDLANBsucRWEu8nLlMCOjM8Dh7tmw4Sp895EThKmhSQ&oe=631D8E10',
+                                  'https://scontent-lga3-1.xx.fbcdn.net/v/t39.30808-6/305213660_5298775460244393_3700270719083305575_n.jpg?_nc_cat=103&ccb=1-7&_nc_sid=09cbfe&_nc_ohc=bMWpIPCteosAX8qjwkc&_nc_ht=scontent-lga3-1.xx&oh=00_AT86-u9G7umbF3INUcptE50pu8BtGUPBzycr9727gmiR4w&oe=632405F2',
                                   fit: BoxFit.cover,
                                 ),
                               ),
@@ -190,7 +191,7 @@ class _CategoryPageState extends State<CategoryPage> {
                               child: CircleAvatar(
                                 child: ClipOval(
                                   child: Image.network(
-                                    'https://scontent-lga3-1.xx.fbcdn.net/v/t39.30808-6/305213660_5298775460244393_3700270719083305575_n.jpg?_nc_cat=103&ccb=1-7&_nc_sid=09cbfe&_nc_ohc=wpo3El9R7wwAX8XRJSm&_nc_ht=scontent-lga3-1.xx&oh=00_AT_7LteTpaUMPC9OW73CL_C45dcVoiTT2GG3LKEodC90tw&oe=631C1CF2',
+                                    'https://scontent-lga3-1.xx.fbcdn.net/v/t1.6435-9/193213907_4419559838077181_2959395753433319266_n.jpg?_nc_cat=107&ccb=1-7&_nc_sid=09cbfe&_nc_ohc=rkR7hr7w5fAAX_2k6sX&_nc_ht=scontent-lga3-1.xx&oh=00_AT_JTX03j8CNcJ0tdmD4iY7tY_Z8lJiv7Zv5DVgNlWIfAw&oe=63444DA4',
                                     fit: BoxFit.cover,
                                   ),
                                 ),
@@ -415,7 +416,7 @@ class SearchPlacesSheet extends StatelessWidget {
                                     padding: const EdgeInsets.only(bottom: 6.0),
                                     child: Chip(
                                       label: Text(placeDetails.types!.first
-                                          .capitalize()),
+                                          .capitalizeString()),
                                       avatar: Image.network(
                                         placeDetails.icon!,
                                         height: 18,
@@ -449,6 +450,7 @@ class SearchPlacesSheet extends StatelessWidget {
                                               ? placeDetails
                                                   .photos!.first.photoReference!
                                               : null)));
+                                  Navigator.pop(context);
                                 },
                                 icon:
                                     const Icon(Icons.add_location_alt_outlined),
@@ -486,7 +488,7 @@ class SearchPlacesSheet extends StatelessWidget {
 //                     )
 
 extension StringExtension on String {
-  String capitalize() {
+  String capitalizeString() {
     return "${this[0].toUpperCase()}${substring(1).toLowerCase()}";
   }
 }
@@ -558,6 +560,7 @@ class _PlaceCardState extends State<PlaceCard> {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
       child: Card(
+        color: FlexColor.deepBlueDarkSecondaryContainer.withOpacity(0.10),
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 4.0),
           child: ListTile(
@@ -577,6 +580,14 @@ class _PlaceCardState extends State<PlaceCard> {
                         future: getPhotos(widget.memoryImage!),
                         builder: (context, snapshot) {
                           var data = snapshot;
+                          if (snapshot.connectionState !=
+                              ConnectionState.done) {
+                            return Center(
+                              child: LoadingAnimationWidget.discreteCircle(
+                                  color: Theme.of(context).primaryColor,
+                                  size: 30.0),
+                            );
+                          }
                           if (!snapshot.hasData) {
                             return Image.network(
                               widget.imageUrl!,
@@ -586,7 +597,10 @@ class _PlaceCardState extends State<PlaceCard> {
                               child: CircularProgressIndicator(),
                             );
                           } else {
-                            return Image.memory(snapshot.data!);
+                            return Image.memory(
+                              snapshot.data!,
+                              fit: BoxFit.cover,
+                            );
                           }
                         },
                       )
