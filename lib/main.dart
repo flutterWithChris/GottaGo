@@ -90,7 +90,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 state is SavedCategoriesUpdated) {
               return Center(
                 child: LoadingAnimationWidget.newtonCradle(
-                    color: Theme.of(context).primaryColor, size: 30.0),
+                    color: Theme.of(context).primaryColor, size: 120.0),
               );
             }
             if (state is SavedCategoriesFailed) {
@@ -502,6 +502,7 @@ class CreateListDialog extends StatelessWidget {
   Widget build(BuildContext context) {
     final TextEditingController listNameController = TextEditingController();
     return Dialog(
+      backgroundColor: FlexColor.deepBlueDarkPrimaryContainer,
       child: SizedBox(
         height: 250,
         child: Column(
@@ -509,7 +510,7 @@ class CreateListDialog extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Text(
-              'Create a List:',
+              'Create New List:',
               style: Theme.of(context)
                   .textTheme
                   .titleLarge!

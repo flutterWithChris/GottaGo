@@ -15,7 +15,7 @@ class SavedCategoriesBloc
     List<Category> savedCategories = [];
     on<SavedCategoriesEvent>((event, emit) async {
       if (event is LoadSavedCategories) {
-        await Future.delayed(const Duration(seconds: 1));
+        await Future.delayed(const Duration(seconds: 2));
         emit(SavedCategoriesLoaded(categories: savedCategories));
       }
       if (event is AddCategory) {

@@ -116,7 +116,7 @@ class _CategoryPageState extends State<CategoryPage> {
             if (state is SavedPlacesLoading || state is SavedPlacesUpdated) {
               return Center(
                 child: LoadingAnimationWidget.newtonCradle(
-                    color: Colors.blue, size: 30.0),
+                    color: Colors.blue, size: 120.0),
               );
             }
             if (state is SavedPlacesFailed) {
@@ -502,7 +502,7 @@ class GoButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return SliverToBoxAdapter(
       child: Padding(
-        padding: const EdgeInsets.only(bottom: 4.0),
+        padding: const EdgeInsets.symmetric(vertical: 8.0),
         child: FractionallySizedBox(
           widthFactor: 0.65,
           child: ElevatedButton(
