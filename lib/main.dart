@@ -478,29 +478,46 @@ class CategoryCard extends StatelessWidget {
   }
 }
 
-class DeleteListDialog extends StatelessWidget {
+class DeleteListDialog extends StatefulWidget {
   const DeleteListDialog({
     Key? key,
   }) : super(key: key);
 
   @override
+  State<DeleteListDialog> createState() => _DeleteListDialogState();
+}
+
+class _DeleteListDialogState extends State<DeleteListDialog> {
+  bool buttonEnabled = false;
+  final TextEditingController deleteConfirmFieldController =
+      TextEditingController();
+  @override
   Widget build(BuildContext context) {
-    final TextEditingController deleteConfirmFieldController =
-        TextEditingController();
     return Dialog(
       child: SizedBox(
         height: 250,
-        width: 300,
+        width: 350,
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
             Text(
               'Delete List?',
-              style: Theme.of(context).textTheme.titleLarge,
+              style: Theme.of(context)
+                  .textTheme
+                  .headlineMedium!
+                  .copyWith(fontWeight: FontWeight.bold),
             ),
             SizedBox(
-              width: 275,
+              width: 270,
+              height: 60,
               child: TextField(
+                onChanged: (value) {
+                  if (value == 'Breakfast Ideas') {
+                    setState(() {
+                      buttonEnabled = true;
+                    });
+                  }
+                },
                 controller: deleteConfirmFieldController,
                 autofocus: true,
                 decoration: InputDecoration(
@@ -508,7 +525,7 @@ class DeleteListDialog extends StatelessWidget {
                         borderSide: BorderSide(
                             color: Theme.of(context).highlightColor,
                             width: 1.0),
-                        borderRadius: BorderRadius.circular(20.0)),
+                        borderRadius: BorderRadius.circular(24.0)),
                     focusedBorder: OutlineInputBorder(
                         borderSide: BorderSide(
                             color: Theme.of(context).primaryColor, width: 2.0),
@@ -520,14 +537,16 @@ class DeleteListDialog extends StatelessWidget {
             ElevatedButton.icon(
                 style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.red, foregroundColor: Colors.white),
-                onPressed: () {
-                  if (deleteConfirmFieldController.text.isNotEmpty) {
-                    context.read<SavedListsBloc>().add(RemoveList(
-                        placeList: PlaceList(
-                            name: deleteConfirmFieldController.text)));
-                    Navigator.pop(context);
-                  }
-                },
+                onPressed: buttonEnabled
+                    ? () {
+                        if (deleteConfirmFieldController.text.isNotEmpty) {
+                          context.read<SavedListsBloc>().add(RemoveList(
+                              placeList: PlaceList(
+                                  name: deleteConfirmFieldController.text)));
+                          Navigator.pop(context);
+                        }
+                      }
+                    : null,
                 icon: const Icon(Icons.delete_forever_rounded),
                 label: const Text('Delete Forever')),
           ],
