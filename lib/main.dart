@@ -383,6 +383,27 @@ class CategoryCard extends StatelessWidget {
               child: Card(
                 //color: FlexColor.deepBlueDarkPrimaryContainer.withOpacity(0.15),
                 child: ListTile(
+                  trailing: Padding(
+                    padding: const EdgeInsets.only(bottom: 16.0),
+                    child: PopupMenuButton(
+                        // onSelected: (value) {},
+                        icon: const Icon(Icons.more_vert_rounded),
+                        itemBuilder: (context) => <PopupMenuEntry>[
+                              PopupMenuItem(
+                                  onTap: () {
+                                    WidgetsBinding.instance
+                                        .addPostFrameCallback((timeStamp) {
+                                      showDialog(
+                                        context: context,
+                                        builder: (context) {
+                                          return const DeleteListDialog();
+                                        },
+                                      );
+                                    });
+                                  },
+                                  child: const Text('Delete List'))
+                            ]),
+                  ),
                   onTap: () {
                     context.read<SavedPlacesBloc>().add(LoadPlaces());
                     context.go('/home/category-page');
@@ -390,8 +411,6 @@ class CategoryCard extends StatelessWidget {
                   contentPadding: const EdgeInsets.symmetric(
                       vertical: 12.0, horizontal: 24.0),
                   minLeadingWidth: 20,
-
-                  //tileColor: categoryColor,
                   title: Padding(
                     padding: const EdgeInsets.only(bottom: 8.0),
                     child: Wrap(
@@ -452,6 +471,65 @@ class CategoryCard extends StatelessWidget {
                 ),
               ),
             ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class DeleteListDialog extends StatelessWidget {
+  const DeleteListDialog({
+    Key? key,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    final TextEditingController deleteConfirmFieldController =
+        TextEditingController();
+    return Dialog(
+      child: SizedBox(
+        height: 250,
+        width: 300,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: [
+            Text(
+              'Delete List?',
+              style: Theme.of(context).textTheme.titleLarge,
+            ),
+            SizedBox(
+              width: 275,
+              child: TextField(
+                controller: deleteConfirmFieldController,
+                autofocus: true,
+                decoration: InputDecoration(
+                    enabledBorder: OutlineInputBorder(
+                        borderSide: BorderSide(
+                            color: Theme.of(context).highlightColor,
+                            width: 1.0),
+                        borderRadius: BorderRadius.circular(20.0)),
+                    focusedBorder: OutlineInputBorder(
+                        borderSide: BorderSide(
+                            color: Theme.of(context).primaryColor, width: 2.0),
+                        borderRadius: BorderRadius.circular(20.0)),
+                    //  prefixIcon: const Icon(Icons.lock),
+                    hintText: "Type 'Breakfast Ideas'"),
+              ),
+            ),
+            ElevatedButton.icon(
+                style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.red, foregroundColor: Colors.white),
+                onPressed: () {
+                  if (deleteConfirmFieldController.text.isNotEmpty) {
+                    context.read<SavedListsBloc>().add(RemoveList(
+                        placeList: PlaceList(
+                            name: deleteConfirmFieldController.text)));
+                    Navigator.pop(context);
+                  }
+                },
+                icon: const Icon(Icons.delete_forever_rounded),
+                label: const Text('Delete Forever')),
           ],
         ),
       ),
