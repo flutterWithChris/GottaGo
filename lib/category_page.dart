@@ -8,10 +8,12 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:go_router/go_router.dart';
 import 'package:google_place/google_place.dart';
 import 'package:leggo/bloc/bloc/place_search_bloc.dart';
 import 'package:leggo/bloc/saved_places/bloc/saved_places_bloc.dart';
 import 'package:leggo/model/place.dart';
+import 'package:leggo/widgets/main_bottom_navbar.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:reorderables/reorderables.dart';
 
@@ -24,59 +26,7 @@ class CategoryPage extends StatefulWidget {
 
 class _CategoryPageState extends State<CategoryPage> {
   List<Widget> rows = [];
-  List<PlaceCard> placeCards = [
-    // const PlaceCard(
-    //   closingTime: '3PM',
-    //   placeName: 'Hatch',
-    //   placeLocation: 'Huntington, NY',
-    //   placeDescription:
-    //       'An extensive menu of classic & creative American breakfast dishes with contemporary...',
-    //   imageUrl:
-    //       'https://www.google.com/maps/uv?pb=!1s0x89e8287866d3ffff:0xa6734768501a1e3f!3m1!7e115!4shttps://lh5.googleusercontent.com/p/AF1QipNcnaL0OxmWX4zTLo_frU6Pa7eqglkMZcEcK9xe%3Dw258-h160-k-no!5shatch+huntington+-+Google+Search!15zQ2dJZ0FRPT0&imagekey=!1e10!2sAF1QipNcnaL0OxmWX4zTLo_frU6Pa7eqglkMZcEcK9xe&hl=en&sa=X&ved=2ahUKEwiwmoaj84D6AhWWkIkEHfHKDhUQoip6BAhREAM',
-    // ),
-    // const PlaceCard(
-    //   closingTime: '3PM',
-    //   placeName: 'Whiskey Down Diner',
-    //   placeLocation: 'Farmingdale, NY',
-    //   placeDescription:
-    //       'Familiar all-day diner offering typical comfort food such as pancakes, eggs, burgers...',
-    //   imageUrl:
-    //       'https://www.google.com/maps/uv?pb=!1s0x89e82b9897a768f9%3A0x2853132db2dacf1b!3m1!7e115!4shttps%3A%2F%2Flh5.googleusercontent.com%2Fp%2FAF1QipPYj58DyJv2NTqWJItryUFImbcTUfqe67FHBrur%3Dw168-h160-k-no!5sdown%20diner%20-%20Google%20Search!15sCgIgAQ&imagekey=!1e10!2sAF1QipPYj58DyJv2NTqWJItryUFImbcTUfqe67FHBrur&hl=en&sa=X&ved=2ahUKEwjAmaKshYH6AhXNjYkEHQs5C6IQoip6BAhpEAM#',
-    // ),
-    // const PlaceCard(
-    //   closingTime: '3PM',
-    //   placeName: 'Jardin Cafe',
-    //   placeLocation: 'Patchogue, NY',
-    //   placeDescription:
-    //       '"I was pleasantly surprised to see such a varied menu with meat and tofu options."',
-    //   imageUrl:
-    //       'https://www.google.com/maps/uv?pb=!1s0x89e849a3c6fe856d:0xabd40cec3dcf19a6!3m1!7e115!4shttps://lh5.googleusercontent.com/p/AF1QipPOidJNkMv1UYjBKbw5sXQvANFfLayn9uCamtQH%3Dw120-h160-k-no!5sjardin+cafe+-+Google+Search!15zQ2dJZ0FRPT0&imagekey=!1e10!2sAF1QipPOidJNkMv1UYjBKbw5sXQvANFfLayn9uCamtQH&hl=en&sa=X&ved=2ahUKEwjMg7HPhYH6AhURj4kEHf7oBT8Qoip6BAhdEAM',
-    // ),
-    // const PlaceCard(
-    //   closingTime: '3PM',
-    //   placeName: 'Rise & Grind',
-    //   placeLocation: 'Patchogue, NY',
-    //   placeDescription: '"excellent food, coffee and service..."',
-    //   imageUrl:
-    //       'https://www.google.com/maps/uv?pb=!1s0x89c41f115b12a40f%3A0x1cb4aeb28234535!3m1!7e115!4shttps%3A%2F%2Flh5.googleusercontent.com%2Fp%2FAF1QipPxetTYWtNtyheHagncbjDIbW59m9kKW9pYS9Mk%3Dw120-h160-k-no!5srise%20and%20grind%20cafe%20-%20Google%20Search!15sCgIgAQ&imagekey=!1e10!2sAF1QipPxetTYWtNtyheHagncbjDIbW59m9kKW9pYS9Mk&hl=en&sa=X&ved=2ahUKEwjc4_a6hoH6AhWclIkEHbtlBrMQoip6BAhpEAM# ',
-    // ),
-    // const PlaceCard(
-    //   closingTime: '3PM',
-    //   placeName: 'Hatch',
-    //   placeLocation: 'Huntington, NY',
-    //   placeDescription:
-    //       'An extensive menu of classic & creative American breakfast dishes with contemporary...',
-    //   imageUrl:
-    //       'https://www.google.com/maps/uv?pb=!1s0x89e8287866d3ffff:0xa6734768501a1e3f!3m1!7e115!4shttps://lh5.googleusercontent.com/p/AF1QipNcnaL0OxmWX4zTLo_frU6Pa7eqglkMZcEcK9xe%3Dw258-h160-k-no!5shatch+huntington+-+Google+Search!15zQ2dJZ0FRPT0&imagekey=!1e10!2sAF1QipNcnaL0OxmWX4zTLo_frU6Pa7eqglkMZcEcK9xe&hl=en&sa=X&ved=2ahUKEwiwmoaj84D6AhWWkIkEHfHKDhUQoip6BAhREAM',
-    // ),
-  ];
-  // @override
-  // void initState() {
-  //   // TODO: implement initState
-  //   rows =
-  //       List<Widget>.generate(placeCards.length, (index) => placeCards[index]);
-  //   super.initState();
-  // }
+  List<PlaceCard> placeCards = [];
 
   @override
   Widget build(BuildContext context) {
@@ -91,11 +41,12 @@ class _CategoryPageState extends State<CategoryPage> {
       return photo;
     }
 
-    // Ma
-
     return SafeArea(
       child: Scaffold(
+        floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
+        bottomNavigationBar: const MainBottomNavBar(),
         floatingActionButton: FloatingActionButton(
+          shape: const StadiumBorder(),
           // backgroundColor: Theme.of(context).primaryColor.withOpacity(0.5),
           child: const Icon(Icons.add_location_rounded),
           onPressed: () {
@@ -115,8 +66,8 @@ class _CategoryPageState extends State<CategoryPage> {
             print('Current State: ${state.toString()}');
             if (state is SavedPlacesLoading || state is SavedPlacesUpdated) {
               return Center(
-                child: LoadingAnimationWidget.newtonCradle(
-                    color: Colors.blue, size: 120.0),
+                child: LoadingAnimationWidget.inkDrop(
+                    color: FlexColor.materialDarkSecondaryHc, size: 40.0),
               );
             }
             if (state is SavedPlacesFailed) {
@@ -137,15 +88,18 @@ class _CategoryPageState extends State<CategoryPage> {
 
               rows = [
                 for (Place place in state.places)
-                  PlaceCard(
-                      place: place,
-                      imageUrl: place.mainPhoto,
-                      memoryImage: place.mainPhoto,
-                      placeName: place.name,
-                      ratingsTotal: place.rating,
-                      placeDescription: place.description,
-                      closingTime: place.closingTime,
-                      placeLocation: place.city)
+                  Animate(
+                    effects: const [SlideEffect(curve: Curves.easeInOutBack)],
+                    child: PlaceCard(
+                        place: place,
+                        imageUrl: place.mainPhoto,
+                        memoryImage: place.mainPhoto,
+                        placeName: place.name,
+                        ratingsTotal: place.rating,
+                        placeDescription: place.description,
+                        closingTime: place.closingTime,
+                        placeLocation: place.city),
+                  )
               ];
               return CustomScrollView(
                 controller: mainScrollController,
@@ -226,7 +180,7 @@ class _CategoryPageState extends State<CategoryPage> {
   }
 }
 
-class SearchPlacesSheet extends StatelessWidget {
+class SearchPlacesSheet extends StatefulWidget {
   const SearchPlacesSheet({
     Key? key,
     required this.googlePlace,
@@ -235,18 +189,34 @@ class SearchPlacesSheet extends StatelessWidget {
 
   final GooglePlace googlePlace;
   final bool mounted;
+
+  @override
+  State<SearchPlacesSheet> createState() => _SearchPlacesSheetState();
+}
+
+class _SearchPlacesSheetState extends State<SearchPlacesSheet> {
   Future<Uint8List?> getPhotos(DetailsResult detailsResult) async {
     var placeDetails = detailsResult;
-    var photo = await googlePlace.photos
+    var photo = await widget.googlePlace.photos
         .get(placeDetails.photos!.first.photoReference!, 1080, 1920);
     return photo;
+  }
+
+  DraggableScrollableController? scrollableController;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    scrollableController = DraggableScrollableController();
+    super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
     return DraggableScrollableSheet(
+      controller: scrollableController,
       initialChildSize: 0.6,
-      maxChildSize: 0.80,
+      maxChildSize: 1.0,
       expand: false,
       builder: (context, scrollController) {
         return Padding(
@@ -274,7 +244,8 @@ class SearchPlacesSheet extends StatelessWidget {
                   suggestionsCallback: (pattern) async {
                     List<AutocompletePrediction> predictions = [];
                     if (pattern.isEmpty) return predictions;
-                    var place = await googlePlace.autocomplete.get(pattern);
+                    var place =
+                        await widget.googlePlace.autocomplete.get(pattern);
                     predictions = place!.predictions!;
                     return predictions;
                   },
@@ -288,12 +259,19 @@ class SearchPlacesSheet extends StatelessWidget {
                     );
                   },
                   onSuggestionSelected: (suggestion) async {
-                    var placeDetails =
-                        await googlePlace.details.get(suggestion.placeId!);
+                    var placeDetails = await widget.googlePlace.details
+                        .get(suggestion.placeId!);
                     placeDetails!.result!.name;
-                    if (!mounted) return;
                     context.read<PlaceSearchBloc>().add(
                         PlaceSelected(detailsResult: placeDetails.result!));
+                    // await scrollController.animateTo(1.5,
+                    //     duration: const Duration(milliseconds: 500),
+                    //     curve: Curves.easeOut);
+                    await scrollableController!.animateTo(0.7,
+                        duration: const Duration(milliseconds: 150),
+                        curve: Curves.easeOutBack);
+
+                    if (!widget.mounted) return;
                   },
                 ),
               ),
@@ -316,15 +294,17 @@ class SearchPlacesSheet extends StatelessWidget {
                                 children: [
                                   Padding(
                                     padding: const EdgeInsets.symmetric(
-                                        vertical: 16.0),
-                                    child: Text(
-                                      placeDetails!.name!,
-                                      textAlign: TextAlign.center,
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .titleLarge!
-                                          .copyWith(
-                                              fontWeight: FontWeight.bold),
+                                        vertical: 16.0, horizontal: 24.0),
+                                    child: FittedBox(
+                                      child: Text(
+                                        placeDetails!.name!,
+                                        textAlign: TextAlign.center,
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .titleLarge!
+                                            .copyWith(
+                                                fontWeight: FontWeight.bold),
+                                      ),
                                     ),
                                   ),
                                   Padding(
@@ -503,11 +483,13 @@ class GoButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return SliverToBoxAdapter(
       child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 8.0),
+        padding: const EdgeInsets.symmetric(vertical: 16.0),
         child: FractionallySizedBox(
           widthFactor: 0.65,
           child: ElevatedButton(
-            onPressed: () {},
+            onPressed: () {
+              context.goNamed('random-wheel');
+            },
             style: ElevatedButton.styleFrom(
               fixedSize: const Size(125, 40),
               minimumSize: const Size(125, 40),
@@ -561,7 +543,7 @@ class _PlaceCardState extends State<PlaceCard> {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
       child: Card(
-        color: FlexColor.deepBlueDarkSecondaryContainer.withOpacity(0.10),
+        //color: FlexColor.deepBlueDarkSecondaryContainer.withOpacity(0.10),
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 4.0),
           child: ListTile(
@@ -618,7 +600,13 @@ class _PlaceCardState extends State<PlaceCard> {
                 alignment: WrapAlignment.spaceBetween,
                 crossAxisAlignment: WrapCrossAlignment.center,
                 children: [
-                  Text(widget.placeName),
+                  Text(
+                    widget.placeName,
+                    style: Theme.of(context)
+                        .textTheme
+                        .titleMedium!
+                        .copyWith(fontWeight: FontWeight.bold),
+                  ),
                   Wrap(
                     spacing: 5.0,
                     crossAxisAlignment: WrapCrossAlignment.center,

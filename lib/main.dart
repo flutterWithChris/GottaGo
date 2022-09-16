@@ -1,73 +1,186 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flex_color_scheme/flex_color_scheme.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_animate/animate.dart';
+import 'package:flutter_animate/effects/effects.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:go_router/go_router.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:leggo/bloc/bloc/auth/bloc/auth_bloc.dart';
 import 'package:leggo/bloc/bloc/place_search_bloc.dart';
-import 'package:leggo/bloc/saved_categories/bloc/saved_categories_bloc.dart';
+import 'package:leggo/bloc/saved_categories/bloc/saved_lists_bloc.dart';
 import 'package:leggo/bloc/saved_places/bloc/saved_places_bloc.dart';
 import 'package:leggo/category_page.dart';
-import 'package:leggo/model/category.dart';
+import 'package:leggo/cubit/cubit/login/login_cubit.dart';
+import 'package:leggo/firebase_options.dart';
+import 'package:leggo/login.dart';
+import 'package:leggo/model/place_list.dart';
+import 'package:leggo/random_wheel_page.dart';
+import 'package:leggo/repository/auth_repository.dart';
+import 'package:leggo/repository/place_list_repository.dart';
+import 'package:leggo/repository/user_repository.dart';
+import 'package:leggo/widgets/main_bottom_navbar.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:reorderables/reorderables.dart';
 
 void main() async {
-  await dotenv.load(fileName: '.env');
+  WidgetsFlutterBinding.ensureInitialized();
+  await Future.wait([
+    dotenv.load(fileName: '.env'),
+    Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform),
+  ]);
+
   runApp(const MyApp());
 }
 
-final router = GoRouter(initialLocation: '/', routes: [
-  GoRoute(
-      name: '/',
-      path: '/',
-      pageBuilder: (context, state) => const MaterialPage<void>(
-              child: MyHomePage(
-            title: 'Leggo',
-          )),
-      routes: [
-        GoRoute(
-          path: 'category-page',
-          pageBuilder: (context, state) =>
-              const MaterialPage<void>(child: CategoryPage()),
-        )
-      ]),
-]);
-
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
   const MyApp({super.key});
+
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  late AuthBloc bloc;
 
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return MultiBlocProvider(
+    return MultiRepositoryProvider(
       providers: [
-        BlocProvider(
-          create: (context) => PlaceSearchBloc(),
+        RepositoryProvider(
+          create: (context) => AuthRepository(),
         ),
-        BlocProvider(
-          create: (context) => SavedPlacesBloc(),
+        RepositoryProvider(
+          create: (context) => UserRepository(),
         ),
-        BlocProvider(
-          create: (context) =>
-              SavedCategoriesBloc()..add(LoadSavedCategories()),
+        RepositoryProvider(
+          create: (context) => PlaceListRepository(),
         ),
       ],
-      child: MaterialApp.router(
-        darkTheme: FlexThemeData.dark(
-          scheme: FlexScheme.deepBlue,
-          useMaterial3: true,
-          useMaterial3ErrorColors: true,
+      child: MultiBlocProvider(
+        providers: [
+          BlocProvider(
+            create: (context) => AuthBloc(
+                authRepository: context.read<AuthRepository>(),
+                userRepository: context.read<UserRepository>()),
+          ),
+          BlocProvider(
+            create: (context) =>
+                LoginCubit(authRepository: context.read<AuthRepository>()),
+          ),
+          BlocProvider(
+            create: (context) => PlaceSearchBloc(),
+          ),
+          BlocProvider(
+            create: (context) => SavedPlacesBloc(),
+          ),
+          BlocProvider(
+            create: (context) => SavedListsBloc()..add(LoadSavedLists()),
+          ),
+        ],
+        child: BlocBuilder<AuthBloc, AuthState>(
+          builder: (context, state) {
+            bloc = context.read<AuthBloc>();
+            return MaterialApp.router(
+              theme: FlexThemeData.light(
+                scheme: FlexScheme.bahamaBlue,
+                surfaceMode: FlexSurfaceMode.highScaffoldLowSurface,
+                blendLevel: 20,
+                appBarOpacity: 0.95,
+                subThemesData: const FlexSubThemesData(
+                  blendOnLevel: 20,
+                  blendOnColors: false,
+                ),
+                visualDensity: FlexColorScheme.comfortablePlatformDensity,
+                useMaterial3: true,
+                // To use the playground font, add GoogleFonts package and uncomment
+                // fontFamily: GoogleFonts.notoSans().fontFamily,
+              ),
+              darkTheme: FlexThemeData.dark(
+                scheme: FlexScheme.bahamaBlue,
+                surfaceMode: FlexSurfaceMode.highScaffoldLowSurface,
+                blendLevel: 15,
+                appBarOpacity: 0.90,
+                subThemesData: const FlexSubThemesData(
+                  blendOnLevel: 30,
+                ),
+                visualDensity: FlexColorScheme.comfortablePlatformDensity,
+                useMaterial3: true,
+                // To use the playground font, add GoogleFonts package and uncomment
+                fontFamily: GoogleFonts.lato().fontFamily,
+              ),
+              // If you do not have a themeMode switch, uncomment this line
+              // to let the device system mode control the theme mode:
+              themeMode: ThemeMode.system,
+              routeInformationParser: router.routeInformationParser,
+              routeInformationProvider: router.routeInformationProvider,
+              routerDelegate: router.routerDelegate,
+              title: 'Flutter Demo',
+            );
+          },
         ),
-        routeInformationParser: router.routeInformationParser,
-        routeInformationProvider: router.routeInformationProvider,
-        routerDelegate: router.routerDelegate,
-        title: 'Flutter Demo',
-        theme: FlexThemeData.light(
-            scheme: FlexScheme.espresso, useMaterial3: true),
       ),
     );
   }
+
+  late final router = GoRouter(
+      initialLocation: '/',
+      refreshListenable: GoRouterRefreshStream(bloc.stream),
+      redirect: (state) {
+        bool loggedIn = bloc.state.status == AuthStatus.authenticated;
+        // bool loggedIn = true;
+        bool isLoggingIn = state.location == '/login';
+        bool completedOnboarding = true;
+        bool isOnboarding = state.location == '/signup';
+
+        if (!loggedIn) {
+          return isLoggingIn
+              ? null
+              : isOnboarding
+                  ? null
+                  : '/login';
+        }
+
+        final isLoggedIn = state.location == '/';
+
+        if (loggedIn && completedOnboarding == false) return null;
+        if (loggedIn && isLoggingIn) return isLoggedIn ? null : '/';
+        if (loggedIn && isOnboarding) return isLoggedIn ? null : '/';
+
+        return null;
+        return null;
+      },
+      routes: [
+        GoRoute(
+          path: '/login',
+          pageBuilder: (context, state) =>
+              const MaterialPage<void>(child: LoginPage()),
+        ),
+        GoRoute(
+            name: '/',
+            path: '/',
+            pageBuilder: (context, state) => const MaterialPage<void>(
+                    child: MyHomePage(
+                  title: 'Leggo',
+                )),
+            routes: [
+              GoRoute(
+                  path: 'home/category-page',
+                  pageBuilder: (context, state) =>
+                      const MaterialPage<void>(child: CategoryPage()),
+                  routes: [
+                    GoRoute(
+                      name: 'random-wheel',
+                      path: 'home/category-page/random-wheel',
+                      pageBuilder: (context, state) =>
+                          const MaterialPage<void>(child: RandomWheelPage()),
+                    )
+                  ])
+            ]),
+      ]);
 }
 
 class MyHomePage extends StatefulWidget {
@@ -83,58 +196,59 @@ class _MyHomePageState extends State<MyHomePage> {
   List<Widget> rows = [];
   @override
   Widget build(BuildContext context) {
-    final List<Category> sampleCategories = [
-      Category(
+    final List<PlaceList> samplePlaceLists = [
+      PlaceList(
           name: 'Breakfast Ideas', icon: Icons.egg, contributorIds: ['userId']),
-      Category(
+      PlaceList(
           name: 'Lunch Spots',
           icon: FontAwesomeIcons.bowlFood,
           contributorIds: ['userId']),
-      Category(
+      PlaceList(
           name: 'Dinner',
           icon: FontAwesomeIcons.utensils,
           contributorIds: ['userId']),
-      Category(
+      PlaceList(
           name: 'Iceland Trip',
           icon: FontAwesomeIcons.earthOceania,
           contributorIds: ['userId']),
-      Category(
+      PlaceList(
           name: 'Travel',
           icon: FontAwesomeIcons.earthAmericas,
           contributorIds: ['userId']),
     ];
     return SafeArea(
       child: Scaffold(
-        body: BlocBuilder<SavedCategoriesBloc, SavedCategoriesState>(
+        floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
+        bottomNavigationBar: const MainBottomNavBar(),
+        body: BlocBuilder<SavedListsBloc, SavedListsState>(
           builder: (context, state) {
-            if (state is SavedCategoriesLoading ||
-                state is SavedCategoriesUpdated) {
+            if (state is SavedListsLoading || state is SavedListsUpdated) {
               return Center(
-                child: LoadingAnimationWidget.newtonCradle(
-                    color: Theme.of(context).primaryColor, size: 120.0),
+                child: LoadingAnimationWidget.inkDrop(
+                    color: FlexColor.materialDarkPrimaryHc, size: 40.0),
               );
             }
-            if (state is SavedCategoriesFailed) {
+            if (state is SavedListsFailed) {
               return const Center(
                 child: Text('Error Loading Lists!'),
               );
             }
-            if (state is SavedCategoriesLoaded) {
+            if (state is SavedListsLoaded) {
               final ScrollController mainScrollController = ScrollController();
 
               void addCategoriesToList() {
-                for (Category category in state.categories) {
-                  rows.add(CategoryCard(category: category));
+                for (PlaceList placeList in state.placeLists) {
+                  rows.add(CategoryCard(category: placeList));
                 }
               }
 
-              if (state.categories.isNotEmpty) {
+              if (state.placeLists.isNotEmpty) {
                 addCategoriesToList();
               }
 
               void _onReorder(int oldIndex, int newIndex) {
-                Category category = state.categories.removeAt(oldIndex);
-                state.categories.insert(newIndex, category);
+                PlaceList category = state.placeLists.removeAt(oldIndex);
+                state.placeLists.insert(newIndex, category);
                 setState(() {
                   Widget row = rows.removeAt(oldIndex);
                   rows.insert(newIndex, row);
@@ -142,8 +256,8 @@ class _MyHomePageState extends State<MyHomePage> {
               }
 
               void _onReorderSampleItem(int oldIndex, int newIndex) {
-                Category category = sampleCategories.removeAt(oldIndex);
-                sampleCategories.insert(newIndex, category);
+                PlaceList placeList = samplePlaceLists.removeAt(oldIndex);
+                samplePlaceLists.insert(newIndex, placeList);
                 setState(() {
                   Widget row = rows.removeAt(oldIndex);
                   rows.insert(newIndex, row);
@@ -174,31 +288,44 @@ class _MyHomePageState extends State<MyHomePage> {
                     expandedHeight: 120,
                     actions: [
                       IconButton(
-                          onPressed: () {}, icon: const Icon(Icons.more_vert))
+                          onPressed: () {}, icon: const Icon(Icons.more_vert)),
+                      IconButton(
+                          onPressed: () {
+                            context.read<LoginCubit>().logout();
+                          },
+                          icon: const Icon(Icons.logout_rounded)),
                     ],
                   ),
                   // Main List View
 
                   ReorderableSliverList(
                       delegate: ReorderableSliverChildBuilderDelegate(
-                          childCount: state.categories.isNotEmpty
-                              ? state.categories.length
+                          childCount: state.placeLists.isNotEmpty
+                              ? state.placeLists.length
                               : 6, (context, index) {
-                        if (state.categories.isNotEmpty) {
+                        if (state.placeLists.isNotEmpty) {
                           // rows.clear();
                           rows = [
-                            for (Category category in state.categories)
-                              CategoryCard(category: category)
+                            for (PlaceList category in state.placeLists)
+                              Animate(
+                                  effects: const [SlideEffect()],
+                                  child: CategoryCard(category: category))
                           ];
 
                           return rows[index];
                         } else {
                           rows.clear();
                           List<SampleCategoryCard> sampleCategoryCards = [];
-                          for (Category category in sampleCategories) {
-                            rows.add(SampleCategoryCard(category: category));
+                          for (PlaceList category in samplePlaceLists) {
+                            rows.add(Animate(
+                                effects: const [SlideEffect()],
+                                child: SampleCategoryCard(category: category)));
                           }
-                          rows.insert(0, const BlankCategoryCard());
+                          rows.insert(
+                              0,
+                              Animate(
+                                  effects: const [SlideEffect()],
+                                  child: const BlankCategoryCard()));
                           return rows[index];
                         }
                       }),
@@ -213,6 +340,7 @@ class _MyHomePageState extends State<MyHomePage> {
           },
         ),
         floatingActionButton: FloatingActionButton(
+          shape: const StadiumBorder(),
           onPressed: () {
             showDialog(
               context: context,
@@ -230,7 +358,7 @@ class _MyHomePageState extends State<MyHomePage> {
 }
 
 class CategoryCard extends StatelessWidget {
-  final Category category;
+  final PlaceList category;
 
   const CategoryCard({
     Key? key,
@@ -249,11 +377,11 @@ class CategoryCard extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.all(8.0),
               child: Card(
-                color: FlexColor.deepBlueDarkPrimaryContainer.withOpacity(0.15),
+                //color: FlexColor.deepBlueDarkPrimaryContainer.withOpacity(0.15),
                 child: ListTile(
                   onTap: () {
                     context.read<SavedPlacesBloc>().add(LoadPlaces());
-                    context.go('/category-page');
+                    context.go('/home/category-page');
                   },
                   contentPadding: const EdgeInsets.symmetric(
                       vertical: 12.0, horizontal: 24.0),
@@ -335,7 +463,7 @@ class BlankCategoryCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.fromLTRB(8.0, 0, 8.0, 8.0),
+      padding: const EdgeInsets.fromLTRB(8.0, 16.0, 8.0, 4.0),
       child: SizedBox(
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -344,7 +472,8 @@ class BlankCategoryCard extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.all(8.0),
               child: Card(
-                color: FlexColor.deepBlueDarkPrimaryContainer,
+                elevation: 1.618,
+                //color: FlexColor.materialDarkPrimaryContainerHc,
                 child: ListTile(
                   minVerticalPadding: 30.0,
                   onTap: () {
@@ -396,8 +525,8 @@ class BlankCategoryCard extends StatelessWidget {
                               height: 50,
                               width: 50,
                               child: Container(
-                                  color:
-                                      FlexColor.deepBlueDarkSecondaryVariant),
+                                  color: FlexColor
+                                      .materialDarkTertiaryContainerHc),
                             ),
                           ),
                         ),
@@ -407,8 +536,7 @@ class BlankCategoryCard extends StatelessWidget {
                             height: 50,
                             width: 50,
                             child: Container(
-                              color: FlexColor.deepBlueDarkTertiaryContainer,
-                            ),
+                                color: FlexColor.materialDarkSecondaryHc),
                           ),
                         ),
                       ]),
@@ -425,7 +553,7 @@ class BlankCategoryCard extends StatelessWidget {
 }
 
 class SampleCategoryCard extends StatelessWidget {
-  final Category category;
+  final PlaceList category;
   const SampleCategoryCard({
     Key? key,
     required this.category,
@@ -434,7 +562,7 @@ class SampleCategoryCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.fromLTRB(8.0, 0, 8.0, 8.0),
+      padding: const EdgeInsets.fromLTRB(8.0, 4.0, 8.0, 4.0),
       child: SizedBox(
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -443,10 +571,10 @@ class SampleCategoryCard extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.all(8.0),
               child: Opacity(
-                opacity: 0.5,
+                opacity: 0.6,
                 child: Card(
                   elevation: 2.0,
-                  color: FlexColor.deepBlueDarkSecondaryContainer,
+                  //  color: FlexColor.deepBlueDarkSecondaryContainer,
                   child: ListTile(
                     minVerticalPadding: 24.0,
                     onTap: () {
@@ -538,7 +666,7 @@ class CreateListDialog extends StatelessWidget {
   Widget build(BuildContext context) {
     final TextEditingController listNameController = TextEditingController();
     return Dialog(
-      backgroundColor: FlexColor.deepBlueDarkPrimaryContainer,
+      //backgroundColor: FlexColor.,
       child: SizedBox(
         height: 250,
         child: Column(
@@ -561,6 +689,7 @@ class CreateListDialog extends StatelessWidget {
                 controller: listNameController,
                 autofocus: true,
                 decoration: InputDecoration(
+                    filled: true,
                     hintText: "ex. Breakfast Ideas",
                     border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(20.0))),
@@ -573,9 +702,9 @@ class CreateListDialog extends StatelessWidget {
                       // backgroundColor: FlexColor.espressoDarkTertiary,
                       ),
                   onPressed: () {
-                    print('Category Added: ${listNameController.value.text}');
-                    context.read<SavedCategoriesBloc>().add(AddCategory(
-                        category: Category(
+                    print('PlaceList Added: ${listNameController.value.text}');
+                    context.read<SavedListsBloc>().add(AddList(
+                        placeList: PlaceList(
                             name: listNameController.value.text,
                             contributorIds: ['userId'])));
                     Navigator.pop(context);
