@@ -110,7 +110,7 @@ class LoginPage extends StatelessWidget {
                                     color: Theme.of(context).primaryColor,
                                     width: 2.0),
                                 borderRadius: BorderRadius.circular(20.0)),
-                            hintText: 'Email',
+                            label: const Text('Email Address'),
                             prefixIcon: const Icon(Icons.email_rounded)),
                       ),
                     );
@@ -140,7 +140,7 @@ class LoginPage extends StatelessWidget {
                                 width: 2.0),
                             borderRadius: BorderRadius.circular(20.0)),
                         prefixIcon: const Icon(Icons.lock),
-                        hintText: 'Password'),
+                        label: const Text('Password')),
                   ),
                 ),
                 SizedBox(

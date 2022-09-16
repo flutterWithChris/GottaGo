@@ -43,7 +43,7 @@ class RearrangeSavedLists extends SavedListsEvent {
   final PlaceList placeList;
   final int oldIndex;
   final int newIndex;
-  RearrangeSavedLists({
+  const RearrangeSavedLists({
     required this.placeList,
     required this.oldIndex,
     required this.newIndex,

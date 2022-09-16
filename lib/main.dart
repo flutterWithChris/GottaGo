@@ -386,6 +386,7 @@ class CategoryCard extends StatelessWidget {
                   trailing: Padding(
                     padding: const EdgeInsets.only(bottom: 16.0),
                     child: PopupMenuButton(
+                        color: Theme.of(context).scaffoldBackgroundColor,
                         // onSelected: (value) {},
                         icon: const Icon(Icons.more_vert_rounded),
                         itemBuilder: (context) => <PopupMenuEntry>[

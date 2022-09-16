@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
-import 'package:leggo/model/place.dart';
 import 'package:leggo/model/place_list.dart';
 import 'package:leggo/repository/place_list_repository.dart';
 
@@ -26,7 +25,7 @@ class SavedListsBloc extends Bloc<SavedListsEvent, SavedListsState> {
         placeListRepository.getPlaceLists().listen((placeList) {
           myPlaceLists.add(placeList);
         });
-        await Future.delayed(const Duration(seconds: 1), () {});
+        await Future.delayed(const Duration(milliseconds: 500), () {});
         emit(SavedListsLoaded(placeLists: myPlaceLists));
       }
       if (event is AddList) {
@@ -42,7 +41,7 @@ class SavedListsBloc extends Bloc<SavedListsEvent, SavedListsState> {
         // myPlaceLists.remove(event.placeList);
         await placeListRepository.removePlaceList(event.placeList);
         emit(SavedListsUpdated(placeList: event.placeList));
-        await Future.delayed(const Duration(seconds: 1));
+        await Future.delayed(const Duration(milliseconds: 500));
         add(LoadSavedLists());
       }
       if (event is RearrangeSavedLists) {}
