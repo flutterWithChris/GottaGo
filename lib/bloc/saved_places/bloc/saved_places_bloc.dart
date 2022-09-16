@@ -19,17 +19,6 @@ class SavedPlacesBloc extends Bloc<SavedPlacesEvent, SavedPlacesState> {
         mainPhoto:
             'https://www.google.com/maps/uv?pb=!1s0x89e8287866d3ffff:0xa6734768501a1e3f!3m1!7e115!4shttps://lh5.googleusercontent.com/p/AF1QipNcnaL0OxmWX4zTLo_frU6Pa7eqglkMZcEcK9xe%3Dw258-h160-k-no!5shatch+huntington+-+Google+Search!15zQ2dJZ0FRPT0&imagekey=!1e10!2sAF1QipNcnaL0OxmWX4zTLo_frU6Pa7eqglkMZcEcK9xe&hl=en&sa=X&ved=2ahUKEwiwmoaj84D6AhWWkIkEHfHKDhUQoip6BAhREAM',
       ),
-      // Place(
-      //   closingTime: '3PM',
-      //   name: 'Whiskey Down Diner',
-      //   address: '',
-      //   city: 'Farmingdale, NY',
-      //   description:
-      //       'Familiar all-day diner offering typical comfort food such as pancakes, eggs, burgers...',
-      //   type: 'Cafe',
-      //   mainPhoto:
-      //       'https://www.google.com/maps/uv?pb=!1s0x89e82b9897a768f9%3A0x2853132db2dacf1b!3m1!7e115!4shttps%3A%2F%2Flh5.googleusercontent.com%2Fp%2FAF1QipPYj58DyJv2NTqWJItryUFImbcTUfqe67FHBrur%3Dw168-h160-k-no!5sdown%20diner%20-%20Google%20Search!15sCgIgAQ&imagekey=!1e10!2sAF1QipPYj58DyJv2NTqWJItryUFImbcTUfqe67FHBrur&hl=en&sa=X&ved=2ahUKEwjAmaKshYH6AhXNjYkEHQs5C6IQoip6BAhpEAM#',
-      // ),
       Place(
         closingTime: '3PM',
         name: 'Jardin Cafe',
