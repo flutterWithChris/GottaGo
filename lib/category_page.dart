@@ -65,9 +65,71 @@ class _CategoryPageState extends State<CategoryPage> {
           builder: (context, state) {
             print('Current State: ${state.toString()}');
             if (state is SavedPlacesLoading || state is SavedPlacesUpdated) {
-              return Center(
-                child: LoadingAnimationWidget.inkDrop(
-                    color: FlexColor.materialDarkSecondaryHc, size: 40.0),
+              return CustomScrollView(
+                slivers: [
+                  SliverAppBar.medium(
+                    // leading: Padding(
+                    //   padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                    //   child: IconButton(
+                    //     onPressed: () {},
+                    //     icon: const Icon(Icons.menu),
+                    //   ),
+                    // ),
+                    title: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Wrap(
+                          spacing: 12.0,
+                          crossAxisAlignment: WrapCrossAlignment.center,
+                          children: [
+                            const Icon(FontAwesomeIcons.egg),
+                            Text(
+                              'Breakfast',
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .titleLarge!
+                                  .copyWith(fontWeight: FontWeight.bold),
+                            ),
+                          ],
+                        ),
+                        Stack(
+                          clipBehavior: Clip.none,
+                          children: [
+                            CircleAvatar(
+                              child: ClipOval(
+                                child: Image.network(
+                                  'https://scontent-lga3-1.xx.fbcdn.net/v/t39.30808-6/305213660_5298775460244393_3700270719083305575_n.jpg?_nc_cat=103&ccb=1-7&_nc_sid=09cbfe&_nc_ohc=bMWpIPCteosAX8qjwkc&_nc_ht=scontent-lga3-1.xx&oh=00_AT86-u9G7umbF3INUcptE50pu8BtGUPBzycr9727gmiR4w&oe=632405F2',
+                                  fit: BoxFit.cover,
+                                ),
+                              ),
+                            ),
+                            Positioned(
+                              right: 30,
+                              child: CircleAvatar(
+                                child: ClipOval(
+                                  child: Image.network(
+                                    'https://scontent-lga3-1.xx.fbcdn.net/v/t1.6435-9/193213907_4419559838077181_2959395753433319266_n.jpg?_nc_cat=107&ccb=1-7&_nc_sid=09cbfe&_nc_ohc=rkR7hr7w5fAAX_2k6sX&_nc_ht=scontent-lga3-1.xx&oh=00_AT_JTX03j8CNcJ0tdmD4iY7tY_Z8lJiv7Zv5DVgNlWIfAw&oe=63444DA4',
+                                    fit: BoxFit.cover,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                    actions: [
+                      IconButton(
+                          onPressed: () {}, icon: const Icon(Icons.more_vert)),
+                    ],
+                  ),
+                  SliverFillRemaining(
+                    child: Center(
+                      child: LoadingAnimationWidget.inkDrop(
+                          color: FlexColor.materialDarkSecondaryHc, size: 40.0),
+                    ),
+                  ),
+                ],
               );
             }
             if (state is SavedPlacesFailed) {

@@ -45,7 +45,7 @@ class SavedPlacesBloc extends Bloc<SavedPlacesEvent, SavedPlacesState> {
     on<SavedPlacesEvent>((event, emit) async {
       // TODO: implement event handler
       if (event is LoadPlaces) {
-        await Future.delayed(const Duration(seconds: 2));
+        await Future.delayed(const Duration(milliseconds: 500));
         emit(SavedPlacesLoaded(places: savedPlaces));
       }
       if (event is AddPlace) {
