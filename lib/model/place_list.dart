@@ -21,7 +21,7 @@ class PlaceList {
   Map<String, Object> toDocument() {
     return {
       'name': name,
-      'iconData': icon!,
+      //'iconData': icon,
       //  'places': places!,
       //   'contributorIds': contributorIds,
     };

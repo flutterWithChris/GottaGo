@@ -22,7 +22,7 @@ class RemoveList extends SavedListsEvent {
   });
   @override
   // TODO: implement props
-  List<Object> get props => [props];
+  List<Object> get props => [placeList];
 }
 
 class EditList extends SavedListsEvent {
@@ -38,3 +38,17 @@ class EditList extends SavedListsEvent {
 class LoadSavedLists extends SavedListsEvent {}
 
 class UpdateSavedLists extends SavedListsEvent {}
+
+class RearrangeSavedLists extends SavedListsEvent {
+  final PlaceList placeList;
+  final int oldIndex;
+  final int newIndex;
+  RearrangeSavedLists({
+    required this.placeList,
+    required this.oldIndex,
+    required this.newIndex,
+  });
+  @override
+  // TODO: implement props
+  List<Object> get props => [placeList, oldIndex, newIndex];
+}

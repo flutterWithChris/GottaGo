@@ -78,7 +78,9 @@ class _MyAppState extends State<MyApp> {
             create: (context) => SavedPlacesBloc(),
           ),
           BlocProvider(
-            create: (context) => SavedListsBloc()..add(LoadSavedLists()),
+            create: (context) => SavedListsBloc(
+                placeListRepository: context.read<PlaceListRepository>())
+              ..add(LoadSavedLists()),
           ),
         ],
         child: BlocBuilder<AuthBloc, AuthState>(
@@ -297,7 +299,9 @@ class _MyHomePageState extends State<MyHomePage> {
                     ],
                   ),
                   // Main List View
-
+                  const SliverToBoxAdapter(
+                    child: SizedBox(height: 12.0),
+                  ),
                   ReorderableSliverList(
                       delegate: ReorderableSliverChildBuilderDelegate(
                           childCount: state.placeLists.isNotEmpty
