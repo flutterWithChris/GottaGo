@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class Place {
+  final String googlePlaceId;
   final String name;
   final String address;
   final String city;
@@ -12,6 +13,7 @@ class Place {
   final String mainPhoto;
   final String? closingTime;
   Place({
+    required this.googlePlaceId,
     required this.name,
     required this.address,
     required this.city,
@@ -25,6 +27,7 @@ class Place {
   });
 
   Place copyWith({
+    String? googlePlaceId,
     String? name,
     String? address,
     String? city,
@@ -37,6 +40,7 @@ class Place {
     String? closingTime,
   }) {
     return Place(
+      googlePlaceId: googlePlaceId ?? this.googlePlaceId,
       name: name ?? this.name,
       address: address ?? this.address,
       city: city ?? this.city,
@@ -52,6 +56,7 @@ class Place {
 
   factory Place.fromSnapshot(DocumentSnapshot snap) {
     return Place(
+        googlePlaceId: snap['googlePlaceId'],
         name: snap.id,
         address: snap['address'],
         city: snap['city'],
@@ -66,6 +71,7 @@ class Place {
 
   Map<String, Object> toDocument() {
     return {
+      'googlePlaceId': googlePlaceId,
       'name': name,
       'address': address,
       'city': city,

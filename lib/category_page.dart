@@ -12,6 +12,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_place/google_place.dart';
 import 'package:leggo/bloc/bloc/place_search_bloc.dart';
+import 'package:leggo/bloc/saved_categories/bloc/saved_lists_bloc.dart';
 import 'package:leggo/bloc/saved_places/bloc/saved_places_bloc.dart';
 import 'package:leggo/model/place.dart';
 import 'package:leggo/widgets/main_bottom_navbar.dart';
@@ -458,17 +459,23 @@ class _SearchPlacesSheetState extends State<SearchPlacesSheet> {
                                       icon: const Icon(Icons.web_rounded,
                                           size: 18),
                                       label: const Text('Visit Website')),
-                                  Wrap(
-                                    spacing: 4.0,
-                                    crossAxisAlignment:
-                                        WrapCrossAlignment.center,
-                                    children: [
-                                      const Icon(
-                                        Icons.place_rounded,
-                                        size: 18,
+                                  Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 4.0),
+                                    child: FittedBox(
+                                      child: Wrap(
+                                        spacing: 4.0,
+                                        crossAxisAlignment:
+                                            WrapCrossAlignment.center,
+                                        children: [
+                                          const Icon(
+                                            Icons.place_rounded,
+                                            size: 18,
+                                          ),
+                                          Text(placeDetails.formattedAddress!),
+                                        ],
                                       ),
-                                      Text(placeDetails.formattedAddress!),
-                                    ],
+                                    ),
                                   ),
                                   Padding(
                                     padding: const EdgeInsets.all(8.0),
@@ -515,13 +522,17 @@ class _SearchPlacesSheetState extends State<SearchPlacesSheet> {
                             child: ElevatedButton.icon(
                                 onPressed: () {
                                   print('Place Added: ${placeDetails.name}');
-
+                                  context
+                                      .read<SavedListsBloc>()
+                                      .add(UpdateSavedLists());
                                   context.read<SavedPlacesBloc>().add(AddPlace(
                                       placeList: context
                                           .read<SavedPlacesBloc>()
                                           .state
                                           .placeList!,
                                       place: Place(
+                                          googlePlaceId:
+                                              placeDetails.placeId ?? '',
                                           website: placeDetails.website ?? '',
                                           closingTime: placeDetails
                                                   .openingHours?.openNow
@@ -548,7 +559,8 @@ class _SearchPlacesSheetState extends State<SearchPlacesSheet> {
                                 },
                                 icon:
                                     const Icon(Icons.add_location_alt_outlined),
-                                label: const Text('Add to Breakfast Ideas')),
+                                label: Text(
+                                    'Add to ${context.read<SavedPlacesBloc>().state.placeList!.name}')),
                           ),
                         ],
                       ),
@@ -700,7 +712,7 @@ class _PlaceCardState extends State<PlaceCard> {
                     //tileColor: Colors.white,
 
                     title: Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 2.0),
+                      padding: const EdgeInsets.symmetric(vertical: 4.0),
                       child: Wrap(
                         //spacing: 24.0,
                         alignment: WrapAlignment.spaceBetween,
@@ -726,7 +738,7 @@ class _PlaceCardState extends State<PlaceCard> {
                                 style: Theme.of(context)
                                     .textTheme
                                     .bodySmall!
-                                    .copyWith(fontWeight: FontWeight.bold),
+                                    .copyWith(),
                               ),
                             ],
                           ),
@@ -738,33 +750,68 @@ class _PlaceCardState extends State<PlaceCard> {
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         Wrap(
-                          crossAxisAlignment: WrapCrossAlignment.center,
                           alignment: WrapAlignment.spaceBetween,
+                          crossAxisAlignment: WrapCrossAlignment.center,
                           children: [
-                            Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Text(
-                                  'Open \'Til ${widget.closingTime}',
-                                  style: Theme.of(context).textTheme.bodySmall,
-                                ),
-                                const SizedBox(
-                                  width: 6.0,
-                                ),
-                                const CircleAvatar(
-                                  radius: 3,
-                                  backgroundColor: Colors.lightGreen,
-                                ),
-                                const SizedBox(
-                                  width: 12.0,
-                                ),
-                              ],
-                            ),
+                            FutureBuilder(
+                                future: googlePlace.details
+                                    .get(widget.place.googlePlaceId),
+                                builder: (context, snapshot) {
+                                  var data = snapshot.data;
+                                  if (data == null) {
+                                    return const SizedBox();
+                                  } else {
+                                    if (data.result!.openingHours!.openNow ==
+                                        true) {
+                                      return Wrap(
+                                        crossAxisAlignment:
+                                            WrapCrossAlignment.center,
+                                        spacing: 6.0,
+                                        children: [
+                                          const CircleAvatar(
+                                            radius: 3,
+                                            backgroundColor: Colors.lightGreen,
+                                          ),
+                                          Text(
+                                            'Open Now',
+                                            style: Theme.of(context)
+                                                .textTheme
+                                                .bodySmall!
+                                                .copyWith(
+                                                    fontWeight:
+                                                        FontWeight.bold),
+                                          ),
+                                        ],
+                                      );
+                                    } else {
+                                      return Wrap(
+                                          crossAxisAlignment:
+                                              WrapCrossAlignment.center,
+                                          spacing: 6.0,
+                                          children: [
+                                            const CircleAvatar(
+                                              radius: 3,
+                                              backgroundColor: Colors.red,
+                                            ),
+                                            Text(
+                                              'Closed Now',
+                                              style: Theme.of(context)
+                                                  .textTheme
+                                                  .bodySmall!
+                                                  .copyWith(
+                                                      fontWeight:
+                                                          FontWeight.bold),
+                                            ),
+                                          ]);
+                                    }
+                                  }
+                                }),
                             widget.ratingsTotal != null
                                 ? SizedBox(
                                     height: 28,
                                     child: FittedBox(
                                       child: Chip(
+                                        backgroundColor: Colors.transparent,
                                         labelPadding:
                                             const EdgeInsets.symmetric(
                                                 horizontal: 12.0),
@@ -774,11 +821,21 @@ class _PlaceCardState extends State<PlaceCard> {
                                                 WrapCrossAlignment.center,
                                             spacing: 8.0,
                                             children: [
-                                              const Icon(
-                                                Icons.star,
-                                                size: 18.0,
-                                                color: Colors.amber,
-                                              ),
+                                              RatingBar.builder(
+                                                  itemSize: 18.0,
+                                                  initialRating:
+                                                      widget.place.rating!,
+                                                  allowHalfRating: true,
+                                                  ignoreGestures: true,
+                                                  itemBuilder:
+                                                      (context, index) {
+                                                    return const Icon(
+                                                      Icons.star,
+                                                      size: 18.0,
+                                                      color: Colors.amber,
+                                                    );
+                                                  },
+                                                  onRatingUpdate: (rating) {}),
                                               Text(widget.ratingsTotal
                                                   .toString())
                                             ]),
@@ -807,7 +864,7 @@ class _PlaceCardState extends State<PlaceCard> {
                                             ]),
                                       ),
                                     ),
-                                  )
+                                  ),
                           ],
                         ),
                         widget.placeDescription != null

@@ -90,7 +90,7 @@ class _MyAppState extends State<MyApp> {
             bloc = context.read<AuthBloc>();
             return MaterialApp.router(
               theme: FlexThemeData.light(
-                scheme: FlexScheme.bahamaBlue,
+                scheme: FlexScheme.deepBlue,
                 surfaceMode: FlexSurfaceMode.highScaffoldLowSurface,
                 blendLevel: 20,
                 appBarOpacity: 0.95,
@@ -100,11 +100,12 @@ class _MyAppState extends State<MyApp> {
                 ),
                 visualDensity: FlexColorScheme.comfortablePlatformDensity,
                 useMaterial3: true,
+                fontFamily: GoogleFonts.lato().fontFamily,
                 // To use the playground font, add GoogleFonts package and uncomment
                 // fontFamily: GoogleFonts.notoSans().fontFamily,
               ),
               darkTheme: FlexThemeData.dark(
-                scheme: FlexScheme.bahamaBlue,
+                scheme: FlexScheme.deepBlue,
                 surfaceMode: FlexSurfaceMode.highScaffoldLowSurface,
                 blendLevel: 15,
                 appBarOpacity: 0.90,
@@ -441,8 +442,7 @@ class CategoryCard extends StatelessWidget {
                   ),
                   subtitle: Padding(
                     padding: const EdgeInsets.only(left: 24.0),
-                    child:
-                        Text('${placeList.places?.length ?? 0} Saved Places'),
+                    child: Text('${placeList.placeCount} Saved Places'),
                   ),
                   leading: Padding(
                     padding: const EdgeInsets.only(left: 16.0, top: 8.0),

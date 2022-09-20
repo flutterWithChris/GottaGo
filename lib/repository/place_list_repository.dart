@@ -77,6 +77,19 @@ class PlaceListRepository {
     }));
   }
 
+  Future<int> getPlaceListItemCount(PlaceList placeList) {
+    final auth.User firebaseUser = auth.FirebaseAuth.instance.currentUser!;
+
+    return _firebaseFirestore
+        .collection('users')
+        .doc(firebaseUser.uid)
+        .collection('place_lists')
+        .doc(placeList.name)
+        .collection('places')
+        .get()
+        .then((value) => value.size);
+  }
+
   Future<void> updatePlaceLists(PlaceList placeList) {
     final auth.User firebaseUser = auth.FirebaseAuth.instance.currentUser!;
     return _firebaseFirestore
