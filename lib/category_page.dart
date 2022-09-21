@@ -1,3 +1,4 @@
+import 'package:avatar_stack/avatar_stack.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flex_color_scheme/flex_color_scheme.dart';
 import 'package:flutter/foundation.dart';
@@ -15,6 +16,7 @@ import 'package:leggo/bloc/bloc/place_search_bloc.dart';
 import 'package:leggo/bloc/saved_categories/bloc/saved_lists_bloc.dart';
 import 'package:leggo/bloc/saved_places/bloc/saved_places_bloc.dart';
 import 'package:leggo/model/place.dart';
+import 'package:leggo/model/user.dart';
 import 'package:leggo/widgets/main_bottom_navbar.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:reorderables/reorderables.dart';
@@ -82,62 +84,6 @@ class _CategoryPageState extends State<CategoryPage> {
                       children: [
                         LoadingAnimationWidget.prograssiveDots(
                             color: Theme.of(context).primaryColor, size: 18.0),
-                        Stack(
-                          clipBehavior: Clip.none,
-                          children: [
-                            CircleAvatar(
-                              child: ClipOval(
-                                child: CachedNetworkImage(
-                                  imageUrl:
-                                      'https://scontent-lga3-1.xx.fbcdn.net/v/t39.30808-6/305213660_5298775460244393_3700270719083305575_n.jpg?_nc_cat=103&ccb=1-7&_nc_sid=09cbfe&_nc_ohc=xo3NVRcwnp4AX8fjAuD&_nc_ht=scontent-lga3-1.xx&oh=00_AT_Q4ml8IkUtWFFpd6OVaCeNaTaWkaOkWyNYfnhj5dWlfQ&oe=632BEEF2',
-                                  fit: BoxFit.cover,
-                                  errorWidget: (context, url, error) {
-                                    return Container(
-                                      child:
-                                          const SizedBox(child: Text('Error')),
-                                    );
-                                  },
-                                  placeholder: (context, url) {
-                                    return Center(
-                                      child:
-                                          LoadingAnimationWidget.discreteCircle(
-                                              color: Theme.of(context)
-                                                  .primaryColor,
-                                              size: 30.0),
-                                    );
-                                  },
-                                ),
-                              ),
-                            ),
-                            Positioned(
-                              right: 30,
-                              child: CircleAvatar(
-                                child: ClipOval(
-                                  child: CachedNetworkImage(
-                                    imageUrl:
-                                        'https://scontent-lga3-1.xx.fbcdn.net/v/t1.6435-9/193213907_4419559838077181_2959395753433319266_n.jpg?_nc_cat=107&ccb=1-7&_nc_sid=09cbfe&_nc_ohc=rkR7hr7w5fAAX_2k6sX&_nc_ht=scontent-lga3-1.xx&oh=00_AT_JTX03j8CNcJ0tdmD4iY7tY_Z8lJiv7Zv5DVgNlWIfAw&oe=63444DA4',
-                                    fit: BoxFit.cover,
-                                    errorWidget: (context, url, error) {
-                                      return Container(
-                                        child: const SizedBox(
-                                            child: Text('Error')),
-                                      );
-                                    },
-                                    placeholder: (context, url) {
-                                      return Center(
-                                        child: LoadingAnimationWidget
-                                            .discreteCircle(
-                                                color: Theme.of(context)
-                                                    .primaryColor,
-                                                size: 30.0),
-                                      );
-                                    },
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
                       ],
                     ),
                     actions: [
@@ -161,6 +107,12 @@ class _CategoryPageState extends State<CategoryPage> {
             }
 
             if (state is SavedPlacesLoaded) {
+              List<User> contributors =
+                  context.watch<SavedListsBloc>().contributors;
+              List<String> contributorAvatars = [];
+              for (User user in contributors) {
+                contributorAvatars.add(user.profilePicture);
+              }
               void _onReorder(int oldIndex, int newIndex) {
                 Place place = state.places.removeAt(oldIndex);
                 state.places.insert(newIndex, place);
@@ -189,6 +141,7 @@ class _CategoryPageState extends State<CategoryPage> {
                 controller: mainScrollController,
                 slivers: [
                   SliverAppBar.medium(
+                    expandedHeight: 125,
                     // leading: Padding(
                     //   padding: const EdgeInsets.symmetric(horizontal: 8.0),
                     //   child: IconButton(
@@ -214,26 +167,18 @@ class _CategoryPageState extends State<CategoryPage> {
                           ],
                         ),
                         Stack(
-                          clipBehavior: Clip.none,
                           children: [
-                            CircleAvatar(
-                              child: ClipOval(
-                                child: Image.network(
-                                  'https://scontent-lga3-1.xx.fbcdn.net/v/t39.30808-6/305213660_5298775460244393_3700270719083305575_n.jpg?_nc_cat=103&ccb=1-7&_nc_sid=09cbfe&_nc_ohc=xo3NVRcwnp4AX8fjAuD&_nc_ht=scontent-lga3-1.xx&oh=00_AT_Q4ml8IkUtWFFpd6OVaCeNaTaWkaOkWyNYfnhj5dWlfQ&oe=632BEEF2',
-                                  fit: BoxFit.cover,
-                                ),
-                              ),
-                            ),
-                            Positioned(
-                              right: 30,
-                              child: CircleAvatar(
-                                child: ClipOval(
-                                  child: Image.network(
-                                    'https://scontent-lga3-1.xx.fbcdn.net/v/t1.6435-9/193213907_4419559838077181_2959395753433319266_n.jpg?_nc_cat=107&ccb=1-7&_nc_sid=09cbfe&_nc_ohc=rkR7hr7w5fAAX_2k6sX&_nc_ht=scontent-lga3-1.xx&oh=00_AT_JTX03j8CNcJ0tdmD4iY7tY_Z8lJiv7Zv5DVgNlWIfAw&oe=63444DA4',
-                                    fit: BoxFit.cover,
-                                  ),
-                                ),
-                              ),
+                            AvatarStack(
+                              borderWidth: 2.0,
+                              borderColor:
+                                  Theme.of(context).chipTheme.backgroundColor,
+                              width: 80,
+                              height: 80,
+                              avatars: [
+                                for (User user in contributors)
+                                  CachedNetworkImageProvider(
+                                      user.profilePicture),
+                              ],
                             ),
                           ],
                         ),
@@ -246,6 +191,7 @@ class _CategoryPageState extends State<CategoryPage> {
                   ),
                   const GoButton(),
                   ReorderableSliverList(
+                    enabled: false,
                     onReorder: _onReorder,
                     delegate: ReorderableSliverChildBuilderDelegate(
                         childCount: state.places.length, (context, index) {
@@ -290,7 +236,6 @@ class _SearchPlacesSheetState extends State<SearchPlacesSheet> {
 
   @override
   void initState() {
-    // TODO: implement initState
     scrollableController = DraggableScrollableController();
     super.initState();
   }
