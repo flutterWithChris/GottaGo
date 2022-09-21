@@ -10,11 +10,13 @@ part 'saved_lists_state.dart';
 
 class SavedListsBloc extends Bloc<SavedListsEvent, SavedListsState> {
   final PlaceListRepository _placeListRepository;
+  int placeCount = 0;
   //StreamSubscription<PlaceList> _placeListSubscription;
   SavedListsBloc({required PlaceListRepository placeListRepository})
       : _placeListRepository = placeListRepository,
         super(SavedListsLoading()) {
     List<PlaceList> myPlaceLists = [];
+
     // _placeListSubscription =
     //     placeListRepository.getPlaceLists().listen((placeList) {
     //   add(UpdateSavedLists());
@@ -22,25 +24,29 @@ class SavedListsBloc extends Bloc<SavedListsEvent, SavedListsState> {
     on<SavedListsEvent>((event, emit) async {
       if (event is LoadSavedLists) {
         myPlaceLists.clear();
-        placeListRepository.getPlaceLists().listen((placeList) {
-          myPlaceLists.add(placeList);
+
+        placeListRepository.getPlaceLists().listen((placeList) async {
+          placeCount =
+              await placeListRepository.getPlaceListItemCount(placeList);
+          myPlaceLists.add(placeList.copyWith(placeCount: placeCount));
         });
         await Future.delayed(const Duration(milliseconds: 500), () {});
         emit(SavedListsLoaded(placeLists: myPlaceLists));
       }
       if (event is AddList) {
         await placeListRepository.createPlaceList(event.placeList);
-        emit(SavedListsUpdated(placeList: event.placeList));
+        emit(SavedListsUpdated());
         // await Future.delayed(const Duration(seconds: 1));
         add(LoadSavedLists());
       }
       if (event is UpdateSavedLists) {
+        emit(SavedListsUpdated());
         add(LoadSavedLists());
       }
       if (event is RemoveList) {
         // myPlaceLists.remove(event.placeList);
         await placeListRepository.removePlaceList(event.placeList);
-        emit(SavedListsUpdated(placeList: event.placeList));
+        emit(SavedListsUpdated());
         await Future.delayed(const Duration(milliseconds: 500));
         add(LoadSavedLists());
       }

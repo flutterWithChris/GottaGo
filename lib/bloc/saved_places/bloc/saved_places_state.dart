@@ -1,22 +1,28 @@
 part of 'saved_places_bloc.dart';
 
-abstract class SavedPlacesState extends Equatable {
-  const SavedPlacesState();
+class SavedPlacesState extends Equatable {
+  final PlaceList? placeList;
+  const SavedPlacesState({
+    this.placeList,
+  });
 
   @override
-  List<Object> get props => [];
+  List<Object?> get props => [placeList];
 }
 
 class SavedPlacesLoading extends SavedPlacesState {}
 
 class SavedPlacesLoaded extends SavedPlacesState {
-  List<Place> places;
-  SavedPlacesLoaded({
+  final List<Place> places;
+  @override
+  final PlaceList placeList;
+  const SavedPlacesLoaded({
     required this.places,
+    required this.placeList,
   });
   @override
   // TODO: implement props
-  List<Object> get props => [places];
+  List<Object> get props => [places, placeList];
 }
 
 class SavedPlacesFailed extends SavedPlacesState {}

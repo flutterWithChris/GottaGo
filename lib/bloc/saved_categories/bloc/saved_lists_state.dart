@@ -21,10 +21,4 @@ class SavedListsLoaded extends SavedListsState {
 
 class SavedListsFailed extends SavedListsState {}
 
-class SavedListsUpdated extends SavedListsState {
-  final PlaceList placeList;
-  SavedListsUpdated({required this.placeList});
-  @override
-  // TODO: implement props
-  List<Object> get props => [placeList];
-}
+class SavedListsUpdated extends SavedListsState {}

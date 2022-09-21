@@ -2,7 +2,7 @@ part of 'place_search_bloc.dart';
 
 enum Status { initial, loading, loaded, failed }
 
-class PlaceSearchState {
+class PlaceSearchState extends Equatable {
   Status status;
   DetailsResult? detailsResult;
   PlaceSearchState({required this.status, this.detailsResult});
@@ -23,4 +23,8 @@ class PlaceSearchState {
   factory PlaceSearchState.failed() {
     return PlaceSearchState(status: Status.failed);
   }
+
+  @override
+  // TODO: implement props
+  List<Object?> get props => [status, detailsResult];
 }

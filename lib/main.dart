@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flex_color_scheme/flex_color_scheme.dart';
 import 'package:flutter/material.dart';
@@ -75,7 +76,8 @@ class _MyAppState extends State<MyApp> {
             create: (context) => PlaceSearchBloc(),
           ),
           BlocProvider(
-            create: (context) => SavedPlacesBloc(),
+            create: (context) => SavedPlacesBloc(
+                placeListRepository: context.read<PlaceListRepository>()),
           ),
           BlocProvider(
             create: (context) => SavedListsBloc(
@@ -88,7 +90,7 @@ class _MyAppState extends State<MyApp> {
             bloc = context.read<AuthBloc>();
             return MaterialApp.router(
               theme: FlexThemeData.light(
-                scheme: FlexScheme.bahamaBlue,
+                scheme: FlexScheme.deepBlue,
                 surfaceMode: FlexSurfaceMode.highScaffoldLowSurface,
                 blendLevel: 20,
                 appBarOpacity: 0.95,
@@ -98,11 +100,12 @@ class _MyAppState extends State<MyApp> {
                 ),
                 visualDensity: FlexColorScheme.comfortablePlatformDensity,
                 useMaterial3: true,
+                fontFamily: GoogleFonts.lato().fontFamily,
                 // To use the playground font, add GoogleFonts package and uncomment
                 // fontFamily: GoogleFonts.notoSans().fontFamily,
               ),
               darkTheme: FlexThemeData.dark(
-                scheme: FlexScheme.bahamaBlue,
+                scheme: FlexScheme.deepBlue,
                 surfaceMode: FlexSurfaceMode.highScaffoldLowSurface,
                 blendLevel: 15,
                 appBarOpacity: 0.90,
@@ -170,13 +173,13 @@ class _MyAppState extends State<MyApp> {
                 )),
             routes: [
               GoRoute(
-                  path: 'home/category-page',
+                  path: 'home/placeList-page',
                   pageBuilder: (context, state) =>
                       const MaterialPage<void>(child: CategoryPage()),
                   routes: [
                     GoRoute(
                       name: 'random-wheel',
-                      path: 'home/category-page/random-wheel',
+                      path: 'home/placeList-page/random-wheel',
                       pageBuilder: (context, state) =>
                           const MaterialPage<void>(child: RandomWheelPage()),
                     )
@@ -240,7 +243,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
               void addCategoriesToList() {
                 for (PlaceList placeList in state.placeLists) {
-                  rows.add(CategoryCard(category: placeList));
+                  rows.add(CategoryCard(placeList: placeList));
                 }
               }
 
@@ -249,8 +252,8 @@ class _MyHomePageState extends State<MyHomePage> {
               }
 
               void _onReorder(int oldIndex, int newIndex) {
-                PlaceList category = state.placeLists.removeAt(oldIndex);
-                state.placeLists.insert(newIndex, category);
+                PlaceList placeList = state.placeLists.removeAt(oldIndex);
+                state.placeLists.insert(newIndex, placeList);
                 setState(() {
                   Widget row = rows.removeAt(oldIndex);
                   rows.insert(newIndex, row);
@@ -310,20 +313,21 @@ class _MyHomePageState extends State<MyHomePage> {
                         if (state.placeLists.isNotEmpty) {
                           // rows.clear();
                           rows = [
-                            for (PlaceList category in state.placeLists)
+                            for (PlaceList placeList in state.placeLists)
                               Animate(
                                   effects: const [SlideEffect()],
-                                  child: CategoryCard(category: category))
+                                  child: CategoryCard(placeList: placeList))
                           ];
 
                           return rows[index];
                         } else {
                           rows.clear();
                           List<SampleCategoryCard> sampleCategoryCards = [];
-                          for (PlaceList category in samplePlaceLists) {
+                          for (PlaceList placeList in samplePlaceLists) {
                             rows.add(Animate(
                                 effects: const [SlideEffect()],
-                                child: SampleCategoryCard(category: category)));
+                                child:
+                                    SampleCategoryCard(placeList: placeList)));
                           }
                           rows.insert(
                               0,
@@ -362,11 +366,11 @@ class _MyHomePageState extends State<MyHomePage> {
 }
 
 class CategoryCard extends StatelessWidget {
-  final PlaceList category;
+  final PlaceList placeList;
 
   const CategoryCard({
     Key? key,
-    required this.category,
+    required this.placeList,
   }) : super(key: key);
 
   @override
@@ -406,8 +410,10 @@ class CategoryCard extends StatelessWidget {
                             ]),
                   ),
                   onTap: () {
-                    context.read<SavedPlacesBloc>().add(LoadPlaces());
-                    context.go('/home/category-page');
+                    context
+                        .read<SavedPlacesBloc>()
+                        .add(LoadPlaces(placeList: placeList));
+                    context.go('/home/placeList-page');
                   },
                   contentPadding: const EdgeInsets.symmetric(
                       vertical: 12.0, horizontal: 24.0),
@@ -418,14 +424,14 @@ class CategoryCard extends StatelessWidget {
                       crossAxisAlignment: WrapCrossAlignment.center,
                       spacing: 10.0,
                       children: [
-                        category.icon != null
+                        placeList.icon != null
                             ? Icon(
-                                category.icon,
+                                placeList.icon,
                                 size: 18,
                               )
                             : const SizedBox(),
                         Text(
-                          category.name,
+                          placeList.name,
                           style: Theme.of(context)
                               .textTheme
                               .titleMedium!
@@ -436,7 +442,7 @@ class CategoryCard extends StatelessWidget {
                   ),
                   subtitle: Padding(
                     padding: const EdgeInsets.only(left: 24.0),
-                    child: Text('${category.places?.length ?? 0} Saved Places'),
+                    child: Text('${placeList.placeCount} Saved Places'),
                   ),
                   leading: Padding(
                     padding: const EdgeInsets.only(left: 16.0, top: 8.0),
@@ -449,8 +455,9 @@ class CategoryCard extends StatelessWidget {
                           child: SizedBox(
                             height: 50,
                             width: 50,
-                            child: Image.network(
-                              'https://www.google.com/maps/uv?pb=!1s0x89e8287866d3ffff:0xa6734768501a1e3f!3m1!7e115!4shttps://lh5.googleusercontent.com/p/AF1QipNcnaL0OxmWX4zTLo_frU6Pa7eqglkMZcEcK9xe%3Dw258-h160-k-no!5shatch+huntington+-+Google+Search!15zQ2dJZ0FRPT0&imagekey=!1e10!2sAF1QipNcnaL0OxmWX4zTLo_frU6Pa7eqglkMZcEcK9xe&hl=en&sa=X&ved=2ahUKEwiwmoaj84D6AhWWkIkEHfHKDhUQoip6BAhREAM',
+                            child: CachedNetworkImage(
+                              imageUrl:
+                                  'https://www.google.com/maps/uv?pb=!1s0x89e8287866d3ffff:0xa6734768501a1e3f!3m1!7e115!4shttps://lh5.googleusercontent.com/p/AF1QipNcnaL0OxmWX4zTLo_frU6Pa7eqglkMZcEcK9xe%3Dw258-h160-k-no!5shatch+huntington+-+Google+Search!15zQ2dJZ0FRPT0&imagekey=!1e10!2sAF1QipNcnaL0OxmWX4zTLo_frU6Pa7eqglkMZcEcK9xe&hl=en&sa=X&ved=2ahUKEwiwmoaj84D6AhWWkIkEHfHKDhUQoip6BAhREAM',
                               fit: BoxFit.cover,
                             ),
                           ),
@@ -461,9 +468,15 @@ class CategoryCard extends StatelessWidget {
                         child: SizedBox(
                           height: 50,
                           width: 50,
-                          child: Image.network(
-                            'https://www.google.com/maps/uv?pb=!1s0x89e82b9897a768f9:0x2853132db2dacf1b!3m1!7e115!4shttps://lh5.googleusercontent.com/p/AF1QipPYj58DyJv2NTqWJItryUFImbcTUfqe67FHBrur%3Dw168-h160-k-no!5sdown+diner+-+Google+Search!15zQ2dJZ0FRPT0&imagekey=!1e10!2sAF1QipPYj58DyJv2NTqWJItryUFImbcTUfqe67FHBrur&hl=en&sa=X&ved=2ahUKEwjwieGP9ID6AhVslokEHRRnBuIQoip6BAhnEAM',
+                          child: CachedNetworkImage(
+                            imageUrl:
+                                'https://www.google.com/maps/uv?pb=!1s0x89e82b9897a768f9:0x2853132db2dacf1b!3m1!7e115!4shttps://lh5.googleusercontent.com/p/AF1QipPYj58DyJv2NTqWJItryUFImbcTUfqe67FHBrur%3Dw168-h160-k-no!5sdown+diner+-+Google+Search!15zQ2dJZ0FRPT0&imagekey=!1e10!2sAF1QipPYj58DyJv2NTqWJItryUFImbcTUfqe67FHBrur&hl=en&sa=X&ved=2ahUKEwjwieGP9ID6AhVslokEHRRnBuIQoip6BAhnEAM',
                             fit: BoxFit.cover,
+                            placeholder: (context, url) {
+                              return LoadingAnimationWidget.discreteCircle(
+                                  color: Theme.of(context).primaryColor,
+                                  size: 18.0);
+                            },
                           ),
                         ),
                       ),
@@ -580,7 +593,7 @@ class BlankCategoryCard extends StatelessWidget {
                   minVerticalPadding: 30.0,
                   onTap: () {
                     //context.read<SavedPlacesBloc>().add(LoadPlaces());
-                    // context.go('/category-page');
+                    // context.go('/placeList-page');
                     showDialog(
                       context: context,
                       builder: (context) {
@@ -655,10 +668,10 @@ class BlankCategoryCard extends StatelessWidget {
 }
 
 class SampleCategoryCard extends StatelessWidget {
-  final PlaceList category;
+  final PlaceList placeList;
   const SampleCategoryCard({
     Key? key,
-    required this.category,
+    required this.placeList,
   }) : super(key: key);
 
   @override
@@ -681,7 +694,7 @@ class SampleCategoryCard extends StatelessWidget {
                     minVerticalPadding: 24.0,
                     onTap: () {
                       //context.read<SavedPlacesBloc>().add(LoadPlaces());
-                      // context.go('/category-page');
+                      // context.go('/placeList-page');
                       showDialog(
                         context: context,
                         builder: (context) {
@@ -698,14 +711,14 @@ class SampleCategoryCard extends StatelessWidget {
                       crossAxisAlignment: WrapCrossAlignment.center,
                       spacing: 10.0,
                       children: [
-                        category.icon != null
+                        placeList.icon != null
                             ? Icon(
-                                category.icon,
+                                placeList.icon,
                                 size: 16,
                               )
                             : const SizedBox(),
                         Text(
-                          category.name,
+                          placeList.name,
                           style: Theme.of(context)
                               .textTheme
                               .titleMedium!

@@ -1,6 +1,7 @@
 import 'package:bubble_bottom_bar/bubble_bottom_bar.dart';
 import 'package:flex_color_scheme/flex_color_scheme.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 class MainBottomNavBar extends StatefulWidget {
   const MainBottomNavBar({super.key});
@@ -22,6 +23,16 @@ class _MainBottomNavBarState extends State<MainBottomNavBar> {
     setState(() {
       currentIndex = index!;
     });
+    switch (index) {
+      case 0:
+        break;
+      case 1:
+        context.go('/');
+        break;
+      case 2:
+        break;
+      default:
+    }
   }
 
   @override

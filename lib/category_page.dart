@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flex_color_scheme/flex_color_scheme.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -11,6 +12,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_place/google_place.dart';
 import 'package:leggo/bloc/bloc/place_search_bloc.dart';
+import 'package:leggo/bloc/saved_categories/bloc/saved_lists_bloc.dart';
 import 'package:leggo/bloc/saved_places/bloc/saved_places_bloc.dart';
 import 'package:leggo/model/place.dart';
 import 'package:leggo/widgets/main_bottom_navbar.dart';
@@ -78,28 +80,32 @@ class _CategoryPageState extends State<CategoryPage> {
                     title: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Wrap(
-                          spacing: 12.0,
-                          crossAxisAlignment: WrapCrossAlignment.center,
-                          children: [
-                            const Icon(FontAwesomeIcons.egg),
-                            Text(
-                              'Breakfast',
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .titleLarge!
-                                  .copyWith(fontWeight: FontWeight.bold),
-                            ),
-                          ],
-                        ),
+                        LoadingAnimationWidget.prograssiveDots(
+                            color: Theme.of(context).primaryColor, size: 18.0),
                         Stack(
                           clipBehavior: Clip.none,
                           children: [
                             CircleAvatar(
                               child: ClipOval(
-                                child: Image.network(
-                                  'https://scontent-lga3-1.xx.fbcdn.net/v/t39.30808-6/305213660_5298775460244393_3700270719083305575_n.jpg?_nc_cat=103&ccb=1-7&_nc_sid=09cbfe&_nc_ohc=bMWpIPCteosAX8qjwkc&_nc_ht=scontent-lga3-1.xx&oh=00_AT86-u9G7umbF3INUcptE50pu8BtGUPBzycr9727gmiR4w&oe=632405F2',
+                                child: CachedNetworkImage(
+                                  imageUrl:
+                                      'https://scontent-lga3-1.xx.fbcdn.net/v/t39.30808-6/305213660_5298775460244393_3700270719083305575_n.jpg?_nc_cat=103&ccb=1-7&_nc_sid=09cbfe&_nc_ohc=xo3NVRcwnp4AX8fjAuD&_nc_ht=scontent-lga3-1.xx&oh=00_AT_Q4ml8IkUtWFFpd6OVaCeNaTaWkaOkWyNYfnhj5dWlfQ&oe=632BEEF2',
                                   fit: BoxFit.cover,
+                                  errorWidget: (context, url, error) {
+                                    return Container(
+                                      child:
+                                          const SizedBox(child: Text('Error')),
+                                    );
+                                  },
+                                  placeholder: (context, url) {
+                                    return Center(
+                                      child:
+                                          LoadingAnimationWidget.discreteCircle(
+                                              color: Theme.of(context)
+                                                  .primaryColor,
+                                              size: 30.0),
+                                    );
+                                  },
                                 ),
                               ),
                             ),
@@ -107,9 +113,25 @@ class _CategoryPageState extends State<CategoryPage> {
                               right: 30,
                               child: CircleAvatar(
                                 child: ClipOval(
-                                  child: Image.network(
-                                    'https://scontent-lga3-1.xx.fbcdn.net/v/t1.6435-9/193213907_4419559838077181_2959395753433319266_n.jpg?_nc_cat=107&ccb=1-7&_nc_sid=09cbfe&_nc_ohc=rkR7hr7w5fAAX_2k6sX&_nc_ht=scontent-lga3-1.xx&oh=00_AT_JTX03j8CNcJ0tdmD4iY7tY_Z8lJiv7Zv5DVgNlWIfAw&oe=63444DA4',
+                                  child: CachedNetworkImage(
+                                    imageUrl:
+                                        'https://scontent-lga3-1.xx.fbcdn.net/v/t1.6435-9/193213907_4419559838077181_2959395753433319266_n.jpg?_nc_cat=107&ccb=1-7&_nc_sid=09cbfe&_nc_ohc=rkR7hr7w5fAAX_2k6sX&_nc_ht=scontent-lga3-1.xx&oh=00_AT_JTX03j8CNcJ0tdmD4iY7tY_Z8lJiv7Zv5DVgNlWIfAw&oe=63444DA4',
                                     fit: BoxFit.cover,
+                                    errorWidget: (context, url, error) {
+                                      return Container(
+                                        child: const SizedBox(
+                                            child: Text('Error')),
+                                      );
+                                    },
+                                    placeholder: (context, url) {
+                                      return Center(
+                                        child: LoadingAnimationWidget
+                                            .discreteCircle(
+                                                color: Theme.of(context)
+                                                    .primaryColor,
+                                                size: 30.0),
+                                      );
+                                    },
                                   ),
                                 ),
                               ),
@@ -183,7 +205,7 @@ class _CategoryPageState extends State<CategoryPage> {
                           children: [
                             const Icon(FontAwesomeIcons.egg),
                             Text(
-                              'Breakfast',
+                              state.placeList.name,
                               style: Theme.of(context)
                                   .textTheme
                                   .titleLarge!
@@ -197,7 +219,7 @@ class _CategoryPageState extends State<CategoryPage> {
                             CircleAvatar(
                               child: ClipOval(
                                 child: Image.network(
-                                  'https://scontent-lga3-1.xx.fbcdn.net/v/t39.30808-6/305213660_5298775460244393_3700270719083305575_n.jpg?_nc_cat=103&ccb=1-7&_nc_sid=09cbfe&_nc_ohc=bMWpIPCteosAX8qjwkc&_nc_ht=scontent-lga3-1.xx&oh=00_AT86-u9G7umbF3INUcptE50pu8BtGUPBzycr9727gmiR4w&oe=632405F2',
+                                  'https://scontent-lga3-1.xx.fbcdn.net/v/t39.30808-6/305213660_5298775460244393_3700270719083305575_n.jpg?_nc_cat=103&ccb=1-7&_nc_sid=09cbfe&_nc_ohc=xo3NVRcwnp4AX8fjAuD&_nc_ht=scontent-lga3-1.xx&oh=00_AT_Q4ml8IkUtWFFpd6OVaCeNaTaWkaOkWyNYfnhj5dWlfQ&oe=632BEEF2',
                                   fit: BoxFit.cover,
                                 ),
                               ),
@@ -295,12 +317,21 @@ class _SearchPlacesSheetState extends State<SearchPlacesSheet> {
                   textFieldConfiguration: TextFieldConfiguration(
                       autofocus: true,
                       decoration: InputDecoration(
+                          enabledBorder: OutlineInputBorder(
+                              borderSide: BorderSide(
+                                  color: Theme.of(context).primaryColor),
+                              borderRadius: BorderRadius.circular(50.0)),
+                          focusedBorder: OutlineInputBorder(
+                              borderSide: BorderSide(
+                                  color: Theme.of(context).primaryColor,
+                                  width: 3.0),
+                              borderRadius: BorderRadius.circular(50.0)),
                           contentPadding: const EdgeInsets.all(0),
                           filled: true,
                           fillColor:
                               Theme.of(context).chipTheme.backgroundColor,
                           border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(25)),
+                              borderRadius: BorderRadius.circular(50)),
                           hintText: 'Search Places...',
                           prefixIcon: const Icon(Icons.search_rounded))),
                   suggestionsCallback: (pattern) async {
@@ -329,7 +360,7 @@ class _SearchPlacesSheetState extends State<SearchPlacesSheet> {
                     // await scrollController.animateTo(1.5,
                     //     duration: const Duration(milliseconds: 500),
                     //     curve: Curves.easeOut);
-                    await scrollableController!.animateTo(0.7,
+                    await scrollableController!.animateTo(0.8,
                         duration: const Duration(milliseconds: 150),
                         curve: Curves.easeOutBack);
 
@@ -338,6 +369,8 @@ class _SearchPlacesSheetState extends State<SearchPlacesSheet> {
                 ),
               ),
               BlocBuilder<PlaceSearchBloc, PlaceSearchState>(
+                buildWhen: (previous, current) =>
+                    previous.detailsResult != current.detailsResult,
                 builder: (context, state) {
                   if (state.status == Status.initial) {
                     return const SizedBox();
@@ -372,44 +405,52 @@ class _SearchPlacesSheetState extends State<SearchPlacesSheet> {
                                   Padding(
                                     padding: const EdgeInsets.symmetric(
                                         vertical: 8.0),
-                                    child: FutureBuilder(
-                                        future: getPhotos(placeDetails),
-                                        builder: (context, snapshot) {
-                                          if (snapshot.hasData) {
-                                            return AspectRatio(
-                                              aspectRatio: 16 / 9,
-                                              child: Image.memory(
-                                                snapshot.data!,
-                                                fit: BoxFit.cover,
-                                              ),
-                                            );
-                                          } else {
-                                            return AspectRatio(
-                                              aspectRatio: 16 / 9,
-                                              child: Center(
-                                                child: Animate(
-                                                  onPlay: (controller) {
-                                                    controller.repeat();
-                                                  },
-                                                  effects: const [
-                                                    ShimmerEffect(
-                                                        duration: Duration(
-                                                            seconds: 2))
-                                                  ],
-                                                  child: Container(
-                                                    height: 300,
-                                                    width:
-                                                        MediaQuery.of(context)
+                                    child: BlocBuilder<PlaceSearchBloc,
+                                        PlaceSearchState>(
+                                      buildWhen: (previous, current) =>
+                                          previous.detailsResult !=
+                                          current.detailsResult,
+                                      builder: (context, state) {
+                                        return FutureBuilder(
+                                            future: getPhotos(placeDetails),
+                                            builder: (context, snapshot) {
+                                              if (snapshot.hasData) {
+                                                return AspectRatio(
+                                                  aspectRatio: 16 / 9,
+                                                  child: Image.memory(
+                                                    snapshot.data!,
+                                                    fit: BoxFit.cover,
+                                                  ),
+                                                );
+                                              } else {
+                                                return AspectRatio(
+                                                  aspectRatio: 16 / 9,
+                                                  child: Center(
+                                                    child: Animate(
+                                                      onPlay: (controller) {
+                                                        controller.repeat();
+                                                      },
+                                                      effects: const [
+                                                        ShimmerEffect(
+                                                            duration: Duration(
+                                                                seconds: 2))
+                                                      ],
+                                                      child: Container(
+                                                        height: 300,
+                                                        width: MediaQuery.of(
+                                                                context)
                                                             .size
                                                             .width,
-                                                    color: Theme.of(context)
-                                                        .primaryColor,
+                                                        color: Theme.of(context)
+                                                            .primaryColor,
+                                                      ),
+                                                    ),
                                                   ),
-                                                ),
-                                              ),
-                                            );
-                                          }
-                                        }),
+                                                );
+                                              }
+                                            });
+                                      },
+                                    ),
                                   ),
                                   OutlinedButton.icon(
                                       style: OutlinedButton.styleFrom(
@@ -418,17 +459,23 @@ class _SearchPlacesSheetState extends State<SearchPlacesSheet> {
                                       icon: const Icon(Icons.web_rounded,
                                           size: 18),
                                       label: const Text('Visit Website')),
-                                  Wrap(
-                                    spacing: 4.0,
-                                    crossAxisAlignment:
-                                        WrapCrossAlignment.center,
-                                    children: [
-                                      const Icon(
-                                        Icons.place_rounded,
-                                        size: 18,
+                                  Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 4.0),
+                                    child: FittedBox(
+                                      child: Wrap(
+                                        spacing: 4.0,
+                                        crossAxisAlignment:
+                                            WrapCrossAlignment.center,
+                                        children: [
+                                          const Icon(
+                                            Icons.place_rounded,
+                                            size: 18,
+                                          ),
+                                          Text(placeDetails.formattedAddress!),
+                                        ],
                                       ),
-                                      Text(placeDetails.formattedAddress!),
-                                    ],
+                                    ),
                                   ),
                                   Padding(
                                     padding: const EdgeInsets.all(8.0),
@@ -475,29 +522,45 @@ class _SearchPlacesSheetState extends State<SearchPlacesSheet> {
                             child: ElevatedButton.icon(
                                 onPressed: () {
                                   print('Place Added: ${placeDetails.name}');
-
+                                  context
+                                      .read<SavedListsBloc>()
+                                      .add(UpdateSavedLists());
                                   context.read<SavedPlacesBloc>().add(AddPlace(
+                                      placeList: context
+                                          .read<SavedPlacesBloc>()
+                                          .state
+                                          .placeList!,
                                       place: Place(
-                                          rating: placeDetails.rating!,
+                                          googlePlaceId:
+                                              placeDetails.placeId ?? '',
+                                          website: placeDetails.website ?? '',
+                                          closingTime: placeDetails
+                                                  .openingHours?.openNow
+                                                  .toString() ??
+                                              '',
+                                          review:
+                                              placeDetails.reviews![0].text ??
+                                                  '',
+                                          rating: placeDetails.rating ?? 0,
                                           name: placeDetails.name!,
                                           address:
-                                              placeDetails.formattedAddress!,
+                                              placeDetails.formattedAddress ??
+                                                  '',
                                           description: placeDetails.reviews !=
                                                   null
                                               ? placeDetails.reviews![0].text
-                                              : null,
+                                              : '',
                                           city:
                                               '${placeDetails.addressComponents![2].shortName}, ${placeDetails.addressComponents![6].shortName}',
                                           type: placeDetails.types![0],
-                                          mainPhoto: placeDetails.photos != null
-                                              ? placeDetails
-                                                  .photos!.first.photoReference!
-                                              : null)));
+                                          mainPhoto: placeDetails
+                                              .photos!.first.photoReference!)));
                                   Navigator.pop(context);
                                 },
                                 icon:
                                     const Icon(Icons.add_location_alt_outlined),
-                                label: const Text('Add to Breakfast Ideas')),
+                                label: Text(
+                                    'Add to ${context.read<SavedPlacesBloc>().state.placeList!.name}')),
                           ),
                         ],
                       ),
@@ -596,7 +659,8 @@ class _PlaceCardState extends State<PlaceCard> {
   final GooglePlace googlePlace =
       GooglePlace(dotenv.env['GOOGLE_PLACES_API_KEY']!);
   Future<Uint8List?> getPhotos(String photoReference) async {
-    var photo = await googlePlace.photos.get(photoReference, 1080, 1920);
+    Uint8List? photo = await googlePlace.photos.get(photoReference, 1080, 1920);
+
     return photo;
   }
 
@@ -604,171 +668,215 @@ class _PlaceCardState extends State<PlaceCard> {
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
-      child: Card(
-        //color: FlexColor.deepBlueDarkSecondaryContainer.withOpacity(0.10),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 4.0),
-          child: ListTile(
-            visualDensity: const VisualDensity(vertical: 4),
-            shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12.0)),
-            contentPadding:
-                const EdgeInsets.symmetric(horizontal: 12.0, vertical: 10.0),
-            //tileColor: Colors.white,
-            leading: ClipRRect(
-              borderRadius: BorderRadius.circular(12.0),
-              child: SizedBox(
-                height: 100,
-                width: 100,
-                child: widget.memoryImage != null
-                    ? FutureBuilder(
-                        future: getPhotos(widget.memoryImage!),
-                        builder: (context, snapshot) {
-                          var data = snapshot;
-                          if (snapshot.connectionState !=
-                              ConnectionState.done) {
-                            return Center(
-                              child: LoadingAnimationWidget.discreteCircle(
-                                  color: Theme.of(context).primaryColor,
-                                  size: 30.0),
-                            );
-                          }
-                          if (!snapshot.hasData) {
-                            return Image.network(
-                              widget.imageUrl!,
-                              fit: BoxFit.cover,
-                            );
-                            return const Center(
-                              child: CircularProgressIndicator(),
-                            );
-                          } else {
-                            return Image.memory(
-                              snapshot.data!,
-                              fit: BoxFit.cover,
-                            );
-                          }
-                        },
-                      )
-                    : Image.network(
-                        widget.imageUrl!,
-                        fit: BoxFit.cover,
-                      ),
-              ),
-            ),
-            title: Padding(
-              padding: const EdgeInsets.symmetric(vertical: 2.0),
-              child: Wrap(
-                //spacing: 24.0,
-                alignment: WrapAlignment.spaceBetween,
-                crossAxisAlignment: WrapCrossAlignment.center,
-                children: [
-                  Text(
-                    widget.placeName,
-                    style: Theme.of(context)
-                        .textTheme
-                        .titleMedium!
-                        .copyWith(fontWeight: FontWeight.bold),
-                  ),
-                  Wrap(
-                    spacing: 5.0,
-                    crossAxisAlignment: WrapCrossAlignment.center,
-                    children: [
-                      const Icon(
-                        Icons.location_pin,
-                        size: 13,
-                      ),
-                      Text(
-                        widget.placeLocation,
-                        style: Theme.of(context)
-                            .textTheme
-                            .bodySmall!
-                            .copyWith(fontWeight: FontWeight.bold),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ),
-            subtitle: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
+      child: LimitedBox(
+        maxWidth: 375,
+        maxHeight: 200,
+        child: Card(
+          //color: FlexColor.deepBlueDarkSecondaryContainer.withOpacity(0.10),
+          child: Padding(
+            padding: const EdgeInsets.only(right: 4.0),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
               mainAxisSize: MainAxisSize.min,
               children: [
-                Wrap(
-                  crossAxisAlignment: WrapCrossAlignment.center,
-                  alignment: WrapAlignment.spaceBetween,
-                  children: [
-                    Row(
+                Padding(
+                  padding: const EdgeInsets.only(right: 4.0),
+                  child: SizedBox(
+                    width: 120,
+                    height: 175,
+                    child: Expanded(
+                        child: FittedBox(
+                      fit: BoxFit.cover,
+                      clipBehavior: Clip.hardEdge,
+                      child: CachedNetworkImage(
+                        imageUrl:
+                            'https://maps.googleapis.com/maps/api/place/photo?maxwidth=1080&maxheight=1920&photo_reference=${widget.place.mainPhoto}&key=${dotenv.get('GOOGLE_PLACES_API_KEY')}',
+                        fit: BoxFit.cover,
+                        errorWidget: (context, error, stackTrace) {
+                          return Container(
+                            child: const SizedBox(child: Text('Error')),
+                          );
+                        },
+                      ),
+                    )),
+                  ),
+                ),
+                Flexible(
+                  flex: 2,
+                  child: ListTile(
+                    visualDensity: const VisualDensity(vertical: 4),
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12.0)),
+                    contentPadding: const EdgeInsets.symmetric(
+                        horizontal: 12.0, vertical: 4.0),
+                    //tileColor: Colors.white,
+
+                    title: Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 4.0),
+                      child: Wrap(
+                        //spacing: 24.0,
+                        alignment: WrapAlignment.spaceBetween,
+                        crossAxisAlignment: WrapCrossAlignment.center,
+                        children: [
+                          Text(
+                            widget.placeName,
+                            style: Theme.of(context)
+                                .textTheme
+                                .titleMedium!
+                                .copyWith(fontWeight: FontWeight.bold),
+                          ),
+                          Wrap(
+                            spacing: 5.0,
+                            crossAxisAlignment: WrapCrossAlignment.center,
+                            children: [
+                              const Icon(
+                                Icons.location_pin,
+                                size: 13,
+                              ),
+                              Text(
+                                widget.place.city,
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .bodySmall!
+                                    .copyWith(),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+                    subtitle: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        Text(
-                          'Open \'Til ${widget.closingTime}',
-                          style: Theme.of(context).textTheme.bodySmall,
+                        Wrap(
+                          alignment: WrapAlignment.spaceBetween,
+                          crossAxisAlignment: WrapCrossAlignment.center,
+                          children: [
+                            FutureBuilder(
+                                future: googlePlace.details
+                                    .get(widget.place.googlePlaceId),
+                                builder: (context, snapshot) {
+                                  var data = snapshot.data;
+                                  if (data == null) {
+                                    return const SizedBox();
+                                  } else {
+                                    if (data.result!.openingHours!.openNow ==
+                                        true) {
+                                      return Wrap(
+                                        crossAxisAlignment:
+                                            WrapCrossAlignment.center,
+                                        spacing: 6.0,
+                                        children: [
+                                          const CircleAvatar(
+                                            radius: 3,
+                                            backgroundColor: Colors.lightGreen,
+                                          ),
+                                          Text(
+                                            'Open Now',
+                                            style: Theme.of(context)
+                                                .textTheme
+                                                .bodySmall!
+                                                .copyWith(
+                                                    fontWeight:
+                                                        FontWeight.bold),
+                                          ),
+                                        ],
+                                      );
+                                    } else {
+                                      return Wrap(
+                                          crossAxisAlignment:
+                                              WrapCrossAlignment.center,
+                                          spacing: 6.0,
+                                          children: [
+                                            const CircleAvatar(
+                                              radius: 3,
+                                              backgroundColor: Colors.red,
+                                            ),
+                                            Text(
+                                              'Closed Now',
+                                              style: Theme.of(context)
+                                                  .textTheme
+                                                  .bodySmall!
+                                                  .copyWith(
+                                                      fontWeight:
+                                                          FontWeight.bold),
+                                            ),
+                                          ]);
+                                    }
+                                  }
+                                }),
+                            widget.ratingsTotal != null
+                                ? SizedBox(
+                                    height: 28,
+                                    child: FittedBox(
+                                      child: Chip(
+                                        backgroundColor: Colors.transparent,
+                                        labelPadding:
+                                            const EdgeInsets.symmetric(
+                                                horizontal: 12.0),
+                                        visualDensity: VisualDensity.compact,
+                                        label: Wrap(
+                                            crossAxisAlignment:
+                                                WrapCrossAlignment.center,
+                                            spacing: 8.0,
+                                            children: [
+                                              RatingBar.builder(
+                                                  itemSize: 18.0,
+                                                  initialRating:
+                                                      widget.place.rating!,
+                                                  allowHalfRating: true,
+                                                  ignoreGestures: true,
+                                                  itemBuilder:
+                                                      (context, index) {
+                                                    return const Icon(
+                                                      Icons.star,
+                                                      size: 18.0,
+                                                      color: Colors.amber,
+                                                    );
+                                                  },
+                                                  onRatingUpdate: (rating) {}),
+                                              Text(widget.ratingsTotal
+                                                  .toString())
+                                            ]),
+                                      ),
+                                    ),
+                                  )
+                                : SizedBox(
+                                    height: 28,
+                                    child: FittedBox(
+                                      child: Chip(
+                                        labelPadding:
+                                            const EdgeInsets.symmetric(
+                                                horizontal: 12.0),
+                                        visualDensity: VisualDensity.compact,
+                                        label: Wrap(
+                                            crossAxisAlignment:
+                                                WrapCrossAlignment.center,
+                                            spacing: 8.0,
+                                            children: const [
+                                              Icon(
+                                                Icons.star,
+                                                size: 18.0,
+                                                color: Colors.amber,
+                                              ),
+                                              Text('5.0')
+                                            ]),
+                                      ),
+                                    ),
+                                  ),
+                          ],
                         ),
-                        const SizedBox(
-                          width: 6.0,
-                        ),
-                        const CircleAvatar(
-                          radius: 3,
-                          backgroundColor: Colors.lightGreen,
-                        ),
-                        const SizedBox(
-                          width: 12.0,
-                        ),
+                        widget.placeDescription != null
+                            ? Text(
+                                widget.placeDescription!,
+                                maxLines: 3,
+                              )
+                            : Container()
                       ],
                     ),
-                    widget.ratingsTotal != null
-                        ? SizedBox(
-                            height: 28,
-                            child: FittedBox(
-                              child: Chip(
-                                labelPadding: const EdgeInsets.symmetric(
-                                    horizontal: 12.0),
-                                visualDensity: VisualDensity.compact,
-                                label: Wrap(
-                                    crossAxisAlignment:
-                                        WrapCrossAlignment.center,
-                                    spacing: 8.0,
-                                    children: [
-                                      const Icon(
-                                        Icons.star,
-                                        size: 18.0,
-                                        color: Colors.amber,
-                                      ),
-                                      Text(widget.ratingsTotal.toString())
-                                    ]),
-                              ),
-                            ),
-                          )
-                        : SizedBox(
-                            height: 28,
-                            child: FittedBox(
-                              child: Chip(
-                                labelPadding: const EdgeInsets.symmetric(
-                                    horizontal: 12.0),
-                                visualDensity: VisualDensity.compact,
-                                label: Wrap(
-                                    crossAxisAlignment:
-                                        WrapCrossAlignment.center,
-                                    spacing: 8.0,
-                                    children: const [
-                                      Icon(
-                                        Icons.star,
-                                        size: 18.0,
-                                        color: Colors.amber,
-                                      ),
-                                      Text('5.0')
-                                    ]),
-                              ),
-                            ),
-                          )
-                  ],
+                  ),
                 ),
-                widget.placeDescription != null
-                    ? Text(
-                        widget.placeDescription!,
-                        maxLines: 3,
-                      )
-                    : Container()
               ],
             ),
           ),
