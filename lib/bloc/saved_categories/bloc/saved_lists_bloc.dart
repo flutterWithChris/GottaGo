@@ -5,15 +5,12 @@ import 'package:equatable/equatable.dart';
 import 'package:leggo/model/place_list.dart';
 import 'package:leggo/repository/place_list_repository.dart';
 
-import '../../../model/user.dart';
-
 part 'saved_lists_event.dart';
 part 'saved_lists_state.dart';
 
 class SavedListsBloc extends Bloc<SavedListsEvent, SavedListsState> {
   final PlaceListRepository _placeListRepository;
   int placeCount = 0;
-  List<User> contributors = [];
   //StreamSubscription<PlaceList> _placeListSubscription;
   SavedListsBloc({required PlaceListRepository placeListRepository})
       : _placeListRepository = placeListRepository,
@@ -27,16 +24,12 @@ class SavedListsBloc extends Bloc<SavedListsEvent, SavedListsState> {
     on<SavedListsEvent>((event, emit) async {
       if (event is LoadSavedLists) {
         myPlaceLists.clear();
-        contributors.clear();
 
         // Get Place List & Fetch Contributors
         placeListRepository.getPlaceLists().listen((placeList) async {
           placeCount =
               await placeListRepository.getPlaceListItemCount(placeList);
           myPlaceLists.add(placeList.copyWith(placeCount: placeCount));
-          placeListRepository.getListContributors(placeList).listen((user) {
-            contributors.add(user);
-          });
         });
 
         await Future.delayed(const Duration(milliseconds: 500), () {});

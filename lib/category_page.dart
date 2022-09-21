@@ -1,4 +1,5 @@
 import 'package:avatar_stack/avatar_stack.dart';
+import 'package:avatar_stack/positions.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flex_color_scheme/flex_color_scheme.dart';
 import 'package:flutter/foundation.dart';
@@ -107,8 +108,7 @@ class _CategoryPageState extends State<CategoryPage> {
             }
 
             if (state is SavedPlacesLoaded) {
-              List<User> contributors =
-                  context.watch<SavedListsBloc>().contributors;
+              List<User> contributors = state.contributors;
               List<String> contributorAvatars = [];
               for (User user in contributors) {
                 contributorAvatars.add(user.profilePicture);
@@ -166,20 +166,19 @@ class _CategoryPageState extends State<CategoryPage> {
                             ),
                           ],
                         ),
-                        Stack(
-                          children: [
-                            AvatarStack(
-                              borderWidth: 2.0,
-                              borderColor:
-                                  Theme.of(context).chipTheme.backgroundColor,
-                              width: 80,
-                              height: 80,
-                              avatars: [
-                                for (User user in contributors)
-                                  CachedNetworkImageProvider(
-                                      user.profilePicture),
-                              ],
-                            ),
+                        AvatarStack(
+                          settings: RestrictedPositions(
+                              align: StackAlign.right,
+                              laying: StackLaying.first),
+                          borderWidth: 2.0,
+                          borderColor:
+                              Theme.of(context).chipTheme.backgroundColor,
+                          width: 70,
+                          height: 80,
+                          avatars: [
+                            for (User user in contributors.reversed)
+                              CachedNetworkImageProvider(user.profilePicture,
+                                  maxHeight: 80),
                           ],
                         ),
                       ],
@@ -525,19 +524,6 @@ class _SearchPlacesSheetState extends State<SearchPlacesSheet> {
   }
 }
 
-// RichText(
-//                       text: TextSpan(
-
-//                           children: [
-//                             TextSpan(text: 'Add to'),
-//                             TextSpan(
-//                                 text: ' Breakfast Ideas',
-//                                 style: TextStyle(
-//                                   fontWeight: FontWeight.bold,
-//                                 ))
-//                           ]),
-//                     )
-
 extension StringExtension on String {
   String capitalizeString() {
     return "${this[0].toUpperCase()}${substring(1).toLowerCase()}";
@@ -553,7 +539,7 @@ class GoButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return SliverToBoxAdapter(
       child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 16.0),
+        padding: const EdgeInsets.only(top: 24.0, bottom: 16.0),
         child: FractionallySizedBox(
           widthFactor: 0.65,
           child: ElevatedButton(
