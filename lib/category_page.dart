@@ -177,8 +177,7 @@ class _CategoryPageState extends State<CategoryPage> {
                           height: 80,
                           avatars: [
                             for (User user in contributors.reversed)
-                              CachedNetworkImageProvider(user.profilePicture,
-                                  maxHeight: 80),
+                              CachedNetworkImageProvider(user.profilePicture),
                           ],
                         ),
                       ],
