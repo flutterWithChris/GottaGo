@@ -174,7 +174,7 @@ class _CategoryPageState extends State<CategoryPage> {
                           borderColor:
                               Theme.of(context).chipTheme.backgroundColor,
                           width: 70,
-                          height: 80,
+                          height: 40,
                           avatars: [
                             for (User user in contributors.reversed)
                               CachedNetworkImageProvider(user.profilePicture),
