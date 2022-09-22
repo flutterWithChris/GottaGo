@@ -15,6 +15,7 @@ class SavedPlacesBloc extends Bloc<SavedPlacesEvent, SavedPlacesState> {
         super(SavedPlacesLoading()) {
     final List<Place> savedPlaces = [];
     List<User> contributors = [];
+    User? listOwner;
     on<SavedPlacesEvent>((event, emit) async {
       // TODO: implement event handler
       if (event is LoadPlaces) {
@@ -27,8 +28,12 @@ class SavedPlacesBloc extends Bloc<SavedPlacesEvent, SavedPlacesState> {
         placeListRepository.getListContributors(event.placeList).listen((user) {
           contributors.add(user);
         });
+        placeListRepository.getListOwner(event.placeList).listen((user) {
+          listOwner = user;
+        });
         await Future.delayed(const Duration(milliseconds: 500));
         emit(SavedPlacesLoaded(
+            listOwner: listOwner!,
             places: savedPlaces,
             placeList: event.placeList,
             contributors: contributors));

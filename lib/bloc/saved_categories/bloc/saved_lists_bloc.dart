@@ -16,6 +16,7 @@ class SavedListsBloc extends Bloc<SavedListsEvent, SavedListsState> {
       : _placeListRepository = placeListRepository,
         super(SavedListsLoading()) {
     List<PlaceList> myPlaceLists = [];
+    List<PlaceList> sharedPlaceLists = [];
 
     // _placeListSubscription =
     //     placeListRepository.getPlaceLists().listen((placeList) {
@@ -26,14 +27,20 @@ class SavedListsBloc extends Bloc<SavedListsEvent, SavedListsState> {
         myPlaceLists.clear();
 
         // Get Place List & Fetch Contributors
-        placeListRepository.getPlaceLists().listen((placeList) async {
+        placeListRepository.getMyPlaceLists().listen((placeList) async {
           placeCount =
               await placeListRepository.getPlaceListItemCount(placeList);
           myPlaceLists.add(placeList.copyWith(placeCount: placeCount));
         });
+        placeListRepository.getSharedPlaceLists().listen((placeList) async {
+          placeCount =
+              await placeListRepository.getPlaceListItemCount(placeList);
+          sharedPlaceLists.add(placeList.copyWith(placeCount: placeCount));
+        });
 
         await Future.delayed(const Duration(milliseconds: 500), () {});
-        emit(SavedListsLoaded(placeLists: myPlaceLists));
+        emit(SavedListsLoaded(
+            placeLists: myPlaceLists, sharedPlaceLists: sharedPlaceLists));
       }
       if (event is AddList) {
         await placeListRepository.createPlaceList(event.placeList);

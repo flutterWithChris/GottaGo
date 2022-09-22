@@ -5,13 +5,13 @@ class User {
   final String name;
   final String email;
   final String profilePicture;
-  // final List<PlaceList>? placeLists;
+  final List<String>? placeListIds;
   const User({
     this.id,
     required this.name,
     required this.email,
     required this.profilePicture,
-    //  this.placeLists,
+    this.placeListIds,
   });
 
   User copyWith({
@@ -19,14 +19,14 @@ class User {
     String? name,
     String? email,
     String? profilePicture,
-    // List<PlaceList>? placeLists,
+    final List<String>? placeListIds,
   }) {
     return User(
       id: id ?? this.id,
       name: name ?? this.name,
       email: email ?? this.email,
       profilePicture: profilePicture ?? this.profilePicture,
-      //   placeLists: placeLists ?? this.placeLists,
+      placeListIds: placeListIds ?? this.placeListIds,
     );
   }
 
@@ -36,7 +36,7 @@ class User {
       name: snap['name'],
       email: snap['email'],
       profilePicture: snap['profilePicture'],
-      //   placeLists: snap['placeLists'] as List<PlaceList>,
+      placeListIds: List.from(snap['placeListIds']),
     );
   }
 

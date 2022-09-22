@@ -1,6 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:go_router/go_router.dart';
 import 'package:leggo/bloc/saved_places/bloc/saved_places_bloc.dart';
 import 'package:leggo/model/place_list.dart';
@@ -58,20 +59,24 @@ class CategoryCard extends StatelessWidget {
                     context.go('/home/placeList-page');
                   },
                   contentPadding: const EdgeInsets.symmetric(
-                      vertical: 12.0, horizontal: 24.0),
+                      vertical: 16.0, horizontal: 24.0),
                   minLeadingWidth: 20,
                   title: Padding(
-                    padding: const EdgeInsets.only(bottom: 8.0),
+                    padding: const EdgeInsets.only(bottom: 4.0),
                     child: Wrap(
                       crossAxisAlignment: WrapCrossAlignment.center,
-                      spacing: 10.0,
+                      spacing: 8.0,
                       children: [
                         placeList.icon != null
                             ? Icon(
                                 placeList.icon,
                                 size: 18,
                               )
-                            : const SizedBox(),
+                            : Icon(
+                                FontAwesomeIcons.earthAmericas,
+                                size: 16,
+                                color: Theme.of(context).iconTheme.color,
+                              ),
                         Text(
                           placeList.name,
                           style: Theme.of(context)
@@ -83,8 +88,18 @@ class CategoryCard extends StatelessWidget {
                     ),
                   ),
                   subtitle: Padding(
-                    padding: const EdgeInsets.only(left: 24.0),
-                    child: Text('${placeList.placeCount} Saved Places'),
+                    padding: const EdgeInsets.only(left: 23.0),
+                    child: Wrap(
+                      children: [
+                        Text.rich(TextSpan(children: [
+                          TextSpan(
+                              text: '${placeList.placeCount} ',
+                              style:
+                                  const TextStyle(fontWeight: FontWeight.bold)),
+                          const TextSpan(text: ' Saved Places'),
+                        ])),
+                      ],
+                    ),
                   ),
                   leading: Padding(
                     padding: const EdgeInsets.only(left: 16.0, top: 8.0),

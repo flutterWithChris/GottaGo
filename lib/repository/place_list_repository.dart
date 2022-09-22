@@ -15,20 +15,9 @@ class PlaceListRepository {
 
   Future<void> createPlaceList(PlaceList placeList) async {
     final auth.User firebaseUser = auth.FirebaseAuth.instance.currentUser!;
-    await _firebaseFirestore
-        .collection('users')
-        .doc(firebaseUser.uid)
-        .collection('place_lists')
-        .doc(placeList.name)
-        .set(placeList.toDocument());
-    await _firebaseFirestore
-        .collection('users')
-        .doc(firebaseUser.uid)
-        .collection('place_lists')
-        .doc(placeList.name)
-        .collection('contributors')
-        .doc(firebaseUser.uid)
-        .set({
+    DocumentReference doc = _firebaseFirestore.collection('place_lists').doc();
+    await doc.set(placeList.toDocument());
+    await doc.collection('contributors').doc(firebaseUser.uid).set({
       'name': firebaseUser.displayName,
       'profileIcon': firebaseUser.photoURL ?? ''
     });
@@ -44,10 +33,8 @@ class PlaceListRepository {
     await Future.delayed(const Duration(milliseconds: 500));
     if (invitedUser is User) {
       await _firebaseFirestore
-          .collection('users')
-          .doc(firebaseUser.uid)
           .collection('place_lists')
-          .doc(placeList.name)
+          .doc(placeList.placeListId)
           .collection('contributors')
           .doc(userId)
           .update({
@@ -70,11 +57,9 @@ class PlaceListRepository {
     Future.delayed(const Duration(milliseconds: 500));
 
     return _firebaseFirestore
-        .collection('users')
-        .doc(firebaseUser.uid)
         .collection('place_lists')
-        .doc(placeList.name)
-        .collection('contributors')
+        .doc(placeList.placeListId)
+        .collection('contributorIds')
         .snapshots()
         .switchMap(((snapshot) {
       final references = snapshot.docs;
@@ -84,6 +69,22 @@ class PlaceListRepository {
           .snapshots()
           .map((snap) => User.fromSnapshot(snap))));
     }));
+  }
+
+  Stream<User> getListOwner(PlaceList placeList) {
+    final auth.User firebaseUser = auth.FirebaseAuth.instance.currentUser!;
+    User? invitedUser;
+    UserRepository userRepository = UserRepository();
+    userRepository.getUser(firebaseUser.uid).listen((user) {
+      invitedUser = user;
+    });
+    Future.delayed(const Duration(milliseconds: 500));
+
+    return _firebaseFirestore
+        .collection('users')
+        .doc(placeList.listOwnerId)
+        .snapshots()
+        .map((snap) => User.fromSnapshot(snap));
   }
 
   Future<void> removeContributorFromList(
@@ -97,10 +98,8 @@ class PlaceListRepository {
     await Future.delayed(const Duration(milliseconds: 500));
     if (invitedUser is User) {
       await _firebaseFirestore
-          .collection('users')
-          .doc(firebaseUser.uid)
           .collection('place_lists')
-          .doc(placeList.name)
+          .doc(placeList.placeListId)
           .collection('contributors')
           .doc(userId)
           .delete();
@@ -110,10 +109,8 @@ class PlaceListRepository {
   Future<void> addPlaceToList(Place place, PlaceList placeList) async {
     final auth.User firebaseUser = auth.FirebaseAuth.instance.currentUser!;
     _firebaseFirestore
-        .collection('users')
-        .doc(firebaseUser.uid)
         .collection('place_lists')
-        .doc(placeList.name)
+        .doc(placeList.placeListId)
         .collection('places')
         .doc(place.name)
         .set(place.toDocument());
@@ -123,19 +120,15 @@ class PlaceListRepository {
     final auth.User firebaseUser = auth.FirebaseAuth.instance.currentUser!;
 
     return _firebaseFirestore
-        .collection('users')
-        .doc(firebaseUser.uid)
         .collection('place_lists')
-        .doc(placeList.name)
+        .doc(placeList.placeListId)
         .collection('places')
         .snapshots()
         .switchMap(((snapshot) {
       final references = snapshot.docs;
       return MergeStream(references.map((snap) => _firebaseFirestore
-          .collection('users')
-          .doc(firebaseUser.uid)
           .collection('place_lists')
-          .doc(placeList.name)
+          .doc(placeList.placeListId)
           .collection('places')
           .doc(snap.id)
           .snapshots()
@@ -143,19 +136,33 @@ class PlaceListRepository {
     }));
   }
 
-  Stream<PlaceList> getPlaceLists() {
+  Stream<PlaceList> getMyPlaceLists() {
     final auth.User firebaseUser = auth.FirebaseAuth.instance.currentUser!;
 
     return _firebaseFirestore
-        .collection('users')
-        .doc(firebaseUser.uid)
         .collection('place_lists')
+        .where('listOwnerId', isEqualTo: firebaseUser.uid)
         .snapshots()
         .switchMap(((snapshot) {
       final references = snapshot.docs;
       return MergeStream(references.map((snap) => _firebaseFirestore
-          .collection('users')
-          .doc(firebaseUser.uid)
+          .collection('place_lists')
+          .doc(snap.id)
+          .snapshots()
+          .map((snap) => PlaceList.fromSnapshot(snap))));
+    }));
+  }
+
+  Stream<PlaceList> getSharedPlaceLists() {
+    final auth.User firebaseUser = auth.FirebaseAuth.instance.currentUser!;
+
+    return _firebaseFirestore
+        .collection('place_lists')
+        .where('contributorIds', arrayContains: firebaseUser.uid)
+        .snapshots()
+        .switchMap(((snapshot) {
+      final references = snapshot.docs;
+      return MergeStream(references.map((snap) => _firebaseFirestore
           .collection('place_lists')
           .doc(snap.id)
           .snapshots()
@@ -167,10 +174,8 @@ class PlaceListRepository {
     final auth.User firebaseUser = auth.FirebaseAuth.instance.currentUser!;
 
     return _firebaseFirestore
-        .collection('users')
-        .doc(firebaseUser.uid)
         .collection('place_lists')
-        .doc(placeList.name)
+        .doc(placeList.placeListId)
         .collection('places')
         .get()
         .then((value) => value.size);
