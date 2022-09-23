@@ -17,10 +17,6 @@ class PlaceListRepository {
     final auth.User firebaseUser = auth.FirebaseAuth.instance.currentUser!;
     DocumentReference doc = _firebaseFirestore.collection('place_lists').doc();
     await doc.set(placeList.toDocument());
-    await doc.collection('contributors').doc(firebaseUser.uid).set({
-      'name': firebaseUser.displayName,
-      'profileIcon': firebaseUser.photoURL ?? ''
-    });
   }
 
   Future<User?> addContributorToList(PlaceList placeList, String userId) async {
@@ -47,7 +43,7 @@ class PlaceListRepository {
     }
   }
 
-  Stream<User> getListContributors(PlaceList placeList) {
+  Stream<User>? getListContributors(PlaceList placeList) {
     final auth.User firebaseUser = auth.FirebaseAuth.instance.currentUser!;
     User? invitedUser;
     UserRepository userRepository = UserRepository();
@@ -56,19 +52,24 @@ class PlaceListRepository {
     });
     Future.delayed(const Duration(milliseconds: 500));
 
-    return _firebaseFirestore
+    Future<List<dynamic>> contributorIds = _firebaseFirestore
         .collection('place_lists')
         .doc(placeList.placeListId)
-        .collection('contributorIds')
-        .snapshots()
-        .switchMap(((snapshot) {
-      final references = snapshot.docs;
-      return MergeStream(references.map((snap) => _firebaseFirestore
-          .collection('users')
-          .doc(snap.id)
-          .snapshots()
-          .map((snap) => User.fromSnapshot(snap))));
-    }));
+        .get()
+        .then((value) => value.get('contributorIds') as List);
+
+    if (placeList.contributorIds![0] != '') {
+      for (String id in placeList.contributorIds!) {
+        return _firebaseFirestore
+            .collection('users')
+            .doc(id)
+            .snapshots()
+            .map((snap) => User.fromSnapshot(snap));
+      }
+    } else {
+      return null;
+    }
+    return null;
   }
 
   Stream<User> getListOwner(PlaceList placeList) {

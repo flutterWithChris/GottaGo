@@ -20,6 +20,8 @@ import 'package:leggo/model/place_list.dart';
 import 'package:leggo/model/user.dart';
 import 'package:leggo/widgets/lists/invite_dialog.dart';
 import 'package:leggo/widgets/main_bottom_navbar.dart';
+import 'package:leggo/widgets/places/add_place_card.dart';
+import 'package:leggo/widgets/places/blank_place_card.dart';
 import 'package:leggo/widgets/places/place_card.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:reorderables/reorderables.dart';
@@ -74,12 +76,50 @@ class _CategoryPageState extends State<CategoryPage> {
           },
         ),
         body: BlocBuilder<SavedPlacesBloc, SavedPlacesState>(
+          buildWhen: (previous, current) =>
+              previous.placeList != current.placeList,
           builder: (context, state) {
             print('Current State: ${state.toString()}');
             if (state is SavedPlacesLoading || state is SavedPlacesUpdated) {
+              rows = [
+                for (int i = 0; i < 5; i++)
+                  Opacity(
+                    opacity: 0.4,
+                    child: Animate(
+                      effects: const [
+                        FadeEffect(),
+                        ShimmerEffect(
+                            duration: Duration(milliseconds: 500),
+                            curve: Curves.easeInOut),
+                        SlideEffect(
+                            duration: Duration(milliseconds: 300),
+                            curve: Curves.elasticOut,
+                            begin: Offset(-0.5, 0),
+                            end: Offset(0, 0))
+                      ],
+                      child: const BlankPlaceCard(),
+                    ),
+                  )
+              ];
+              rows.insert(
+                0,
+                Padding(
+                  padding: const EdgeInsets.only(top: 8.0),
+                  child: Animate(
+                    effects: const [
+                      SlideEffect(
+                        curve: Curves.easeInOutBack,
+                        // begin: Offset(-0.5, 0),
+                      )
+                    ],
+                    child: const AddPlaceCard(),
+                  ),
+                ),
+              );
               return CustomScrollView(
                 slivers: [
                   SliverAppBar.medium(
+                    expandedHeight: 125,
                     // leading: Padding(
                     //   padding: const EdgeInsets.symmetric(horizontal: 8.0),
                     //   child: IconButton(
@@ -88,10 +128,11 @@ class _CategoryPageState extends State<CategoryPage> {
                     //   ),
                     // ),
                     title: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      mainAxisSize: MainAxisSize.min,
                       children: [
-                        LoadingAnimationWidget.prograssiveDots(
-                            color: Theme.of(context).primaryColor, size: 18.0),
+                        LoadingAnimationWidget.beat(
+                            color: Theme.of(context).primaryIconTheme.color!,
+                            size: 20.0),
                       ],
                     ),
                     actions: [
@@ -99,12 +140,14 @@ class _CategoryPageState extends State<CategoryPage> {
                           onPressed: () {}, icon: const Icon(Icons.more_vert)),
                     ],
                   ),
-                  SliverFillRemaining(
-                    child: Center(
-                      child: LoadingAnimationWidget.beat(
-                          color: Theme.of(context).primaryColor, size: 40.0),
-                    ),
-                  ),
+                  ReorderableSliverList(
+                    enabled: false,
+                    onReorder: (oldIndex, newIndex) {},
+                    delegate: ReorderableSliverChildBuilderDelegate(
+                        childCount: rows.length, (context, index) {
+                      return rows[index];
+                    }),
+                  )
                 ],
               );
             }
@@ -131,11 +174,10 @@ class _CategoryPageState extends State<CategoryPage> {
                 });
               }
 
-              rows = [
-                for (Place place in state.places)
-                  Animate(
-                    effects: const [SlideEffect(curve: Curves.easeInOutBack)],
-                    child: PlaceCard(
+              if (state.places.isNotEmpty) {
+                rows = [
+                  for (Place place in state.places)
+                    PlaceCard(
                         place: place,
                         imageUrl: place.mainPhoto,
                         memoryImage: place.mainPhoto,
@@ -143,9 +185,25 @@ class _CategoryPageState extends State<CategoryPage> {
                         ratingsTotal: place.rating,
                         placeDescription: place.description,
                         closingTime: place.closingTime,
-                        placeLocation: place.city),
-                  )
-              ];
+                        placeLocation: place.city)
+                ];
+              } else {
+                rows = [
+                  for (int i = 0; i < 5; i++)
+                    const Opacity(
+                      opacity: 0.4,
+                      child: BlankPlaceCard(),
+                    )
+                ];
+                rows.insert(
+                  0,
+                  const Padding(
+                    padding: EdgeInsets.only(top: 8.0),
+                    child: AddPlaceCard(),
+                  ),
+                );
+              }
+
               return CustomScrollView(
                 controller: mainScrollController,
                 slivers: [
@@ -154,12 +212,14 @@ class _CategoryPageState extends State<CategoryPage> {
                       contributors: contributors,
                       placeList: state.placeList,
                       scrollController: mainScrollController),
-                  const GoButton(),
+                  state.places.isNotEmpty
+                      ? const GoButton()
+                      : const SliverToBoxAdapter(child: SizedBox()),
                   ReorderableSliverList(
                     enabled: false,
                     onReorder: _onReorder,
                     delegate: ReorderableSliverChildBuilderDelegate(
-                        childCount: state.places.length, (context, index) {
+                        childCount: rows.length, (context, index) {
                       return rows[index];
                     }),
                   )
@@ -194,11 +254,10 @@ class CategoryPageAppBar extends StatefulWidget {
 }
 
 class _CategoryPageAppBarState extends State<CategoryPageAppBar> {
-  EdgeInsets avatarStackPadding = const EdgeInsets.all(0);
+  EdgeInsets avatarStackPadding = const EdgeInsets.only(right: 4.0);
 
   @override
   void initState() {
-    // TODO: implement initState
     if (widget.scrollController.hasClients) {
       widget.scrollController.addListener(
         () {
@@ -209,7 +268,7 @@ class _CategoryPageAppBarState extends State<CategoryPageAppBar> {
           } else if (widget.scrollController.hasClients &&
               widget.scrollController.offset < 70) {
             setState(() {
-              avatarStackPadding = const EdgeInsets.only(right: 0.0);
+              avatarStackPadding = const EdgeInsets.only(right: 4.0);
             });
           }
         },
@@ -233,30 +292,43 @@ class _CategoryPageAppBarState extends State<CategoryPageAppBar> {
       title: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Animate(
-            effects: const [
-              // FadeEffect(),
-              RotateEffect(
-                  curve: Curves.easeOutBack,
-                  duration: Duration(milliseconds: 500),
-                  begin: -0.25,
-                  end: 0.0,
-                  alignment: Alignment.centerLeft)
-            ],
-            child: Wrap(
-              spacing: 12.0,
-              crossAxisAlignment: WrapCrossAlignment.center,
-              children: [
-                const Icon(FontAwesomeIcons.plane),
-                Text(
+          Wrap(
+            spacing: 16.0,
+            crossAxisAlignment: WrapCrossAlignment.center,
+            children: [
+              Animate(effects: const [
+                FadeEffect(),
+                SlideEffect(
+                    duration: Duration(milliseconds: 1000),
+                    curve: Curves.easeOutQuint,
+                    begin: Offset(-0.5, 0),
+                    end: Offset(0, 0))
+                // RotateEffect(
+                //     curve: Curves.easeOutBack,
+                //     duration: Duration(milliseconds: 500),
+                //     begin: -0.25,
+                //     end: 0.0,
+                //     alignment: Alignment.centerLeft)
+              ], child: const Icon(FontAwesomeIcons.plane)),
+              Animate(
+                effects: const [
+                  FadeEffect(),
+                  RotateEffect(
+                      curve: Curves.easeOutBack,
+                      duration: Duration(milliseconds: 500),
+                      begin: -0.25,
+                      end: 0.0,
+                      alignment: Alignment.centerLeft)
+                ],
+                child: Text(
                   widget.placeList.name,
                   style: Theme.of(context)
                       .textTheme
                       .titleLarge!
                       .copyWith(fontWeight: FontWeight.bold),
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
           AnimatedPadding(
             duration: const Duration(milliseconds: 250),
@@ -266,8 +338,8 @@ class _CategoryPageAppBarState extends State<CategoryPageAppBar> {
               effects: const [
                 FadeEffect(),
                 SlideEffect(
-                    duration: Duration(milliseconds: 300),
-                    curve: Curves.easeInOutQuint,
+                    duration: Duration(milliseconds: 700),
+                    curve: Curves.easeOutQuart,
                     begin: Offset(0.5, 0.0),
                     end: Offset(0.0, 0.0)),
               ],
@@ -349,6 +421,7 @@ class _SearchPlacesSheetState extends State<SearchPlacesSheet> {
   @override
   void initState() {
     scrollableController = DraggableScrollableController();
+
     super.initState();
   }
 
@@ -371,9 +444,12 @@ class _SearchPlacesSheetState extends State<SearchPlacesSheet> {
                 padding:
                     const EdgeInsets.symmetric(horizontal: 4.0, vertical: 8.0),
                 child: TypeAheadField(
+                  // keepSuggestionsOnSuggestionSelected: true,
                   textFieldConfiguration: TextFieldConfiguration(
+                      style: const TextStyle(color: Colors.black87),
                       autofocus: true,
                       decoration: InputDecoration(
+                          hintStyle: const TextStyle(color: Colors.black87),
                           enabledBorder: OutlineInputBorder(
                               borderSide: BorderSide(
                                   color: Theme.of(context).primaryColor),
@@ -401,7 +477,7 @@ class _SearchPlacesSheetState extends State<SearchPlacesSheet> {
                   itemBuilder: (context, itemData) {
                     return Padding(
                       padding: const EdgeInsets.symmetric(
-                          horizontal: 4.0, vertical: 2.0),
+                          horizontal: 4.0, vertical: 4.0),
                       child: ListTile(
                         title: Text(itemData.description!),
                       ),
@@ -416,15 +492,22 @@ class _SearchPlacesSheetState extends State<SearchPlacesSheet> {
                     // await scrollController.animateTo(1.5,
                     //     duration: const Duration(milliseconds: 500),
                     //     curve: Curves.easeOut);
-                    await scrollableController!.animateTo(0.8,
-                        duration: const Duration(milliseconds: 150),
-                        curve: Curves.easeOutBack);
+                    // await scrollableController!.animateTo(0.8,
+                    //     duration: const Duration(milliseconds: 150),
+                    //     curve: Curves.easeOutBack);
 
                     if (!widget.mounted) return;
                   },
                 ),
               ),
-              BlocBuilder<PlaceSearchBloc, PlaceSearchState>(
+              BlocConsumer<PlaceSearchBloc, PlaceSearchState>(
+                listener: (context, state) {
+                  if (state.status == Status.loaded) {
+                    scrollableController!.animateTo(0.72,
+                        duration: const Duration(milliseconds: 150),
+                        curve: Curves.easeOutBack);
+                  }
+                },
                 buildWhen: (previous, current) =>
                     previous.detailsResult != current.detailsResult,
                 builder: (context, state) {
@@ -470,40 +553,44 @@ class _SearchPlacesSheetState extends State<SearchPlacesSheet> {
                                         return FutureBuilder(
                                             future: getPhotos(placeDetails),
                                             builder: (context, snapshot) {
-                                              if (snapshot.hasData) {
-                                                return AspectRatio(
-                                                  aspectRatio: 16 / 9,
-                                                  child: Image.memory(
-                                                    snapshot.data!,
-                                                    fit: BoxFit.cover,
-                                                  ),
-                                                );
-                                              } else {
-                                                return AspectRatio(
-                                                  aspectRatio: 16 / 9,
-                                                  child: Center(
-                                                    child: Animate(
-                                                      onPlay: (controller) {
-                                                        controller.repeat();
-                                                      },
-                                                      effects: const [
-                                                        ShimmerEffect(
-                                                            duration: Duration(
-                                                                seconds: 2))
-                                                      ],
-                                                      child: Container(
-                                                        height: 300,
-                                                        width: MediaQuery.of(
-                                                                context)
-                                                            .size
-                                                            .width,
-                                                        color: Theme.of(context)
-                                                            .primaryColor,
+                                              return AspectRatio(
+                                                aspectRatio: 16 / 9,
+                                                child: CachedNetworkImage(
+                                                  placeholder: (context, url) {
+                                                    return AspectRatio(
+                                                      aspectRatio: 16 / 9,
+                                                      child: Center(
+                                                        child: Animate(
+                                                          onPlay: (controller) {
+                                                            controller.repeat();
+                                                          },
+                                                          effects: const [
+                                                            ShimmerEffect(
+                                                                duration:
+                                                                    Duration(
+                                                                        seconds:
+                                                                            2))
+                                                          ],
+                                                          child: Container(
+                                                            height: 300,
+                                                            width:
+                                                                MediaQuery.of(
+                                                                        context)
+                                                                    .size
+                                                                    .width,
+                                                            color: Theme.of(
+                                                                    context)
+                                                                .primaryColor,
+                                                          ),
+                                                        ),
                                                       ),
-                                                    ),
-                                                  ),
-                                                );
-                                              }
+                                                    );
+                                                  },
+                                                  imageUrl:
+                                                      'https://maps.googleapis.com/maps/api/place/photo?maxwidth=1080&maxheight=1920&photo_reference=${placeDetails.photos![0].photoReference}&key=${dotenv.get('GOOGLE_PLACES_API_KEY')}',
+                                                  fit: BoxFit.cover,
+                                                ),
+                                              );
                                             });
                                       },
                                     ),

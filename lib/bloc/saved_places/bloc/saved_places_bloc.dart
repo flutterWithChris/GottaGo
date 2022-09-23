@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:leggo/model/place.dart';
@@ -10,14 +12,15 @@ part 'saved_places_state.dart';
 
 class SavedPlacesBloc extends Bloc<SavedPlacesEvent, SavedPlacesState> {
   final PlaceListRepository _placeListRepository;
+  Stream<User>? contributorStream;
   SavedPlacesBloc({required PlaceListRepository placeListRepository})
       : _placeListRepository = placeListRepository,
         super(SavedPlacesLoading()) {
     final List<Place> savedPlaces = [];
     List<User> contributors = [];
     User? listOwner;
+
     on<SavedPlacesEvent>((event, emit) async {
-      // TODO: implement event handler
       if (event is LoadPlaces) {
         emit(SavedPlacesLoading());
         savedPlaces.clear();
@@ -25,13 +28,18 @@ class SavedPlacesBloc extends Bloc<SavedPlacesEvent, SavedPlacesState> {
         placeListRepository.getPlaces(event.placeList).listen((place) {
           savedPlaces.add(place);
         });
-        placeListRepository.getListContributors(event.placeList).listen((user) {
-          contributors.add(user);
-        });
+        if (event.placeList.contributorIds![0] != '') {
+          placeListRepository
+              .getListContributors(event.placeList)!
+              .listen((user) {
+            contributors.add(user);
+          });
+        }
+
         placeListRepository.getListOwner(event.placeList).listen((user) {
           listOwner = user;
         });
-        await Future.delayed(const Duration(milliseconds: 500));
+        await Future.delayed(const Duration(milliseconds: 600));
         emit(SavedPlacesLoaded(
             listOwner: listOwner!,
             places: savedPlaces,
@@ -58,5 +66,11 @@ class SavedPlacesBloc extends Bloc<SavedPlacesEvent, SavedPlacesState> {
         add(LoadPlaces(placeList: event.placeList));
       }
     });
+  }
+  @override
+  Future<void> close() {
+    // TODO: implement close
+
+    return super.close();
   }
 }
