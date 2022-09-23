@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:leggo/bloc/saved_categories/bloc/saved_lists_bloc.dart';
@@ -67,6 +68,8 @@ class _DeleteListDialogState extends State<DeleteListDialog> {
                         if (deleteConfirmFieldController.text.isNotEmpty) {
                           context.read<SavedListsBloc>().add(RemoveList(
                               placeList: PlaceList(
+                                  listOwnerId:
+                                      FirebaseAuth.instance.currentUser!.uid,
                                   name: deleteConfirmFieldController.text)));
                           Navigator.pop(context);
                         }

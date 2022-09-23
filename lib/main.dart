@@ -9,6 +9,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:leggo/bloc/bloc/auth/bloc/auth_bloc.dart';
+import 'package:leggo/bloc/bloc/invite/bloc/invite_bloc.dart';
 import 'package:leggo/bloc/bloc/place_search_bloc.dart';
 import 'package:leggo/bloc/saved_categories/bloc/saved_lists_bloc.dart';
 import 'package:leggo/bloc/saved_places/bloc/saved_places_bloc.dart';
@@ -19,10 +20,8 @@ import 'package:leggo/login.dart';
 import 'package:leggo/model/place_list.dart';
 import 'package:leggo/random_wheel_page.dart';
 import 'package:leggo/repository/auth_repository.dart';
-
 import 'package:leggo/repository/place_list_repository.dart';
 import 'package:leggo/repository/user_repository.dart';
-
 import 'package:leggo/widgets/lists/blank_category_card.dart';
 import 'package:leggo/widgets/lists/category_card.dart';
 import 'package:leggo/widgets/lists/create_list_dialog.dart';
@@ -88,6 +87,10 @@ class _MyAppState extends State<MyApp> {
             create: (context) => SavedListsBloc(
                 placeListRepository: context.read<PlaceListRepository>())
               ..add(LoadSavedLists()),
+          ),
+          BlocProvider(
+            create: (context) => InviteBloc(
+                placeListRepository: context.read<PlaceListRepository>()),
           ),
         ],
         child: BlocBuilder<AuthBloc, AuthState>(

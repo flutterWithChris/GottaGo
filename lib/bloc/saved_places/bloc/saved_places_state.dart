@@ -13,16 +13,19 @@ class SavedPlacesState extends Equatable {
 class SavedPlacesLoading extends SavedPlacesState {}
 
 class SavedPlacesLoaded extends SavedPlacesState {
+  final User listOwner;
   final List<Place> places;
+  final List<User> contributors;
   @override
   final PlaceList placeList;
-  const SavedPlacesLoaded({
-    required this.places,
-    required this.placeList,
-  });
+  const SavedPlacesLoaded(
+      {required this.places,
+      required this.listOwner,
+      required this.placeList,
+      required this.contributors});
   @override
   // TODO: implement props
-  List<Object> get props => [places, placeList];
+  List<Object> get props => [places, placeList, listOwner, contributors];
 }
 
 class SavedPlacesFailed extends SavedPlacesState {}

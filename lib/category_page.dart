@@ -1,6 +1,6 @@
 import 'package:avatar_stack/avatar_stack.dart';
+import 'package:avatar_stack/positions.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:flex_color_scheme/flex_color_scheme.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/animate.dart';
@@ -16,8 +16,11 @@ import 'package:leggo/bloc/bloc/place_search_bloc.dart';
 import 'package:leggo/bloc/saved_categories/bloc/saved_lists_bloc.dart';
 import 'package:leggo/bloc/saved_places/bloc/saved_places_bloc.dart';
 import 'package:leggo/model/place.dart';
+import 'package:leggo/model/place_list.dart';
 import 'package:leggo/model/user.dart';
+import 'package:leggo/widgets/lists/invite_dialog.dart';
 import 'package:leggo/widgets/main_bottom_navbar.dart';
+import 'package:leggo/widgets/places/place_card.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:reorderables/reorderables.dart';
 
@@ -31,10 +34,15 @@ class CategoryPage extends StatefulWidget {
 class _CategoryPageState extends State<CategoryPage> {
   List<Widget> rows = [];
   List<PlaceCard> placeCards = [];
+  ScrollController mainScrollController = ScrollController();
+
+  @override
+  void initState() {
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
-    final ScrollController mainScrollController = ScrollController();
     final GooglePlace googlePlace =
         GooglePlace(dotenv.env['GOOGLE_PLACES_API_KEY']!);
 
@@ -93,8 +101,8 @@ class _CategoryPageState extends State<CategoryPage> {
                   ),
                   SliverFillRemaining(
                     child: Center(
-                      child: LoadingAnimationWidget.inkDrop(
-                          color: FlexColor.materialDarkSecondaryHc, size: 40.0),
+                      child: LoadingAnimationWidget.beat(
+                          color: Theme.of(context).primaryColor, size: 40.0),
                     ),
                   ),
                 ],
@@ -107,9 +115,10 @@ class _CategoryPageState extends State<CategoryPage> {
             }
 
             if (state is SavedPlacesLoaded) {
-              List<User> contributors =
-                  context.watch<SavedListsBloc>().contributors;
+              List<User> contributors = state.contributors;
               List<String> contributorAvatars = [];
+
+              contributorAvatars.add(state.listOwner.profilePicture);
               for (User user in contributors) {
                 contributorAvatars.add(user.profilePicture);
               }
@@ -140,55 +149,11 @@ class _CategoryPageState extends State<CategoryPage> {
               return CustomScrollView(
                 controller: mainScrollController,
                 slivers: [
-                  SliverAppBar.medium(
-                    expandedHeight: 125,
-                    // leading: Padding(
-                    //   padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                    //   child: IconButton(
-                    //     onPressed: () {},
-                    //     icon: const Icon(Icons.menu),
-                    //   ),
-                    // ),
-                    title: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Wrap(
-                          spacing: 12.0,
-                          crossAxisAlignment: WrapCrossAlignment.center,
-                          children: [
-                            const Icon(FontAwesomeIcons.egg),
-                            Text(
-                              state.placeList.name,
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .titleLarge!
-                                  .copyWith(fontWeight: FontWeight.bold),
-                            ),
-                          ],
-                        ),
-                        Stack(
-                          children: [
-                            AvatarStack(
-                              borderWidth: 2.0,
-                              borderColor:
-                                  Theme.of(context).chipTheme.backgroundColor,
-                              width: 80,
-                              height: 80,
-                              avatars: [
-                                for (User user in contributors)
-                                  CachedNetworkImageProvider(
-                                      user.profilePicture),
-                              ],
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                    actions: [
-                      IconButton(
-                          onPressed: () {}, icon: const Icon(Icons.more_vert)),
-                    ],
-                  ),
+                  CategoryPageAppBar(
+                      listOwner: state.listOwner,
+                      contributors: contributors,
+                      placeList: state.placeList,
+                      scrollController: mainScrollController),
                   const GoButton(),
                   ReorderableSliverList(
                     enabled: false,
@@ -206,6 +171,153 @@ class _CategoryPageState extends State<CategoryPage> {
           },
         ),
       ),
+    );
+  }
+}
+
+class CategoryPageAppBar extends StatefulWidget {
+  const CategoryPageAppBar({
+    Key? key,
+    required this.contributors,
+    required this.placeList,
+    required this.scrollController,
+    required this.listOwner,
+  }) : super(key: key);
+
+  final List<User> contributors;
+  final PlaceList placeList;
+  final User listOwner;
+  final ScrollController scrollController;
+
+  @override
+  State<CategoryPageAppBar> createState() => _CategoryPageAppBarState();
+}
+
+class _CategoryPageAppBarState extends State<CategoryPageAppBar> {
+  EdgeInsets avatarStackPadding = const EdgeInsets.all(0);
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    if (widget.scrollController.hasClients) {
+      widget.scrollController.addListener(
+        () {
+          if (widget.scrollController.offset > 70) {
+            setState(() {
+              avatarStackPadding = const EdgeInsets.only(right: 28.0);
+            });
+          } else if (widget.scrollController.hasClients &&
+              widget.scrollController.offset < 70) {
+            setState(() {
+              avatarStackPadding = const EdgeInsets.only(right: 0.0);
+            });
+          }
+        },
+      );
+    }
+
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return SliverAppBar.medium(
+      expandedHeight: 125,
+      // leading: Padding(
+      //   padding: const EdgeInsets.symmetric(horizontal: 8.0),
+      //   child: IconButton(
+      //     onPressed: () {},
+      //     icon: const Icon(Icons.menu),
+      //   ),
+      // ),
+      title: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Animate(
+            effects: const [
+              // FadeEffect(),
+              RotateEffect(
+                  curve: Curves.easeOutBack,
+                  duration: Duration(milliseconds: 500),
+                  begin: -0.25,
+                  end: 0.0,
+                  alignment: Alignment.centerLeft)
+            ],
+            child: Wrap(
+              spacing: 12.0,
+              crossAxisAlignment: WrapCrossAlignment.center,
+              children: [
+                const Icon(FontAwesomeIcons.plane),
+                Text(
+                  widget.placeList.name,
+                  style: Theme.of(context)
+                      .textTheme
+                      .titleLarge!
+                      .copyWith(fontWeight: FontWeight.bold),
+                ),
+              ],
+            ),
+          ),
+          AnimatedPadding(
+            duration: const Duration(milliseconds: 250),
+            curve: Curves.easeOutSine,
+            padding: avatarStackPadding,
+            child: Animate(
+              effects: const [
+                FadeEffect(),
+                SlideEffect(
+                    duration: Duration(milliseconds: 300),
+                    curve: Curves.easeInOutQuint,
+                    begin: Offset(0.5, 0.0),
+                    end: Offset(0.0, 0.0)),
+              ],
+              child: AvatarStack(
+                settings: RestrictedPositions(
+                    align: StackAlign.right, laying: StackLaying.first),
+                borderWidth: 2.0,
+                borderColor: Theme.of(context).chipTheme.backgroundColor,
+                width: 70,
+                height: 40,
+                avatars: [
+                  CachedNetworkImageProvider(widget.listOwner.profilePicture),
+                  for (User user in widget.contributors.reversed)
+                    CachedNetworkImageProvider(user.profilePicture),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
+      actions: [
+        PopupMenuButton(
+          color: Theme.of(context).scaffoldBackgroundColor,
+          position: PopupMenuPosition.under,
+          itemBuilder: (context) => [
+            PopupMenuItem(
+              onTap: () {
+                WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+                  showDialog(
+                    context: context,
+                    builder: (context) {
+                      return InviteDialog(placeList: widget.placeList);
+                    },
+                  );
+                });
+              },
+              child: Wrap(
+                spacing: 8.0,
+                alignment: WrapAlignment.center,
+                crossAxisAlignment: WrapCrossAlignment.center,
+                children: const [
+                  Icon(Icons.person_add_alt_1_rounded),
+                  Text('Invite Contributor')
+                ],
+              ),
+            ),
+          ],
+          icon: const Icon(Icons.more_vert),
+        ),
+      ],
     );
   }
 }
@@ -269,12 +381,11 @@ class _SearchPlacesSheetState extends State<SearchPlacesSheet> {
                           focusedBorder: OutlineInputBorder(
                               borderSide: BorderSide(
                                   color: Theme.of(context).primaryColor,
-                                  width: 3.0),
+                                  width: 2.0),
                               borderRadius: BorderRadius.circular(50.0)),
                           contentPadding: const EdgeInsets.all(0),
                           filled: true,
-                          fillColor:
-                              Theme.of(context).chipTheme.backgroundColor,
+                          fillColor: Colors.white,
                           border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(50)),
                           hintText: 'Search Places...',
@@ -496,7 +607,7 @@ class _SearchPlacesSheetState extends State<SearchPlacesSheet> {
                                               ? placeDetails.reviews![0].text
                                               : '',
                                           city:
-                                              '${placeDetails.addressComponents![2].shortName}, ${placeDetails.addressComponents![6].shortName}',
+                                              '${placeDetails.addressComponents![0].shortName}',
                                           type: placeDetails.types![0],
                                           mainPhoto: placeDetails
                                               .photos!.first.photoReference!)));
@@ -504,8 +615,19 @@ class _SearchPlacesSheetState extends State<SearchPlacesSheet> {
                                 },
                                 icon:
                                     const Icon(Icons.add_location_alt_outlined),
-                                label: Text(
-                                    'Add to ${context.read<SavedPlacesBloc>().state.placeList!.name}')),
+                                label: Text.rich(TextSpan(
+                                  children: [
+                                    const TextSpan(text: 'Add to '),
+                                    TextSpan(
+                                        text: context
+                                            .read<SavedPlacesBloc>()
+                                            .state
+                                            .placeList!
+                                            .name,
+                                        style: const TextStyle(
+                                            fontWeight: FontWeight.bold)),
+                                  ],
+                                ))),
                           ),
                         ],
                       ),
@@ -525,19 +647,6 @@ class _SearchPlacesSheetState extends State<SearchPlacesSheet> {
   }
 }
 
-// RichText(
-//                       text: TextSpan(
-
-//                           children: [
-//                             TextSpan(text: 'Add to'),
-//                             TextSpan(
-//                                 text: ' Breakfast Ideas',
-//                                 style: TextStyle(
-//                                   fontWeight: FontWeight.bold,
-//                                 ))
-//                           ]),
-//                     )
-
 extension StringExtension on String {
   String capitalizeString() {
     return "${this[0].toUpperCase()}${substring(1).toLowerCase()}";
@@ -553,7 +662,7 @@ class GoButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return SliverToBoxAdapter(
       child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 16.0),
+        padding: const EdgeInsets.only(top: 24.0, bottom: 16.0),
         child: FractionallySizedBox(
           widthFactor: 0.65,
           child: ElevatedButton(
@@ -567,262 +676,6 @@ class GoButton extends StatelessWidget {
             child: const Text(
               'Let\'s Go Somewhere',
               style: TextStyle(fontWeight: FontWeight.bold),
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class PlaceCard extends StatefulWidget {
-  final String? memoryImage;
-  final String? imageUrl;
-  final String placeName;
-  final String? placeDescription;
-  final String? closingTime;
-  final String placeLocation;
-  final double? ratingsTotal;
-  final Place place;
-  const PlaceCard({
-    Key? key,
-    required this.place,
-    this.memoryImage,
-    this.imageUrl,
-    required this.placeName,
-    this.placeDescription,
-    this.closingTime,
-    this.ratingsTotal,
-    required this.placeLocation,
-  }) : super(key: key);
-
-  @override
-  State<PlaceCard> createState() => _PlaceCardState();
-}
-
-class _PlaceCardState extends State<PlaceCard> {
-  final GooglePlace googlePlace =
-      GooglePlace(dotenv.env['GOOGLE_PLACES_API_KEY']!);
-  Future<Uint8List?> getPhotos(String photoReference) async {
-    Uint8List? photo = await googlePlace.photos.get(photoReference, 1080, 1920);
-
-    return photo;
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
-      child: LimitedBox(
-        maxWidth: 375,
-        maxHeight: 200,
-        child: Card(
-          //color: FlexColor.deepBlueDarkSecondaryContainer.withOpacity(0.10),
-          child: Padding(
-            padding: const EdgeInsets.only(right: 4.0),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Padding(
-                  padding: const EdgeInsets.only(right: 4.0),
-                  child: SizedBox(
-                    width: 120,
-                    height: 175,
-                    child: Expanded(
-                        child: FittedBox(
-                      fit: BoxFit.cover,
-                      clipBehavior: Clip.hardEdge,
-                      child: CachedNetworkImage(
-                        imageUrl:
-                            'https://maps.googleapis.com/maps/api/place/photo?maxwidth=1080&maxheight=1920&photo_reference=${widget.place.mainPhoto}&key=${dotenv.get('GOOGLE_PLACES_API_KEY')}',
-                        fit: BoxFit.cover,
-                        errorWidget: (context, error, stackTrace) {
-                          return Container(
-                            child: const SizedBox(child: Text('Error')),
-                          );
-                        },
-                      ),
-                    )),
-                  ),
-                ),
-                Flexible(
-                  flex: 2,
-                  child: ListTile(
-                    visualDensity: const VisualDensity(vertical: 4),
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12.0)),
-                    contentPadding: const EdgeInsets.symmetric(
-                        horizontal: 12.0, vertical: 4.0),
-                    //tileColor: Colors.white,
-
-                    title: Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 4.0),
-                      child: Wrap(
-                        //spacing: 24.0,
-                        alignment: WrapAlignment.spaceBetween,
-                        crossAxisAlignment: WrapCrossAlignment.center,
-                        children: [
-                          Text(
-                            widget.placeName,
-                            style: Theme.of(context)
-                                .textTheme
-                                .titleMedium!
-                                .copyWith(fontWeight: FontWeight.bold),
-                          ),
-                          Wrap(
-                            spacing: 5.0,
-                            crossAxisAlignment: WrapCrossAlignment.center,
-                            children: [
-                              const Icon(
-                                Icons.location_pin,
-                                size: 13,
-                              ),
-                              Text(
-                                widget.place.city,
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .bodySmall!
-                                    .copyWith(),
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-                    ),
-                    subtitle: Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Wrap(
-                          alignment: WrapAlignment.spaceBetween,
-                          crossAxisAlignment: WrapCrossAlignment.center,
-                          children: [
-                            FutureBuilder(
-                                future: googlePlace.details
-                                    .get(widget.place.googlePlaceId),
-                                builder: (context, snapshot) {
-                                  var data = snapshot.data;
-                                  if (data == null) {
-                                    return const SizedBox();
-                                  } else {
-                                    if (data.result!.openingHours!.openNow ==
-                                        true) {
-                                      return Wrap(
-                                        crossAxisAlignment:
-                                            WrapCrossAlignment.center,
-                                        spacing: 6.0,
-                                        children: [
-                                          const CircleAvatar(
-                                            radius: 3,
-                                            backgroundColor: Colors.lightGreen,
-                                          ),
-                                          Text(
-                                            'Open Now',
-                                            style: Theme.of(context)
-                                                .textTheme
-                                                .bodySmall!
-                                                .copyWith(
-                                                    fontWeight:
-                                                        FontWeight.bold),
-                                          ),
-                                        ],
-                                      );
-                                    } else {
-                                      return Wrap(
-                                          crossAxisAlignment:
-                                              WrapCrossAlignment.center,
-                                          spacing: 6.0,
-                                          children: [
-                                            const CircleAvatar(
-                                              radius: 3,
-                                              backgroundColor: Colors.red,
-                                            ),
-                                            Text(
-                                              'Closed Now',
-                                              style: Theme.of(context)
-                                                  .textTheme
-                                                  .bodySmall!
-                                                  .copyWith(
-                                                      fontWeight:
-                                                          FontWeight.bold),
-                                            ),
-                                          ]);
-                                    }
-                                  }
-                                }),
-                            widget.ratingsTotal != null
-                                ? SizedBox(
-                                    height: 28,
-                                    child: FittedBox(
-                                      child: Chip(
-                                        backgroundColor: Colors.transparent,
-                                        labelPadding:
-                                            const EdgeInsets.symmetric(
-                                                horizontal: 12.0),
-                                        visualDensity: VisualDensity.compact,
-                                        label: Wrap(
-                                            crossAxisAlignment:
-                                                WrapCrossAlignment.center,
-                                            spacing: 8.0,
-                                            children: [
-                                              RatingBar.builder(
-                                                  itemSize: 18.0,
-                                                  initialRating:
-                                                      widget.place.rating!,
-                                                  allowHalfRating: true,
-                                                  ignoreGestures: true,
-                                                  itemBuilder:
-                                                      (context, index) {
-                                                    return const Icon(
-                                                      Icons.star,
-                                                      size: 18.0,
-                                                      color: Colors.amber,
-                                                    );
-                                                  },
-                                                  onRatingUpdate: (rating) {}),
-                                              Text(widget.ratingsTotal
-                                                  .toString())
-                                            ]),
-                                      ),
-                                    ),
-                                  )
-                                : SizedBox(
-                                    height: 28,
-                                    child: FittedBox(
-                                      child: Chip(
-                                        labelPadding:
-                                            const EdgeInsets.symmetric(
-                                                horizontal: 12.0),
-                                        visualDensity: VisualDensity.compact,
-                                        label: Wrap(
-                                            crossAxisAlignment:
-                                                WrapCrossAlignment.center,
-                                            spacing: 8.0,
-                                            children: const [
-                                              Icon(
-                                                Icons.star,
-                                                size: 18.0,
-                                                color: Colors.amber,
-                                              ),
-                                              Text('5.0')
-                                            ]),
-                                      ),
-                                    ),
-                                  ),
-                          ],
-                        ),
-                        widget.placeDescription != null
-                            ? Text(
-                                widget.placeDescription!,
-                                maxLines: 3,
-                              )
-                            : Container()
-                      ],
-                    ),
-                  ),
-                ),
-              ],
             ),
           ),
         ),
