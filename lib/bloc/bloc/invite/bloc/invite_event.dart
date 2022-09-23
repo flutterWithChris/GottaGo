@@ -10,10 +10,10 @@ abstract class InviteEvent extends Equatable {
 
 class SendInvite extends InviteEvent {
   @override
-  final Invite invite;
-  const SendInvite({required this.invite});
+  final String userEmail;
+  const SendInvite({required this.userEmail});
   @override
-  List<Object> get props => [invite];
+  List<Object> get props => [userEmail];
 }
 
 class AcceptInvite extends InviteEvent {
