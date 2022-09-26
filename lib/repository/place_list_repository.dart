@@ -163,6 +163,7 @@ class PlaceListRepository {
         .snapshots()
         .switchMap(((snapshot) {
       final references = snapshot.docs;
+
       return MergeStream(references.map((snap) => _firebaseFirestore
           .collection('place_lists')
           .doc(snap.id)
