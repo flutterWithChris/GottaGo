@@ -45,23 +45,19 @@ class _PlaceCardState extends State<BlankPlaceCard> {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 4.0, vertical: 4.0),
       child: ConstrainedBox(
-        constraints: const BoxConstraints(minHeight: 170),
+        constraints: const BoxConstraints(minHeight: 170, maxHeight: 180),
         child: Card(
           clipBehavior: Clip.antiAlias,
           //color: FlexColor.deepBlueDarkSecondaryContainer.withOpacity(0.10),
-          child: Padding(
-            padding: const EdgeInsets.only(right: 4.0),
-            child: Stack(
-              children: [
-                Flex(
-                  direction: Axis.horizontal,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  mainAxisSize: MainAxisSize.min,
+          child: Flex(
+            direction: Axis.horizontal,
+            children: [
+              Flexible(
+                child: Stack(
                   children: [
                     Padding(
                       padding: const EdgeInsets.only(right: 4.0),
-                      child: Expanded(
-                          child: Stack(
+                      child: Stack(
                         alignment: AlignmentDirectional.topEnd,
                         children: [
                           ConstrainedBox(
@@ -116,98 +112,98 @@ class _PlaceCardState extends State<BlankPlaceCard> {
                             ],
                           )
                         ],
-                      )),
-                    ),
-                    Expanded(
-                      flex: 2,
-                      child: Column(
-                        children: [
-                          Padding(
-                            padding: const EdgeInsets.only(
-                              top: 8.0,
-                            ),
-                            child: ListTile(
-                                dense: true,
-                                visualDensity: VisualDensity.compact,
-                                //visualDensity: const VisualDensity(vertical: 4),
-                                shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(12.0)),
-                                // contentPadding: const EdgeInsets.symmetric(
-                                //     horizontal: 12.0, vertical: 4.0),
-                                //tileColor: Colors.white,
-
-                                title: Padding(
-                                  padding: const EdgeInsets.only(bottom: 16.0),
-                                  child: Wrap(
-                                    alignment: WrapAlignment.spaceBetween,
-                                    children: [
-                                      ClipRRect(
-                                        borderRadius: BorderRadius.circular(20),
-                                        child: Container(
-                                            height: 20,
-                                            width: 140,
-                                            color: Colors.grey.shade300),
-                                      )
-                                    ],
-                                  ),
-                                ),
-                                subtitle: Wrap(
-                                  alignment: WrapAlignment.spaceBetween,
-                                  crossAxisAlignment: WrapCrossAlignment.center,
-                                  children: [
-                                    ClipRRect(
-                                      borderRadius: BorderRadius.circular(20),
-                                      child: Container(
-                                          height: 16,
-                                          width: 70,
-                                          color: Colors.grey.shade300),
-                                    ),
-                                    ClipRRect(
-                                      borderRadius: BorderRadius.circular(20),
-                                      child: Container(
-                                          height: 16,
-                                          width: 80,
-                                          color: Colors.grey.shade300),
-                                    )
-                                  ],
-                                )),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.only(
-                                left: 12.0,
-                                right: 12.0,
-                                bottom: 10.0,
-                                top: 24.0),
-                            child: Column(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                ClipRRect(
-                                  borderRadius: BorderRadius.circular(20),
-                                  child: Container(
-                                      height: 18,
-                                      width: 225,
-                                      color: Colors.grey.shade300),
-                                ),
-                                const SizedBox(
-                                  height: 8.0,
-                                ),
-                                ClipRRect(
-                                  borderRadius: BorderRadius.circular(20),
-                                  child: Container(
-                                      height: 18,
-                                      width: 225,
-                                      color: Colors.grey.shade300),
-                                ),
-                              ],
-                            ),
-                          )
-                        ],
                       ),
                     ),
                   ],
                 ),
-              ],
-            ),
+              ),
+              Flexible(
+                flex: 2,
+                child: ConstrainedBox(
+                  constraints: const BoxConstraints(maxWidth: 300),
+                  child: Column(
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.only(
+                          top: 16.0,
+                        ),
+                        child: ListTile(
+                            dense: true,
+                            visualDensity: VisualDensity.compact,
+                            //visualDensity: const VisualDensity(vertical: 4),
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12.0)),
+                            // contentPadding: const EdgeInsets.symmetric(
+                            //     horizontal: 12.0, vertical: 4.0),
+                            //tileColor: Colors.white,
+
+                            title: Padding(
+                              padding: const EdgeInsets.only(bottom: 16.0),
+                              child: Wrap(
+                                alignment: WrapAlignment.spaceBetween,
+                                children: [
+                                  ClipRRect(
+                                    borderRadius: BorderRadius.circular(20),
+                                    child: Container(
+                                        height: 20,
+                                        width: 140,
+                                        color: Colors.grey.shade300),
+                                  )
+                                ],
+                              ),
+                            ),
+                            subtitle: Wrap(
+                              alignment: WrapAlignment.spaceBetween,
+                              crossAxisAlignment: WrapCrossAlignment.center,
+                              children: [
+                                ClipRRect(
+                                  borderRadius: BorderRadius.circular(20),
+                                  child: Container(
+                                      height: 16,
+                                      width: 70,
+                                      color: Colors.grey.shade300),
+                                ),
+                                ClipRRect(
+                                  borderRadius: BorderRadius.circular(20),
+                                  child: Container(
+                                      height: 16,
+                                      width: 80,
+                                      color: Colors.grey.shade300),
+                                )
+                              ],
+                            )),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.only(
+                            left: 12.0, right: 12.0, bottom: 10.0, top: 24.0),
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            ClipRRect(
+                              borderRadius: BorderRadius.circular(20),
+                              child: Container(
+                                  height: 18,
+                                  width: 225,
+                                  color: Colors.grey.shade300),
+                            ),
+                            const SizedBox(
+                              height: 8.0,
+                            ),
+                            ClipRRect(
+                              borderRadius: BorderRadius.circular(20),
+                              child: Container(
+                                  height: 18,
+                                  width: 225,
+                                  color: Colors.grey.shade300),
+                            ),
+                          ],
+                        ),
+                      )
+                    ],
+                  ),
+                ),
+              ),
+            ],
           ),
         ),
       ),

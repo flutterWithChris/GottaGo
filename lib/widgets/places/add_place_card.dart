@@ -6,7 +6,7 @@ import 'package:flutter_animate/animate.dart';
 import 'package:flutter_animate/effects/effects.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:google_place/google_place.dart';
-import 'package:leggo/category_page.dart';
+import 'package:leggo/widgets/places/search_places_sheet.dart';
 
 class AddPlaceCard extends StatefulWidget {
   const AddPlaceCard({
@@ -56,7 +56,7 @@ class _PlaceCardState extends State<AddPlaceCard> {
       child: ClipRRect(
         borderRadius: BorderRadius.circular(20.0),
         child: ConstrainedBox(
-          constraints: const BoxConstraints(minHeight: 170),
+          constraints: const BoxConstraints(minHeight: 170, maxHeight: 180),
           child: InkWell(
             onTap: () {
               showModalBottomSheet(
@@ -75,119 +75,107 @@ class _PlaceCardState extends State<AddPlaceCard> {
               //color: FlexColor.deepBlueDarkSecondaryContainer.withOpacity(0.10),
               child: Padding(
                 padding: const EdgeInsets.only(right: 4.0),
-                child: Stack(
+                child: Flex(
+                  direction: Axis.horizontal,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisSize: MainAxisSize.min,
                   children: [
-                    Flex(
-                      direction: Axis.horizontal,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      mainAxisSize: MainAxisSize.min,
+                    Flexible(
+                        child: Stack(
+                      alignment: AlignmentDirectional.topEnd,
                       children: [
-                        Padding(
-                          padding: const EdgeInsets.only(right: 4.0),
-                          child: Expanded(
-                              child: Stack(
-                            alignment: AlignmentDirectional.topEnd,
-                            children: [
-                              ConstrainedBox(
-                                  constraints: const BoxConstraints(
-                                      minHeight: 170,
-                                      maxHeight: 180,
-                                      minWidth: 120,
-                                      maxWidth: 120),
-                                  child: Container(
-                                    decoration: const BoxDecoration(
-                                        gradient: LinearGradient(stops: [
-                                      0.2,
-                                      0.8
-                                    ], colors: [
-                                      FlexColor.deepBlueDarkSecondary,
-                                      FlexColor.deepBlueLightPrimaryContainer,
-                                    ])),
-                                  )),
-                              Column(
-                                crossAxisAlignment: CrossAxisAlignment.end,
-                                children: [
-                                  Column(
-                                    crossAxisAlignment: CrossAxisAlignment.end,
-                                    children: [
-                                      ClipRRect(
-                                        borderRadius: const BorderRadius.only(
-                                            bottomLeft: Radius.circular(12.0)),
-                                        child: Container(
-                                          alignment:
-                                              AlignmentDirectional.center,
-                                          color: Colors.white.withOpacity(0.9),
-                                          height: 24.0,
-                                          width: 70.0,
-                                          child: const SizedBox(),
-                                        ),
-                                      ),
-                                      ClipRRect(
-                                        borderRadius: const BorderRadius.only(
-                                            bottomLeft: Radius.circular(12.0)),
-                                        child: Container(
-                                            alignment:
-                                                AlignmentDirectional.centerEnd,
-                                            color: Colors.black87,
-                                            height: 20.0,
-                                            width: 50.0,
-                                            child: SizedBox(
-                                              height: 20,
-                                              width: 40,
-                                              child: Padding(
-                                                  padding:
-                                                      const EdgeInsets.only(
-                                                          top: 2.0),
-                                                  child: ClipRRect(
-                                                      borderRadius:
-                                                          BorderRadius.circular(
-                                                              20),
-                                                      child: const SizedBox())),
-                                            )),
-                                      ),
-                                    ],
-                                  )
-                                ],
-                              )
-                            ],
-                          )),
-                        ),
-                        Expanded(
-                            flex: 2,
-                            child: Center(
-                              child: Animate(
-                                effects: const [
-                                  // ShakeEffect(
-                                  //     duration: Duration(seconds: 1), hz: 1),
-                                  ShimmerEffect(
-                                      duration: Duration(milliseconds: 600))
-                                ],
-                                child: ElevatedButton.icon(
-                                    style: ButtonStyle(
-                                        fixedSize: MaterialStateProperty.all(
-                                            const Size(210, 32)),
-                                        foregroundColor:
-                                            MaterialStateProperty.all(
-                                                Colors.white.withOpacity(0.9))),
-                                    onPressed: () {
-                                      showModalBottomSheet(
-                                          backgroundColor: Theme.of(context)
-                                              .scaffoldBackgroundColor
-                                              .withOpacity(0.8),
-                                          isScrollControlled: true,
-                                          context: context,
-                                          builder: (context) {
-                                            return SearchPlacesSheet(
-                                                googlePlace: googlePlace,
-                                                mounted: mounted);
-                                          });
-                                    },
-                                    icon: const Icon(Icons.add_circle_rounded),
-                                    label: const Text('Add Your First Place')),
-                              ),
+                        ConstrainedBox(
+                            constraints: const BoxConstraints(
+                                minHeight: 170,
+                                maxHeight: 180,
+                                minWidth: 120,
+                                maxWidth: 120),
+                            child: Container(
+                              decoration: const BoxDecoration(
+                                  gradient: LinearGradient(stops: [
+                                0.2,
+                                0.8
+                              ], colors: [
+                                FlexColor.deepBlueDarkSecondary,
+                                FlexColor.deepBlueLightPrimaryContainer,
+                              ])),
                             )),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.end,
+                          children: [
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.end,
+                              children: [
+                                ClipRRect(
+                                  borderRadius: const BorderRadius.only(
+                                      bottomLeft: Radius.circular(12.0)),
+                                  child: Container(
+                                    alignment: AlignmentDirectional.center,
+                                    color: Colors.white.withOpacity(0.9),
+                                    height: 24.0,
+                                    width: 70.0,
+                                    child: const SizedBox(),
+                                  ),
+                                ),
+                                ClipRRect(
+                                  borderRadius: const BorderRadius.only(
+                                      bottomLeft: Radius.circular(12.0)),
+                                  child: Container(
+                                      alignment: AlignmentDirectional.centerEnd,
+                                      color: Colors.black87,
+                                      height: 20.0,
+                                      width: 50.0,
+                                      child: SizedBox(
+                                        height: 20,
+                                        width: 40,
+                                        child: Padding(
+                                            padding:
+                                                const EdgeInsets.only(top: 2.0),
+                                            child: ClipRRect(
+                                                borderRadius:
+                                                    BorderRadius.circular(20),
+                                                child: const SizedBox())),
+                                      )),
+                                ),
+                              ],
+                            )
+                          ],
+                        )
                       ],
-                    ),
+                    )),
+                    Flexible(
+                        flex: 2,
+                        child: Center(
+                          child: Animate(
+                            effects: const [
+                              // ShakeEffect(
+                              //     duration: Duration(seconds: 1), hz: 1),
+                              ShimmerEffect(
+                                  duration: Duration(milliseconds: 600))
+                            ],
+                            child: ElevatedButton.icon(
+                                style: ButtonStyle(
+                                    fixedSize: MaterialStateProperty.all(
+                                        const Size(210, 32)),
+                                    foregroundColor: MaterialStateProperty.all(
+                                        Colors.white.withOpacity(0.9))),
+                                onPressed: () {
+                                  showModalBottomSheet(
+                                      backgroundColor: Theme.of(context)
+                                          .scaffoldBackgroundColor
+                                          .withOpacity(0.8),
+                                      isScrollControlled: true,
+                                      context: context,
+                                      builder: (context) {
+                                        return SearchPlacesSheet(
+                                            googlePlace: googlePlace,
+                                            mounted: mounted);
+                                      });
+                                },
+                                icon: const Icon(Icons.add_circle_rounded),
+                                label: const Text('Add Your First Place')),
+                          ),
+                        )),
                   ],
                 ),
               ),

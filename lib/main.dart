@@ -7,14 +7,15 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:go_router/go_router.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:leggo/bloc/bloc/auth/bloc/auth_bloc.dart';
 import 'package:leggo/bloc/bloc/invite/bloc/invite_bloc.dart';
 import 'package:leggo/bloc/bloc/place_search_bloc.dart';
 import 'package:leggo/bloc/saved_categories/bloc/saved_lists_bloc.dart';
 import 'package:leggo/bloc/saved_places/bloc/saved_places_bloc.dart';
 import 'package:leggo/category_page.dart';
+import 'package:leggo/cubit/cubit/cubit/view_place_cubit.dart';
 import 'package:leggo/cubit/cubit/login/login_cubit.dart';
+import 'package:leggo/cubit/cubit/random_wheel_cubit.dart';
 import 'package:leggo/firebase_options.dart';
 import 'package:leggo/login.dart';
 import 'package:leggo/model/place_list.dart';
@@ -92,13 +93,19 @@ class _MyAppState extends State<MyApp> {
             create: (context) => InviteBloc(
                 placeListRepository: context.read<PlaceListRepository>()),
           ),
+          BlocProvider(
+            create: (context) => RandomWheelCubit(),
+          ),
+          BlocProvider(
+            create: (context) => ViewPlaceCubit(),
+          ),
         ],
         child: BlocBuilder<AuthBloc, AuthState>(
           builder: (context, state) {
             bloc = context.read<AuthBloc>();
             return MaterialApp.router(
               theme: FlexThemeData.light(
-                scheme: FlexScheme.deepBlue,
+                scheme: FlexScheme.bahamaBlue,
                 surfaceMode: FlexSurfaceMode.highScaffoldLowSurface,
                 blendLevel: 20,
                 appBarOpacity: 0.95,
@@ -108,12 +115,11 @@ class _MyAppState extends State<MyApp> {
                 ),
                 visualDensity: FlexColorScheme.comfortablePlatformDensity,
                 useMaterial3: true,
-                fontFamily: GoogleFonts.lato().fontFamily,
                 // To use the playground font, add GoogleFonts package and uncomment
                 // fontFamily: GoogleFonts.notoSans().fontFamily,
               ),
               darkTheme: FlexThemeData.dark(
-                scheme: FlexScheme.deepBlue,
+                scheme: FlexScheme.bahamaBlue,
                 surfaceMode: FlexSurfaceMode.highScaffoldLowSurface,
                 blendLevel: 15,
                 appBarOpacity: 0.90,
@@ -123,8 +129,28 @@ class _MyAppState extends State<MyApp> {
                 visualDensity: FlexColorScheme.comfortablePlatformDensity,
                 useMaterial3: true,
                 // To use the playground font, add GoogleFonts package and uncomment
-                fontFamily: GoogleFonts.lato().fontFamily,
+                // fontFamily: GoogleFonts.notoSans().fontFamily,
               ),
+// If you do not have a themeMode switch, uncomment this line
+// to let the device system mode control the theme mode:
+// themeMode: ThemeMode.system,
+
+// If you do not have a themeMode switch, uncomment this line
+// to let the device system mode control the theme mode:
+// themeMode: ThemeMode.system,
+
+// If you do not have a themeMode switch, uncomment this line
+// to let the device system mode control the theme mode:
+// themeMode: ThemeMode.system,
+
+// If you do not have a themeMode switch, uncomment this line
+// to let the device system mode control the theme mode:
+// themeMode: ThemeMode.system,
+
+// If you do not have a themeMode switch, uncomment this line
+// to let the device system mode control the theme mode:
+// themeMode: ThemeMode.system,
+
               // If you do not have a themeMode switch, uncomment this line
               // to let the device system mode control the theme mode:
               themeMode: ThemeMode.system,
