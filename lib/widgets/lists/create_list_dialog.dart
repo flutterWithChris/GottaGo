@@ -31,17 +31,19 @@ class CreateListDialog extends StatelessWidget {
               height: 24.0,
             ),
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20.0),
-              child: TextField(
-                controller: listNameController,
-                autofocus: true,
-                decoration: InputDecoration(
+                padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                child: TextField(
+                  controller: listNameController,
+                  autofocus: true,
+                  decoration: InputDecoration(
                     filled: true,
                     hintText: "ex. Breakfast Ideas",
-                    border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(20.0))),
-              ),
-            ),
+                    focusedBorder: Theme.of(context)
+                        .inputDecorationTheme
+                        .focusedBorder!
+                        .copyWith(borderSide: const BorderSide()),
+                  ),
+                )),
             Padding(
               padding: const EdgeInsets.only(top: 20.0),
               child: ElevatedButton.icon(

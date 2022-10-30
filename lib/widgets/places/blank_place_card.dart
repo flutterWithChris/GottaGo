@@ -1,9 +1,5 @@
-import 'dart:typed_data';
-
 import 'package:flex_color_scheme/flex_color_scheme.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:google_place/google_place.dart';
 
 class BlankPlaceCard extends StatefulWidget {
   const BlankPlaceCard({
@@ -15,14 +11,6 @@ class BlankPlaceCard extends StatefulWidget {
 }
 
 class _PlaceCardState extends State<BlankPlaceCard> {
-  final GooglePlace googlePlace =
-      GooglePlace(dotenv.env['GOOGLE_PLACES_API_KEY']!);
-  Future<Uint8List?> getPhotos(String photoReference) async {
-    Uint8List? photo = await googlePlace.photos.get(photoReference, 1080, 1920);
-
-    return photo;
-  }
-
   titleCase(String string) {
     var splitStr = string.toLowerCase().split(' ');
     for (var i = 0; i < splitStr.length; i++) {

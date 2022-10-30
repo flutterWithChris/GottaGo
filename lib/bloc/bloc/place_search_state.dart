@@ -3,16 +3,18 @@ part of 'place_search_bloc.dart';
 enum Status { initial, loading, loaded, failed }
 
 class PlaceSearchState extends Equatable {
+  List<AutocompletePrediction>? predictions;
   Status status;
   DetailsResult? detailsResult;
-  PlaceSearchState({required this.status, this.detailsResult});
+  PlaceSearchState(
+      {required this.status, this.detailsResult, this.predictions});
 
   factory PlaceSearchState.initial() {
     return PlaceSearchState(status: Status.initial);
   }
 
-  factory PlaceSearchState.loading() {
-    return PlaceSearchState(status: Status.loading);
+  factory PlaceSearchState.loading(List<AutocompletePrediction> predictions) {
+    return PlaceSearchState(status: Status.loading, predictions: predictions);
   }
 
   factory PlaceSearchState.loaded(DetailsResult detailsResult) {

@@ -1,5 +1,3 @@
-import 'dart:typed_data';
-
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
@@ -7,7 +5,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
-import 'package:google_place/google_place.dart';
 import 'package:leggo/bloc/bloc/place_search_bloc.dart';
 import 'package:leggo/category_page.dart';
 
@@ -18,11 +15,9 @@ import '../../model/place.dart';
 class SearchPlacesSheet extends StatefulWidget {
   const SearchPlacesSheet({
     Key? key,
-    required this.googlePlace,
     required this.mounted,
   }) : super(key: key);
 
-  final GooglePlace googlePlace;
   final bool mounted;
 
   @override
@@ -30,13 +25,6 @@ class SearchPlacesSheet extends StatefulWidget {
 }
 
 class _SearchPlacesSheetState extends State<SearchPlacesSheet> {
-  Future<Uint8List?> getPhotos(DetailsResult detailsResult) async {
-    var placeDetails = detailsResult;
-    var photo = await widget.googlePlace.photos
-        .get(placeDetails.photos!.first.photoReference!, 1080, 1920);
-    return photo;
-  }
-
   DraggableScrollableController? scrollableController;
 
   @override
@@ -88,12 +76,11 @@ class _SearchPlacesSheetState extends State<SearchPlacesSheet> {
                           hintText: 'Search Places...',
                           prefixIcon: const Icon(Icons.search_rounded))),
                   suggestionsCallback: (pattern) async {
-                    List<AutocompletePrediction> predictions = [];
-                    if (pattern.isEmpty) return predictions;
-                    var place =
-                        await widget.googlePlace.autocomplete.get(pattern);
-                    predictions = place!.predictions!;
-                    return predictions;
+                    context
+                        .read<PlaceSearchBloc>()
+                        .add(PlaceSearchStarted(searchTerm: pattern));
+
+                    return context.watch<PlaceSearchBloc>().state.predictions!;
                   },
                   itemBuilder: (context, itemData) {
                     return Padding(
@@ -105,11 +92,9 @@ class _SearchPlacesSheetState extends State<SearchPlacesSheet> {
                     );
                   },
                   onSuggestionSelected: (suggestion) async {
-                    var placeDetails = await widget.googlePlace.details
-                        .get(suggestion.placeId!);
-                    placeDetails!.result!.name;
-                    context.read<PlaceSearchBloc>().add(
-                        PlaceSelected(detailsResult: placeDetails.result!));
+                    context
+                        .read<PlaceSearchBloc>()
+                        .add(PlaceSelected(suggestion: suggestion));
                     // await scrollController.animateTo(1.5,
                     //     duration: const Duration(milliseconds: 500),
                     //     curve: Curves.easeOut);
@@ -171,48 +156,40 @@ class _SearchPlacesSheetState extends State<SearchPlacesSheet> {
                                           previous.detailsResult !=
                                           current.detailsResult,
                                       builder: (context, state) {
-                                        return FutureBuilder(
-                                            future: getPhotos(placeDetails),
-                                            builder: (context, snapshot) {
+                                        return AspectRatio(
+                                          aspectRatio: 16 / 9,
+                                          child: CachedNetworkImage(
+                                            placeholder: (context, url) {
                                               return AspectRatio(
                                                 aspectRatio: 16 / 9,
-                                                child: CachedNetworkImage(
-                                                  placeholder: (context, url) {
-                                                    return AspectRatio(
-                                                      aspectRatio: 16 / 9,
-                                                      child: Center(
-                                                        child: Animate(
-                                                          onPlay: (controller) {
-                                                            controller.repeat();
-                                                          },
-                                                          effects: const [
-                                                            ShimmerEffect(
-                                                                duration:
-                                                                    Duration(
-                                                                        seconds:
-                                                                            2))
-                                                          ],
-                                                          child: Container(
-                                                            height: 300,
-                                                            width:
-                                                                MediaQuery.of(
-                                                                        context)
-                                                                    .size
-                                                                    .width,
-                                                            color: Theme.of(
-                                                                    context)
-                                                                .primaryColor,
-                                                          ),
-                                                        ),
-                                                      ),
-                                                    );
-                                                  },
-                                                  imageUrl:
-                                                      'https://maps.googleapis.com/maps/api/place/photo?maxwidth=1080&maxheight=1920&photo_reference=${placeDetails.photos![0].photoReference}&key=${dotenv.get('GOOGLE_PLACES_API_KEY')}',
-                                                  fit: BoxFit.cover,
+                                                child: Center(
+                                                  child: Animate(
+                                                    onPlay: (controller) {
+                                                      controller.repeat();
+                                                    },
+                                                    effects: const [
+                                                      ShimmerEffect(
+                                                          duration: Duration(
+                                                              seconds: 2))
+                                                    ],
+                                                    child: Container(
+                                                      height: 300,
+                                                      width:
+                                                          MediaQuery.of(context)
+                                                              .size
+                                                              .width,
+                                                      color: Theme.of(context)
+                                                          .primaryColor,
+                                                    ),
+                                                  ),
                                                 ),
                                               );
-                                            });
+                                            },
+                                            imageUrl:
+                                                'https://maps.googleapis.com/maps/api/place/photo?maxwidth=1080&maxheight=1920&photo_reference=${placeDetails.photos![0].photoReference}&key=${dotenv.get('GOOGLE_PLACES_API_KEY')}',
+                                            fit: BoxFit.cover,
+                                          ),
+                                        );
                                       },
                                     ),
                                   ),

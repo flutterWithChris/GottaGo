@@ -5,19 +5,19 @@ abstract class SavedListsState extends Equatable {
   SavedListsState({this.placeLists});
 
   @override
-  List<Object> get props => [placeLists!];
+  List<Object?> get props => [placeLists];
 }
 
 class SavedListsLoading extends SavedListsState {}
 
 class SavedListsLoaded extends SavedListsState {
   @override
-  final List<PlaceList> placeLists;
-  final List<PlaceList> sharedPlaceLists;
+  final List<PlaceList>? placeLists;
+  final List<PlaceList>? sharedPlaceLists;
   SavedListsLoaded({required this.placeLists, required this.sharedPlaceLists});
   @override
   // TODO: implement props
-  List<Object> get props => [placeLists, sharedPlaceLists];
+  List<Object?> get props => [placeLists, sharedPlaceLists];
 }
 
 class SavedListsFailed extends SavedListsState {}
