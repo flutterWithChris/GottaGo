@@ -1,44 +1,57 @@
-import 'dart:typed_data';
-
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:google_place/google_place.dart';
-import 'package:meta/meta.dart';
+import 'package:flutter/material.dart';
+
+import 'package:leggo/data/services/places_service.dart';
+import 'package:leggo/model/google_place.dart';
+import 'package:leggo/model/place_search.dart';
+import 'package:rxdart/rxdart.dart';
 
 part 'place_search_event.dart';
 part 'place_search_state.dart';
 
-class PlaceSearchBloc extends Bloc<PlaceSearchEvent, PlaceSearchState> {
+class PlaceSearchBloc extends Bloc<PlaceSearchEvent, PlaceSearchState>
+    with ChangeNotifier {
+  final PlacesService _placesService = PlacesService();
+  List<PlaceSearch> searchResults = [];
+
+  // * Stream for location search results
+  BehaviorSubject<GooglePlace> selectedLocation =
+      BehaviorSubject<GooglePlace>();
+
+  void searchPlaces(String searchTerm) async {
+    print('Search: $searchTerm');
+    searchResults = await _placesService.getAutoComplete(searchTerm);
+    print('Search Result 1: ${searchResults.first.description}');
+
+    notifyListeners();
+  }
+
+  void searchRegionsAndCities(String searchTerm) async {
+    searchResults =
+        await _placesService.getAutoCompleteRegionsAndCities(searchTerm);
+    notifyListeners();
+  }
+
+  void setSelectedLocation(String placeId) async {
+    selectedLocation.add(await _placesService.getPlace(placeId));
+    notifyListeners();
+  }
+
   PlaceSearchBloc() : super(PlaceSearchState.initial()) {
-    final GooglePlace googlePlace =
-        GooglePlace(dotenv.env['GOOGLE_PLACES_API_KEY']!);
     on<PlaceSearchEvent>((event, emit) async {
       if (event is PlaceSearchStarted) {
-        List<AutocompletePrediction> predictions = [];
-        if (event.searchTerm!.isNotEmpty) {
-          var place = await googlePlace.autocomplete.get(event.searchTerm!);
-          predictions = place!.predictions!;
-          emit(PlaceSearchState.loading(predictions));
-        } else {
-          emit(PlaceSearchState.initial());
-        }
+        print('Search Started');
+
+        emit(PlaceSearchState.loading());
       }
       if (event is PlaceSelected) {
-        var placeDetails =
-            await googlePlace.details.get(event.suggestion!.placeId!);
-        if (placeDetails!.result != null) {
-          placeDetails.result!.name;
-          emit(PlaceSearchState.loaded(placeDetails.result!));
-        } else {
-          emit(PlaceSearchState.failed());
-        }
+        //  emit(PlaceSearchState.loaded(placeDetails.result!));
       }
     });
-
-    Future<Uint8List?> getPhotos(String photoReference) async {
-      var photo = await googlePlace.photos.get(photoReference, 1080, 1920);
-      return photo;
-    }
+    on<PlaceSearchbarClicked>(
+        (event, emit) => emit(PlaceSearchState.focused()));
+    on<PlaceSearchbarClosed>(
+        (event, emit) => emit(PlaceSearchState.unfocused()));
   }
 }

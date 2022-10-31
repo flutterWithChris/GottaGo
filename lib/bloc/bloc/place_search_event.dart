@@ -2,27 +2,18 @@ part of 'place_search_bloc.dart';
 
 @immutable
 abstract class PlaceSearchEvent extends Equatable {
-  AutocompletePrediction? suggestion;
-  DetailsResult? result;
   String? searchTerm;
-  PlaceSearchEvent({
-    this.suggestion,
-    this.result,
-  });
+
   @override
   // TODO: implement props
-  List<Object?> get props => [suggestion, result, searchTerm];
+  List<Object?> get props => [searchTerm];
 }
 
 class PlaceSelected extends PlaceSearchEvent {
   @override
-  AutocompletePrediction? suggestion;
-  PlaceSelected({
-    required this.suggestion,
-  });
   @override
   // TODO: implement props
-  List<Object?> get props => [suggestion];
+  List<Object?> get props => [];
 }
 
 class PlaceSearchStarted extends PlaceSearchEvent {
@@ -31,8 +22,13 @@ class PlaceSearchStarted extends PlaceSearchEvent {
   PlaceSearchStarted({
     required this.searchTerm,
   });
-
   @override
   // TODO: implement props
   List<Object?> get props => [searchTerm];
 }
+
+class PlaceSearchSubmit extends PlaceSearchEvent {}
+
+class PlaceSearchbarClicked extends PlaceSearchEvent {}
+
+class PlaceSearchbarClosed extends PlaceSearchEvent {}

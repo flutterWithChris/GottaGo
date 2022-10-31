@@ -2,11 +2,11 @@ part of 'view_place_cubit.dart';
 
 abstract class ViewPlaceState extends Equatable {
   final Place? place;
-  final DetailsResponse? googlePlaceDetails;
-  const ViewPlaceState({this.place, this.googlePlaceDetails});
+
+  const ViewPlaceState({this.place});
 
   @override
-  List<Object> get props => [place!, googlePlaceDetails!];
+  List<Object> get props => [place!];
 }
 
 class ViewPlaceInitial extends ViewPlaceState {}
@@ -18,12 +18,10 @@ class ViewPlaceLoaded extends ViewPlaceState {
   final Place place;
 
   @override
-  final DetailsResponse googlePlaceDetails;
-  const ViewPlaceLoaded(
-      {required this.place, required this.googlePlaceDetails});
+  const ViewPlaceLoaded({required this.place});
   @override
   // TODO: implement props
-  List<Object> get props => [place, googlePlaceDetails];
+  List<Object> get props => [place];
 }
 
 class ViewPlaceFailed extends ViewPlaceState {}

@@ -2,9 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
-import 'package:google_place/google_place.dart';
 import 'package:leggo/cubit/cubit/cubit/view_place_cubit.dart';
 import 'package:leggo/model/place.dart';
 
@@ -23,8 +21,7 @@ class ViewPlaceSheet extends StatelessWidget {
       builder: (context, state) {
         if (state is ViewPlaceLoaded) {
           final Place selectedPlace = place;
-          final DetailsResult googlePlaceDetails =
-              state.googlePlaceDetails.result!;
+
           return ListView(
             controller: scrollController,
             shrinkWrap: true,
@@ -32,8 +29,7 @@ class ViewPlaceSheet extends StatelessWidget {
               SizedBox(
                 height: 250,
                 child: CachedNetworkImage(
-                  imageUrl:
-                      'https://maps.googleapis.com/maps/api/place/photo?maxwidth=1080&maxheight=1920&photo_reference=${googlePlaceDetails.photos?[0].photoReference}&key=${dotenv.get('GOOGLE_PLACES_API_KEY')}',
+                  imageUrl: 'c',
                   placeholder: (context, url) {
                     return AspectRatio(
                       aspectRatio: 16 / 9,
@@ -90,37 +86,37 @@ class ViewPlaceSheet extends StatelessWidget {
                       ),
                     ),
                   ),
-                  googlePlaceDetails.openingHours!.openNow!
-                      ? Flexible(
-                          flex: 1,
-                          child: Wrap(
-                            crossAxisAlignment: WrapCrossAlignment.center,
-                            spacing: 8.0,
-                            children: const [
-                              CircleAvatar(
-                                // minRadius: 1,
-                                radius: 3,
-                                backgroundColor: Colors.green,
-                              ),
-                              Text('Open'),
-                            ],
-                          ),
-                        )
-                      : Flexible(
-                          flex: 1,
-                          child: Wrap(
-                            crossAxisAlignment: WrapCrossAlignment.center,
-                            spacing: 8.0,
-                            children: const [
-                              CircleAvatar(
-                                // minRadius: 1,
-                                radius: 3,
-                                backgroundColor: Colors.redAccent,
-                              ),
-                              Text('Closed'),
-                            ],
-                          ),
-                        ),
+                  // googlePlaceDetails.openingHours!.openNow!
+                  //     ? Flexible(
+                  //         flex: 1,
+                  //         child: Wrap(
+                  //           crossAxisAlignment: WrapCrossAlignment.center,
+                  //           spacing: 8.0,
+                  //           children: const [
+                  //             CircleAvatar(
+                  //               // minRadius: 1,
+                  //               radius: 3,
+                  //               backgroundColor: Colors.green,
+                  //             ),
+                  //             Text('Open'),
+                  //           ],
+                  //         ),
+                  //       )
+                  //     : Flexible(
+                  //         flex: 1,
+                  //         child: Wrap(
+                  //           crossAxisAlignment: WrapCrossAlignment.center,
+                  //           spacing: 8.0,
+                  //           children: const [
+                  //             CircleAvatar(
+                  //               // minRadius: 1,
+                  //               radius: 3,
+                  //               backgroundColor: Colors.redAccent,
+                  //             ),
+                  //             Text('Closed'),
+                  //           ],
+                  //         ),
+                  //       ),
                 ],
               ),
               Padding(
@@ -139,7 +135,7 @@ class ViewPlaceSheet extends StatelessWidget {
                               itemSize: 14,
                               itemCount: 5,
                               ignoreGestures: true,
-                              initialRating: googlePlaceDetails.rating!,
+                              initialRating: 4,
                               itemBuilder: (context, index) {
                                 return const Icon(
                                   Icons.star,
@@ -147,14 +143,14 @@ class ViewPlaceSheet extends StatelessWidget {
                                 );
                               },
                               onRatingUpdate: (value) {}),
-                          Text(googlePlaceDetails.rating.toString())
+                          Text(4.0.toString())
                         ])),
-                    Chip(
-                        avatar: CachedNetworkImage(
-                          imageUrl: googlePlaceDetails.icon!,
-                          height: 16,
-                        ),
-                        label: Text(googlePlaceDetails.types![0]))
+                    // Chip(
+                    //     avatar: CachedNetworkImage(
+                    //       imageUrl: googlePlaceDetails.icon!,
+                    //       height: 16,
+                    //     ),
+                    //     label: Text(googlePlaceDetails.types![0]))
                   ],
                 ),
               ),
@@ -171,7 +167,7 @@ class ViewPlaceSheet extends StatelessWidget {
                         scrollDirection: Axis.horizontal,
                         //controller: scrollController,
                         shrinkWrap: true,
-                        itemCount: googlePlaceDetails.reviews?.length ?? 0,
+                        itemCount: 1,
                         itemBuilder: (context, index) {
                           return Align(
                             child: Padding(
@@ -187,8 +183,8 @@ class ViewPlaceSheet extends StatelessWidget {
                                     crossAxisAlignment:
                                         CrossAxisAlignment.start,
                                     children: [
-                                      Text(
-                                        '"${googlePlaceDetails.reviews![index].text!}"',
+                                      const Text(
+                                        '"reviews"',
                                         maxLines: 4,
                                         overflow: TextOverflow.ellipsis,
                                       ),
@@ -207,10 +203,7 @@ class ViewPlaceSheet extends StatelessWidget {
                                                     itemCount: 5,
                                                     ignoreGestures: true,
                                                     initialRating:
-                                                        googlePlaceDetails
-                                                            .reviews![index]
-                                                            .rating!
-                                                            .toDouble(),
+                                                        4.0.toDouble(),
                                                     itemBuilder:
                                                         (context, index) {
                                                       return const Icon(
@@ -220,9 +213,7 @@ class ViewPlaceSheet extends StatelessWidget {
                                                     },
                                                     onRatingUpdate: (value) {}),
                                                 Text(
-                                                  googlePlaceDetails
-                                                      .reviews![index].rating!
-                                                      .toStringAsFixed(1),
+                                                  4.2.toStringAsFixed(1),
                                                   style: Theme.of(context)
                                                       .textTheme
                                                       .bodySmall!
@@ -243,15 +234,12 @@ class ViewPlaceSheet extends StatelessWidget {
                                           children: [
                                             CircleAvatar(
                                               child: CachedNetworkImage(
-                                                  imageUrl: googlePlaceDetails
-                                                      .reviews![index]
-                                                      .profilePhotoUrl!),
+                                                  imageUrl: 'p'),
                                             ),
-                                            Text(
-                                              googlePlaceDetails
-                                                  .reviews![index].authorName!,
+                                            const Text(
+                                              'author',
                                               overflow: TextOverflow.ellipsis,
-                                              style: const TextStyle(
+                                              style: TextStyle(
                                                   fontWeight: FontWeight.bold),
                                               textAlign: TextAlign.left,
                                             ),

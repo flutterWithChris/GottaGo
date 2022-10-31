@@ -37,7 +37,6 @@ dependencies:
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.2
   go_router: ^5.1.1
-  google_place: ^0.4.7
   flutter_typeahead: ^4.1.0
   anim_search_bar: ^2.0.2
   flutter_dotenv: ^5.0.2
@@ -58,12 +57,13 @@ dependencies:
   bubble_bottom_bar: ^2.0.0
   google_fonts: ^3.0.1
   flutter_fortune_wheel: ^1.2.0
-  rxdart: ^0.27.5
+  rxdart: any
   animations: ^2.0.4
   cached_network_image: ^3.2.2
   cached_memory_image: ^1.3.1
   avatar_stack: ^1.1.2
   confetti: ^0.7.0
+  material_floating_search_bar: ^0.3.7
 
 dev_dependencies:
   flutter_test:
