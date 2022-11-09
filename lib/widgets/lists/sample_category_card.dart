@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flex_color_scheme/flex_color_scheme.dart';
 import 'package:flutter/material.dart';
 import 'package:leggo/model/place_list.dart';
@@ -62,9 +64,9 @@ class SampleCategoryCard extends StatelessWidget {
                         ),
                       ],
                     ),
-                    subtitle: const Padding(
-                      padding: EdgeInsets.only(left: 24.0),
-                      child: Text('12 Saved Places'),
+                    subtitle: Padding(
+                      padding: const EdgeInsets.only(left: 24.0),
+                      child: Text('${Random().nextInt(14) + 1} Saved Places'),
                     ),
                     leading: Padding(
                       padding: const EdgeInsets.only(left: 16.0, top: 8.0),

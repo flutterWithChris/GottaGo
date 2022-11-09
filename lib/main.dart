@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flex_color_scheme/flex_color_scheme.dart';
 import 'package:flutter/material.dart';
@@ -7,9 +9,10 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:go_router/go_router.dart';
+import 'package:leggo/bloc/autocomplete/bloc/autocomplete_bloc.dart';
 import 'package:leggo/bloc/bloc/auth/bloc/auth_bloc.dart';
 import 'package:leggo/bloc/bloc/invite/bloc/invite_bloc.dart';
-import 'package:leggo/bloc/bloc/place_search_bloc.dart';
+
 import 'package:leggo/bloc/saved_categories/bloc/saved_lists_bloc.dart';
 import 'package:leggo/bloc/saved_places/bloc/saved_places_bloc.dart';
 import 'package:leggo/category_page.dart';
@@ -22,6 +25,7 @@ import 'package:leggo/model/place_list.dart';
 import 'package:leggo/random_wheel_page.dart';
 import 'package:leggo/repository/auth_repository.dart';
 import 'package:leggo/repository/place_list_repository.dart';
+import 'package:leggo/repository/places_repository.dart';
 import 'package:leggo/repository/user_repository.dart';
 import 'package:leggo/widgets/lists/blank_category_card.dart';
 import 'package:leggo/widgets/lists/category_card.dart';
@@ -30,6 +34,8 @@ import 'package:leggo/widgets/main_bottom_navbar.dart';
 import 'package:leggo/widgets/lists/sample_category_card.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:reorderables/reorderables.dart';
+
+import 'bloc/place/place_bloc.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -65,6 +71,9 @@ class _MyAppState extends State<MyApp> {
         RepositoryProvider(
           create: (context) => PlaceListRepository(),
         ),
+        RepositoryProvider(
+          create: (context) => PlacesRepository(),
+        ),
       ],
       child: MultiBlocProvider(
         providers: [
@@ -76,9 +85,6 @@ class _MyAppState extends State<MyApp> {
           BlocProvider(
             create: (context) =>
                 LoginCubit(authRepository: context.read<AuthRepository>()),
-          ),
-          BlocProvider(
-            create: (context) => PlaceSearchBloc(),
           ),
           BlocProvider(
             create: (context) => SavedPlacesBloc(
@@ -98,6 +104,15 @@ class _MyAppState extends State<MyApp> {
           ),
           BlocProvider(
             create: (context) => ViewPlaceCubit(),
+          ),
+          BlocProvider(
+            create: (context) => AutocompleteBloc(
+                placesRepository: context.read<PlacesRepository>())
+              ..add(const LoadAutocomplete()),
+          ),
+          BlocProvider(
+            create: (context) =>
+                PlaceBloc(placesRepository: context.read<PlacesRepository>()),
           ),
         ],
         child: BlocBuilder<AuthBloc, AuthState>(
@@ -168,7 +183,7 @@ class _MyAppState extends State<MyApp> {
   late final router = GoRouter(
       initialLocation: '/',
       refreshListenable: GoRouterRefreshStream(bloc.stream),
-      redirect: (state) {
+      redirect: (context, state) {
         bool loggedIn = bloc.state.status == AuthStatus.authenticated;
         // bool loggedIn = true;
         bool isLoggingIn = state.location == '/login';
@@ -189,7 +204,6 @@ class _MyAppState extends State<MyApp> {
         if (loggedIn && isLoggingIn) return isLoggedIn ? null : '/';
         if (loggedIn && isOnboarding) return isLoggedIn ? null : '/';
 
-        return null;
         return null;
       },
       routes: [
@@ -222,6 +236,23 @@ class _MyAppState extends State<MyApp> {
       ]);
 }
 
+class GoRouterRefreshStream extends ChangeNotifier {
+  GoRouterRefreshStream(Stream<dynamic> stream) {
+    notifyListeners();
+    _subscription = stream.asBroadcastStream().listen(
+          (dynamic _) => notifyListeners(),
+        );
+  }
+
+  late final StreamSubscription<dynamic> _subscription;
+
+  @override
+  void dispose() {
+    _subscription.cancel();
+    super.dispose();
+  }
+}
+
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key, required this.title});
 
@@ -235,7 +266,13 @@ class _MyHomePageState extends State<MyHomePage> {
   List<Widget> rows = [];
   @override
   Widget build(BuildContext context) {
-    final List<PlaceList> samplePlaceLists = [];
+    List<PlaceList>? samplePlaceLists = [
+      PlaceList(name: 'Breakfast Ideas', listOwnerId: '12345'),
+      PlaceList(name: 'Iceland Trip', listOwnerId: '12345'),
+      PlaceList(name: 'Lunch Spots', listOwnerId: '12345'),
+      PlaceList(name: 'Experiences', listOwnerId: '12345'),
+      PlaceList(name: 'Local Spots', listOwnerId: '12345'),
+    ];
     return SafeArea(
       child: Scaffold(
         floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
@@ -257,18 +294,18 @@ class _MyHomePageState extends State<MyHomePage> {
               final ScrollController mainScrollController = ScrollController();
 
               void addCategoriesToList() {
-                for (PlaceList placeList in state.placeLists) {
+                for (PlaceList placeList in state.placeLists!) {
                   rows.add(CategoryCard(placeList: placeList));
                 }
               }
 
-              if (state.placeLists.isNotEmpty) {
+              if (state.placeLists!.isNotEmpty) {
                 addCategoriesToList();
               }
 
               void _onReorder(int oldIndex, int newIndex) {
-                PlaceList placeList = state.placeLists.removeAt(oldIndex);
-                state.placeLists.insert(newIndex, placeList);
+                PlaceList placeList = state.placeLists!.removeAt(oldIndex);
+                state.placeLists!.insert(newIndex, placeList);
                 setState(() {
                   Widget row = rows.removeAt(oldIndex);
                   rows.insert(newIndex, row);
@@ -323,22 +360,20 @@ class _MyHomePageState extends State<MyHomePage> {
                   ReorderableSliverList(
                       enabled: false,
                       delegate: ReorderableSliverChildBuilderDelegate(
-                          childCount: state.placeLists.isNotEmpty
-                              ? state.placeLists.length
+                          childCount: state.placeLists!.isNotEmpty
+                              ? state.placeLists!.length
                               : 6, (context, index) {
-                        if (state.placeLists.isNotEmpty) {
-                          // rows.clear();
+                        if (state.placeLists!.isNotEmpty) {
+                          rows.clear();
                           rows = [
-                            for (PlaceList placeList in state.placeLists)
+                            for (PlaceList placeList in state.placeLists!)
                               Animate(
                                   effects: const [SlideEffect()],
                                   child: CategoryCard(placeList: placeList))
                           ];
-
-                          return rows[index];
                         } else {
                           rows.clear();
-                          List<SampleCategoryCard> sampleCategoryCards = [];
+                          // List<SampleCategoryCard> sampleCategoryCards = [];
                           for (PlaceList placeList in samplePlaceLists) {
                             rows.add(Animate(
                                 effects: const [SlideEffect()],
@@ -350,8 +385,8 @@ class _MyHomePageState extends State<MyHomePage> {
                               Animate(
                                   effects: const [SlideEffect()],
                                   child: const BlankCategoryCard()));
-                          return rows[index];
                         }
+                        return rows[index];
                       }),
                       onReorder: _onReorderSampleItem)
                 ],

@@ -27,11 +27,11 @@ class RandomWheelSpun extends RandomWheelState {}
 class RandomWheelChosen extends RandomWheelState {
   @override
   final Place selectedPlace;
-  DetailsResponse? googlePlaceDetails;
-  RandomWheelChosen({required this.selectedPlace, this.googlePlaceDetails});
+
+  const RandomWheelChosen({required this.selectedPlace});
   @override
   // TODO: implement props
-  List<Object> get props => [selectedPlace, googlePlaceDetails!];
+  List<Object> get props => [selectedPlace];
 }
 
 class RandomWheelFailed extends RandomWheelState {}

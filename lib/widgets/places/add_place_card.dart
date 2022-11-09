@@ -1,11 +1,7 @@
-import 'dart:typed_data';
-
 import 'package:flex_color_scheme/flex_color_scheme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/animate.dart';
 import 'package:flutter_animate/effects/effects.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:google_place/google_place.dart';
 import 'package:leggo/widgets/places/search_places_sheet.dart';
 
 class AddPlaceCard extends StatefulWidget {
@@ -18,14 +14,6 @@ class AddPlaceCard extends StatefulWidget {
 }
 
 class _PlaceCardState extends State<AddPlaceCard> {
-  final GooglePlace googlePlace =
-      GooglePlace(dotenv.env['GOOGLE_PLACES_API_KEY']!);
-  Future<Uint8List?> getPhotos(String photoReference) async {
-    Uint8List? photo = await googlePlace.photos.get(photoReference, 1080, 1920);
-
-    return photo;
-  }
-
   titleCase(String string) {
     var splitStr = string.toLowerCase().split(' ');
     for (var i = 0; i < splitStr.length; i++) {
@@ -66,8 +54,7 @@ class _PlaceCardState extends State<AddPlaceCard> {
                   isScrollControlled: true,
                   context: context,
                   builder: (context) {
-                    return SearchPlacesSheet(
-                        googlePlace: googlePlace, mounted: mounted);
+                    return SearchPlacesSheet(mounted: mounted);
                   });
             },
             child: Card(
@@ -168,7 +155,6 @@ class _PlaceCardState extends State<AddPlaceCard> {
                                       context: context,
                                       builder: (context) {
                                         return SearchPlacesSheet(
-                                            googlePlace: googlePlace,
                                             mounted: mounted);
                                       });
                                 },

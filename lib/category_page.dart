@@ -4,15 +4,12 @@ import 'dart:math';
 import 'package:avatar_stack/avatar_stack.dart';
 import 'package:avatar_stack/positions.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/animate.dart';
 import 'package:flutter_animate/effects/effects.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_fortune_wheel/flutter_fortune_wheel.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:google_place/google_place.dart';
 import 'package:leggo/bloc/saved_places/bloc/saved_places_bloc.dart';
 import 'package:leggo/cubit/cubit/random_wheel_cubit.dart';
 import 'package:leggo/model/place.dart';
@@ -50,15 +47,7 @@ class _CategoryPageState extends State<CategoryPage> {
 
   @override
   Widget build(BuildContext context) {
-    final GooglePlace googlePlace =
-        GooglePlace(dotenv.env['GOOGLE_PLACES_API_KEY']!);
-
     final TextEditingController textEditingController = TextEditingController();
-
-    Future<Uint8List?> getPhotos(String photoReference) async {
-      var photo = await googlePlace.photos.get(photoReference, 1080, 1920);
-      return photo;
-    }
 
     return SafeArea(
       child: Scaffold(
@@ -75,8 +64,7 @@ class _CategoryPageState extends State<CategoryPage> {
                 isScrollControlled: true,
                 context: context,
                 builder: (context) {
-                  return SearchPlacesSheet(
-                      googlePlace: googlePlace, mounted: mounted);
+                  return SearchPlacesSheet(mounted: mounted);
                 });
           },
         ),
@@ -180,11 +168,11 @@ class _CategoryPageState extends State<CategoryPage> {
                             place: place,
                             imageUrl: place.mainPhoto,
                             memoryImage: place.mainPhoto,
-                            placeName: place.name,
+                            placeName: place.name!,
                             ratingsTotal: place.rating,
-                            placeDescription: place.description,
-                            closingTime: place.closingTime,
-                            placeLocation: place.city),
+                            placeDescription: place.reviews![0]['text'],
+                            closingTime: place.hours![0],
+                            placeLocation: place.city!),
                       ),
                     )
                 ];
@@ -303,7 +291,7 @@ class _CategoryPageState extends State<CategoryPage> {
                                                           .symmetric(
                                                       horizontal: 16.0),
                                                   child: Text(
-                                                    place.name,
+                                                    place.name!,
                                                     maxLines: 1,
                                                     overflow:
                                                         TextOverflow.ellipsis,
@@ -377,13 +365,13 @@ class _CategoryPageAppBarState extends State<CategoryPageAppBar> {
     if (widget.scrollController.hasClients) {
       widget.scrollController.addListener(
         () {
-          if (widget.scrollController.offset > 70) {
+          if (widget.scrollController.offset > 65) {
             if (!mounted) return;
             setState(() {
               avatarStackPadding = const EdgeInsets.only(right: 28.0);
             });
           } else if (widget.scrollController.hasClients &&
-              widget.scrollController.offset < 70) {
+              widget.scrollController.offset < 65) {
             if (!mounted) return;
             setState(() {
               avatarStackPadding = const EdgeInsets.only(right: 4.0);
@@ -428,7 +416,7 @@ class _CategoryPageAppBarState extends State<CategoryPageAppBar> {
                 //     begin: -0.25,
                 //     end: 0.0,
                 //     alignment: Alignment.centerLeft)
-              ], child: const Icon(FontAwesomeIcons.cakeCandles)),
+              ], child: const Icon(FontAwesomeIcons.earthAmericas)),
               Animate(
                 effects: const [
                   FadeEffect(),
