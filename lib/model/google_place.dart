@@ -8,11 +8,12 @@ class GooglePlace {
   final String formattedPhoneNumber;
   final String placeId;
   final double rating;
-  final List<String> types;
+  final String type;
   final String icon;
   final List<String> weekDayText;
   final String website;
   final String url;
+  final List<dynamic>? reviews;
   final List<dynamic>? photos;
 
   GooglePlace({
@@ -25,28 +26,28 @@ class GooglePlace {
     required this.addressComponents,
     required this.rating,
     required this.icon,
-    required this.types,
+    required this.type,
+    required this.reviews,
     this.photos,
     required this.url,
     required this.website,
   });
 
   factory GooglePlace.fromJson(Map<dynamic, dynamic> parsedJson) {
-    var typesfromJson = parsedJson['types'];
-    List<String> typesList = List<String>.from(typesfromJson);
     return GooglePlace(
         formattedPhoneNumber: parsedJson['formatted_phone_number'],
         formattedAddress: parsedJson['formatted_address'],
         geometry: Geometry.fromJson(parsedJson['geometry']),
         name: parsedJson['name'],
         placeId: parsedJson['place_id'],
-        types: typesList,
+        type: List.from(parsedJson['types']).first,
         icon: parsedJson['icon'],
         rating: parsedJson['rating'],
         addressComponents: List.from(parsedJson['address_components']),
         weekDayText: List.from(parsedJson['opening_hours']['weekday_text']),
         photos: List.from(parsedJson['photos']),
         url: parsedJson['url'],
+        reviews: List.from(parsedJson['reviews']),
         website: parsedJson['website']);
   }
 }

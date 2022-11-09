@@ -1,4 +1,5 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flex_color_scheme/flex_color_scheme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -63,7 +64,7 @@ class _SearchPlacesSheetState extends State<SearchPlacesSheet> {
               BlocConsumer<PlaceBloc, PlaceState>(
                 listener: (context, state) {
                   if (state is PlaceLoaded) {
-                    scrollableController!.animateTo(0.72,
+                    scrollableController!.animateTo(0.8,
                         duration: const Duration(milliseconds: 150),
                         curve: Curves.easeOutBack);
                   }
@@ -75,7 +76,7 @@ class _SearchPlacesSheetState extends State<SearchPlacesSheet> {
                   if (state is PlaceLoaded) {
                     GooglePlace googlePlace = state.googlePlace;
                     return Padding(
-                      padding: const EdgeInsets.all(2.0),
+                      padding: const EdgeInsets.symmetric(vertical: 8.0),
                       child: Column(
                         children: [
                           Padding(
@@ -120,22 +121,6 @@ class _SearchPlacesSheetState extends State<SearchPlacesSheet> {
                                           fit: BoxFit.cover,
                                         ),
                                       ),
-                                      Padding(
-                                        padding: const EdgeInsets.symmetric(
-                                            horizontal: 8.0),
-                                        child: Opacity(
-                                          opacity: 0.9,
-                                          child: Chip(
-                                            label: Text(state
-                                                .googlePlace.types[0]
-                                                .capitalizeString()),
-                                            avatar: Image.network(
-                                              state.googlePlace.icon,
-                                              height: 18,
-                                            ),
-                                          ),
-                                        ),
-                                      ),
                                       Positioned(
                                         left: 10,
                                         top: 8,
@@ -145,7 +130,9 @@ class _SearchPlacesSheetState extends State<SearchPlacesSheet> {
                                             CircleAvatar(
                                               radius: 16,
                                               child: IconButton(
-                                                onPressed: () {},
+                                                onPressed: () {
+                                                  // TODO: Implement webview
+                                                },
                                                 icon: const Icon(
                                                     Icons.web_rounded,
                                                     size: 16),
@@ -154,7 +141,9 @@ class _SearchPlacesSheetState extends State<SearchPlacesSheet> {
                                             CircleAvatar(
                                               radius: 16,
                                               child: IconButton(
-                                                onPressed: () {},
+                                                onPressed: () {
+                                                  // TODO: Implement Call Function
+                                                },
                                                 icon: const Icon(Icons.phone,
                                                     size: 16),
                                               ),
@@ -201,29 +190,119 @@ class _SearchPlacesSheetState extends State<SearchPlacesSheet> {
                                   ),
                                   Padding(
                                     padding: const EdgeInsets.all(8.0),
-                                    child: Wrap(
-                                      spacing: 6.0,
-                                      crossAxisAlignment:
-                                          WrapCrossAlignment.center,
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
                                       children: [
-                                        RatingBar.builder(
-                                          ignoreGestures: true,
-                                          itemSize: 20.0,
-                                          allowHalfRating: true,
-                                          initialRating:
-                                              state.googlePlace.rating,
-                                          itemBuilder: (context, index) {
-                                            return const Icon(
-                                              Icons.star,
-                                              size: 12.0,
-                                              color: Colors.amber,
-                                            );
-                                          },
-                                          onRatingUpdate: (value) {},
+                                        Padding(
+                                          padding: const EdgeInsets.symmetric(
+                                              horizontal: 8.0),
+                                          child: Opacity(
+                                            opacity: 0.9,
+                                            child: SizedBox(
+                                              height: 40,
+                                              child: FittedBox(
+                                                child: Chip(
+                                                  shape: RoundedRectangleBorder(
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                              16)),
+                                                  label: Text(
+                                                    state.googlePlace.type
+                                                        .capitalizeString(),
+                                                    style: Theme.of(context)
+                                                        .textTheme
+                                                        .titleSmall,
+                                                  ),
+                                                  avatar: Image.network(
+                                                    state.googlePlace.icon,
+                                                    height: 18,
+                                                  ),
+                                                ),
+                                              ),
+                                            ),
+                                          ),
                                         ),
-                                        Text(state.googlePlace.rating
-                                            .toString()),
+                                        Wrap(
+                                          spacing: 6.0,
+                                          crossAxisAlignment:
+                                              WrapCrossAlignment.center,
+                                          children: [
+                                            RatingBar.builder(
+                                              onRatingUpdate: (value) => null,
+                                              ignoreGestures: true,
+                                              itemSize: 20.0,
+                                              allowHalfRating: true,
+                                              initialRating:
+                                                  state.googlePlace.rating,
+                                              itemBuilder: (context, index) {
+                                                return const Icon(
+                                                  Icons.star,
+                                                  size: 12.0,
+                                                  color: Colors.amber,
+                                                );
+                                              },
+                                            ),
+                                            Text(state.googlePlace.rating
+                                                .toString()),
+                                          ],
+                                        ),
                                       ],
+                                    ),
+                                  ),
+                                  Padding(
+                                    padding: const EdgeInsets.only(
+                                        left: 8.0, right: 8.0, bottom: 8.0),
+                                    child: Card(
+                                      color: FlexColor
+                                          .bahamaBlueDarkPrimaryContainer,
+                                      child: Padding(
+                                        padding: const EdgeInsets.symmetric(
+                                            horizontal: 16.0, vertical: 16.0),
+                                        child: Column(
+                                          mainAxisSize: MainAxisSize.min,
+                                          children: [
+                                            Text(
+                                              '"${state.googlePlace.reviews![0]!['text']!.toString()}"',
+                                              maxLines: 4,
+                                              overflow: TextOverflow.ellipsis,
+                                            ),
+                                            Padding(
+                                              padding: const EdgeInsets.only(
+                                                  top: 8.0, right: 8.0),
+                                              child: Row(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment.end,
+                                                children: [
+                                                  Wrap(
+                                                    crossAxisAlignment:
+                                                        WrapCrossAlignment
+                                                            .center,
+                                                    spacing: 12.0,
+                                                    children: [
+                                                      state.googlePlace.reviews![
+                                                                      0]![
+                                                                  'profile_photo_url'] !=
+                                                              null
+                                                          ? CircleAvatar(
+                                                              radius: 16,
+                                                              child: CachedNetworkImage(
+                                                                  imageUrl: state
+                                                                          .googlePlace
+                                                                          .reviews![0]![
+                                                                      'profile_photo_url']),
+                                                            )
+                                                          : const SizedBox(),
+                                                      Text(
+                                                          '- ${state.googlePlace.reviews![0]!['author_name']!.toString()}'),
+                                                    ],
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
                                     ),
                                   ),
                                 ],
@@ -235,6 +314,21 @@ class _SearchPlacesSheetState extends State<SearchPlacesSheet> {
                             child: ElevatedButton.icon(
                                 onPressed: () {
                                   // print('Place Added: ${placeDetails.name}');
+                                  print(state.googlePlace.addressComponents);
+                                  var placeCity = state
+                                          .googlePlace.addressComponents
+                                          .firstWhere((element) =>
+                                              element['types']?[0] ==
+                                                  'locality' ||
+                                              element['types']?[0] ==
+                                                  'administrative_area_level_3')[
+                                      'short_name'];
+                                  String? placeState = state
+                                          .googlePlace.addressComponents
+                                          .firstWhere((element) =>
+                                              element['types']?[0] ==
+                                              'administrative_area_level_1')[
+                                      'short_name'];
                                   context
                                       .read<SavedListsBloc>()
                                       .add(UpdateSavedLists());
@@ -245,15 +339,20 @@ class _SearchPlacesSheetState extends State<SearchPlacesSheet> {
                                           .placeList!,
                                       place: Place(
                                           website: googlePlace.placeId,
-                                          closingTime: '',
-                                          review: '',
-                                          rating: 0,
+                                          hours: googlePlace.weekDayText,
+                                          reviews: googlePlace.reviews,
+                                          rating: googlePlace.rating,
                                           name: googlePlace.name,
                                           address: googlePlace.formattedAddress,
-                                          description: '',
-                                          city: 'city',
-                                          type: googlePlace.types[0],
-                                          mainPhoto: 'nah')));
+                                          icon: googlePlace.icon,
+                                          mapsUrl: googlePlace.url,
+                                          phoneNumber:
+                                              googlePlace.formattedPhoneNumber,
+                                          city: placeCity,
+                                          state: placeState,
+                                          type: googlePlace.type,
+                                          mainPhoto: googlePlace.photos?[0]
+                                              ['photo_reference'])));
                                   Navigator.pop(context);
                                 },
                                 icon:

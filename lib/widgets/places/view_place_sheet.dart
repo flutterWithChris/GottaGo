@@ -66,7 +66,7 @@ class ViewPlaceSheet extends StatelessWidget {
                         visualDensity: VisualDensity.compact,
                         // minVerticalPadding: 8,
                         title: Text(
-                          selectedPlace.name,
+                          selectedPlace.name!,
                           style: Theme.of(context)
                               .textTheme
                               .titleLarge
@@ -81,7 +81,7 @@ class ViewPlaceSheet extends StatelessWidget {
                                 Icons.location_pin,
                                 size: 16,
                               ),
-                              Text(selectedPlace.city)
+                              Text(selectedPlace.city!)
                             ]),
                       ),
                     ),

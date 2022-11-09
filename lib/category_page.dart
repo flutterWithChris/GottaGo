@@ -168,11 +168,11 @@ class _CategoryPageState extends State<CategoryPage> {
                             place: place,
                             imageUrl: place.mainPhoto,
                             memoryImage: place.mainPhoto,
-                            placeName: place.name,
+                            placeName: place.name!,
                             ratingsTotal: place.rating,
-                            placeDescription: place.description,
-                            closingTime: place.closingTime,
-                            placeLocation: place.city),
+                            placeDescription: place.reviews![0]['text'],
+                            closingTime: place.hours![0],
+                            placeLocation: place.city!),
                       ),
                     )
                 ];
@@ -291,7 +291,7 @@ class _CategoryPageState extends State<CategoryPage> {
                                                           .symmetric(
                                                       horizontal: 16.0),
                                                   child: Text(
-                                                    place.name,
+                                                    place.name!,
                                                     maxLines: 1,
                                                     overflow:
                                                         TextOverflow.ellipsis,

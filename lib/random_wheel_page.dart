@@ -132,7 +132,7 @@ class _RandomWheelPageState extends State<RandomWheelPage> {
                                   padding: const EdgeInsets.symmetric(
                                       horizontal: 16.0),
                                   child: Text(
-                                    place.name,
+                                    place.name!,
                                     maxLines: 1,
                                     overflow: TextOverflow.ellipsis,
                                     textAlign: TextAlign.center,

@@ -410,7 +410,7 @@ class _PlaceCardState extends State<PlaceCard> {
                                         size: 13,
                                       ),
                                       Text(
-                                        widget.place.city,
+                                        '${widget.place.city!}, ${widget.place.state}',
                                         style: Theme.of(context)
                                             .textTheme
                                             .bodySmall!
@@ -455,7 +455,7 @@ class _PlaceCardState extends State<PlaceCard> {
                                   Padding(
                                     padding: const EdgeInsets.only(top: 8.0),
                                     child: Text(
-                                      '"${widget.place.review}!"',
+                                      '"${widget.place.reviews?[0]['text']}!"',
                                       style: Theme.of(context)
                                           .textTheme
                                           .bodyMedium,
@@ -467,27 +467,27 @@ class _PlaceCardState extends State<PlaceCard> {
                                 ],
                               ),
                             ),
-                            Positioned(
-                              top: -30,
-                              child: Wrap(
-                                crossAxisAlignment: WrapCrossAlignment.center,
-                                spacing: 8.0,
-                                children: [
-                                  IconButton(
-                                      onPressed: () {},
-                                      icon: const Icon(
-                                        Icons.directions,
-                                        size: 20,
-                                      )),
-                                  IconButton(
-                                      onPressed: () {},
-                                      icon: const Icon(
-                                        Icons.close,
-                                        size: 20,
-                                      )),
-                                ],
-                              ),
-                            ),
+                            // Positioned(
+                            //   top: -30,
+                            //   child: Wrap(
+                            //     crossAxisAlignment: WrapCrossAlignment.center,
+                            //     spacing: 8.0,
+                            //     children: [
+                            //       IconButton(
+                            //           onPressed: () {},
+                            //           icon: const Icon(
+                            //             Icons.directions,
+                            //             size: 20,
+                            //           )),
+                            //       IconButton(
+                            //           onPressed: () {},
+                            //           icon: const Icon(
+                            //             Icons.close,
+                            //             size: 20,
+                            //           )),
+                            //     ],
+                            //   ),
+                            // ),
                           ],
                         ),
                       ],
