@@ -6,13 +6,13 @@ import 'package:http/http.dart' as http;
 import 'package:leggo/model/google_place.dart';
 import 'package:leggo/model/place_search.dart';
 
-class PlacesService {
+class PlacesRepository {
   var mag = dotenv.get('GOOGLE_PLACES_API_KEY');
 
   Future<List<PlaceSearch>> getAutoComplete(String search) async {
     // &types=(cities)
     var url = Uri.parse(
-        'https://maps.googleapis.com/maps/api/place/autocomplete/json?input=$search&key=$mag');
+        'https://maps.googleapis.com/maps/api/place/autocomplete/json?input=$search&types=establishment&key=$mag');
 
     var response = await http.get(url);
     var json = convert.jsonDecode(response.body);
