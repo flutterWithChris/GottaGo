@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 
 class Place {
   final String? name;
+  final String? placeId;
   final String? address;
   final String? city;
   final String? state;
@@ -16,6 +17,7 @@ class Place {
   final List<dynamic>? hours;
 
   Place({
+    required this.placeId,
     required this.name,
     required this.address,
     required this.city,
@@ -32,6 +34,7 @@ class Place {
   });
 
   Place copyWith({
+    String? placeId,
     String? name,
     String? address,
     String? city,
@@ -47,6 +50,7 @@ class Place {
     List<dynamic>? hours,
   }) {
     return Place(
+      placeId: placeId ?? this.placeId,
       name: name ?? this.name,
       address: address ?? this.address,
       city: city ?? this.city,
@@ -65,6 +69,7 @@ class Place {
 
   factory Place.fromSnapshot(DocumentSnapshot snap) {
     return Place(
+      placeId: snap['placeId'],
       state: snap['state'],
       name: snap.id,
       address: snap['address'],
@@ -83,6 +88,7 @@ class Place {
 
   Map<String, Object> toDocument() {
     return {
+      'placeId': placeId ?? placeId!,
       'name': name ?? name!,
       'address': address ?? address!,
       'city': city ?? city!,

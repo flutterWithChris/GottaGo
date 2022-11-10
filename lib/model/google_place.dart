@@ -36,7 +36,7 @@ class GooglePlace {
   factory GooglePlace.fromJson(Map<dynamic, dynamic> parsedJson) {
     return GooglePlace(
         formattedPhoneNumber: parsedJson['formatted_phone_number'],
-        formattedAddress: parsedJson['formatted_address'],
+        formattedAddress: parsedJson['vicinity'],
         geometry: Geometry.fromJson(parsedJson['geometry']),
         name: parsedJson['name'],
         placeId: parsedJson['place_id'],

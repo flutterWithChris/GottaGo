@@ -63,7 +63,7 @@ class _PlaceCardState extends State<PlaceCard> {
     //         element.types?[0] == 'administrative_area_level_1')
     //     .shortName;
     return ConstrainedBox(
-        constraints: const BoxConstraints(minHeight: 170, maxHeight: 202),
+        constraints: const BoxConstraints(minHeight: 170, maxHeight: 205),
         child: InkWell(
           onTap: () {
             context.read<ViewPlaceCubit>().viewPlace(widget.place);
@@ -72,7 +72,8 @@ class _PlaceCardState extends State<PlaceCard> {
                 context: context,
                 builder: (context) => DraggableScrollableSheet(
                     expand: false,
-                    initialChildSize: 0.82,
+                    initialChildSize: 0.85,
+                    maxChildSize: 0.85,
                     builder: (context, scrollController) {
                       return ViewPlaceSheet(
                           place: widget.place,
@@ -90,7 +91,7 @@ class _PlaceCardState extends State<PlaceCard> {
                     ConstrainedBox(
                       constraints: const BoxConstraints(
                           minHeight: 202,
-                          maxHeight: 202,
+                          maxHeight: 205,
                           minWidth: 120,
                           maxWidth: 120),
                       child: CachedNetworkImage(
@@ -392,6 +393,8 @@ class _PlaceCardState extends State<PlaceCard> {
                                           .copyWith(
                                               fontWeight: FontWeight.bold,
                                               fontSize: 22),
+                                      maxLines: 2,
+                                      overflow: TextOverflow.ellipsis,
                                     ),
                                   ],
                                 ),

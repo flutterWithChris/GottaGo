@@ -1,5 +1,4 @@
 import 'dart:async';
-
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flex_color_scheme/flex_color_scheme.dart';
 import 'package:flutter/material.dart';
@@ -12,7 +11,6 @@ import 'package:go_router/go_router.dart';
 import 'package:leggo/bloc/autocomplete/bloc/autocomplete_bloc.dart';
 import 'package:leggo/bloc/bloc/auth/bloc/auth_bloc.dart';
 import 'package:leggo/bloc/bloc/invite/bloc/invite_bloc.dart';
-
 import 'package:leggo/bloc/saved_categories/bloc/saved_lists_bloc.dart';
 import 'package:leggo/bloc/saved_places/bloc/saved_places_bloc.dart';
 import 'package:leggo/category_page.dart';
@@ -34,7 +32,6 @@ import 'package:leggo/widgets/main_bottom_navbar.dart';
 import 'package:leggo/widgets/lists/sample_category_card.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:reorderables/reorderables.dart';
-
 import 'bloc/place/place_bloc.dart';
 
 void main() async {
@@ -138,11 +135,13 @@ class _MyAppState extends State<MyApp> {
                 surfaceMode: FlexSurfaceMode.highScaffoldLowSurface,
                 blendLevel: 15,
                 appBarOpacity: 0.90,
+
                 subThemesData: const FlexSubThemesData(
                   blendOnLevel: 30,
                 ),
                 visualDensity: FlexColorScheme.comfortablePlatformDensity,
                 useMaterial3: true,
+
                 // To use the playground font, add GoogleFonts package and uncomment
                 // fontFamily: GoogleFonts.notoSans().fontFamily,
               ),
@@ -293,15 +292,11 @@ class _MyHomePageState extends State<MyHomePage> {
             if (state is SavedListsLoaded) {
               final ScrollController mainScrollController = ScrollController();
 
-              void addCategoriesToList() {
-                for (PlaceList placeList in state.placeLists!) {
-                  rows.add(CategoryCard(placeList: placeList));
-                }
-              }
-
-              if (state.placeLists!.isNotEmpty) {
-                addCategoriesToList();
-              }
+              // void addCategoriesToList() {
+              //   for (PlaceList placeList in state.placeLists!) {
+              //     rows.add(CategoryCard(placeList: placeList));
+              //   }
+              // }
 
               void _onReorder(int oldIndex, int newIndex) {
                 PlaceList placeList = state.placeLists!.removeAt(oldIndex);
@@ -319,6 +314,33 @@ class _MyHomePageState extends State<MyHomePage> {
                   Widget row = rows.removeAt(oldIndex);
                   rows.insert(newIndex, row);
                 });
+              }
+
+              // if (state.placeLists!.isNotEmpty) {
+              //   addCategoriesToList();
+              // }
+
+              if (state.placeLists!.isNotEmpty) {
+                rows.clear();
+                rows = [
+                  for (PlaceList placeList in state.placeLists!)
+                    Animate(
+                        effects: const [SlideEffect()],
+                        child: CategoryCard(placeList: placeList))
+                ];
+              } else {
+                rows.clear();
+                // List<SampleCategoryCard> sampleCategoryCards = [];
+                for (PlaceList placeList in samplePlaceLists) {
+                  rows.add(Animate(
+                      effects: const [SlideEffect()],
+                      child: SampleCategoryCard(placeList: placeList)));
+                }
+                rows.insert(
+                    0,
+                    Animate(
+                        effects: const [SlideEffect()],
+                        child: const BlankCategoryCard()));
               }
 
               return CustomScrollView(
@@ -363,29 +385,6 @@ class _MyHomePageState extends State<MyHomePage> {
                           childCount: state.placeLists!.isNotEmpty
                               ? state.placeLists!.length
                               : 6, (context, index) {
-                        if (state.placeLists!.isNotEmpty) {
-                          rows.clear();
-                          rows = [
-                            for (PlaceList placeList in state.placeLists!)
-                              Animate(
-                                  effects: const [SlideEffect()],
-                                  child: CategoryCard(placeList: placeList))
-                          ];
-                        } else {
-                          rows.clear();
-                          // List<SampleCategoryCard> sampleCategoryCards = [];
-                          for (PlaceList placeList in samplePlaceLists) {
-                            rows.add(Animate(
-                                effects: const [SlideEffect()],
-                                child:
-                                    SampleCategoryCard(placeList: placeList)));
-                          }
-                          rows.insert(
-                              0,
-                              Animate(
-                                  effects: const [SlideEffect()],
-                                  child: const BlankCategoryCard()));
-                        }
                         return rows[index];
                       }),
                       onReorder: _onReorderSampleItem)

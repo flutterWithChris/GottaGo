@@ -163,7 +163,8 @@ class _CategoryPageState extends State<CategoryPage> {
                             curve: Curves.easeInOut),
                       ],
                       child: Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 4.0),
+                        padding: const EdgeInsets.symmetric(
+                            vertical: 4.0, horizontal: 8.0),
                         child: PlaceCard(
                             place: place,
                             imageUrl: place.mainPhoto,
@@ -176,17 +177,18 @@ class _CategoryPageState extends State<CategoryPage> {
                       ),
                     )
                 ];
-
-                for (int i = 0; i < 5; i++) {
-                  rows.add(Opacity(
-                    opacity: 0.4,
-                    child: Animate(effects: const [
-                      ShimmerEffect(
-                          duration: Duration(milliseconds: 500),
-                          curve: Curves.easeInOut),
-                      SlideEffect(curve: Curves.easeOutBack)
-                    ], child: const BlankPlaceCard()),
-                  ));
+                if (state.places.length < 5) {
+                  for (int i = 0; i < 5 - state.places.length; i++) {
+                    rows.add(Opacity(
+                      opacity: 0.4,
+                      child: Animate(effects: const [
+                        ShimmerEffect(
+                            duration: Duration(milliseconds: 500),
+                            curve: Curves.easeInOut),
+                        SlideEffect(curve: Curves.easeOutBack)
+                      ], child: const BlankPlaceCard()),
+                    ));
+                  }
                 }
               } else {
                 rows = [

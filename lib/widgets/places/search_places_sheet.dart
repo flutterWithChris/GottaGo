@@ -1,5 +1,4 @@
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:flex_color_scheme/flex_color_scheme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -42,8 +41,9 @@ class _SearchPlacesSheetState extends State<SearchPlacesSheet> {
   Widget build(BuildContext context) {
     return DraggableScrollableSheet(
       controller: scrollableController,
-      initialChildSize: 0.7,
-      maxChildSize: 1.0,
+      initialChildSize:
+          context.watch<PlaceBloc>().state is PlaceLoaded ? 0.89 : 0.6,
+      maxChildSize: 0.89,
       expand: false,
       builder: (context, scrollController) {
         return Padding(
@@ -64,7 +64,7 @@ class _SearchPlacesSheetState extends State<SearchPlacesSheet> {
               BlocConsumer<PlaceBloc, PlaceState>(
                 listener: (context, state) {
                   if (state is PlaceLoaded) {
-                    scrollableController!.animateTo(0.8,
+                    scrollableController!.animateTo(0.89,
                         duration: const Duration(milliseconds: 150),
                         curve: Curves.easeOutBack);
                   }
@@ -76,304 +76,428 @@ class _SearchPlacesSheetState extends State<SearchPlacesSheet> {
                   if (state is PlaceLoaded) {
                     GooglePlace googlePlace = state.googlePlace;
                     return Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 8.0),
-                      child: Column(
-                        children: [
+                        padding: const EdgeInsets.symmetric(vertical: 8.0),
+                        child: Column(children: [
                           Padding(
-                            padding: const EdgeInsets.all(4.0),
-                            child: Card(
-                              child: Column(
-                                children: [
-                                  Stack(
-                                    alignment: AlignmentDirectional.bottomEnd,
-                                    children: [
-                                      AspectRatio(
-                                        aspectRatio: 16 / 9,
-                                        child: CachedNetworkImage(
-                                          placeholder: (context, url) {
-                                            return AspectRatio(
-                                              aspectRatio: 16 / 9,
-                                              child: Center(
-                                                child: Animate(
-                                                  onPlay: (controller) {
-                                                    controller.repeat();
-                                                  },
-                                                  effects: const [
-                                                    ShimmerEffect(
-                                                        duration: Duration(
-                                                            seconds: 2))
-                                                  ],
-                                                  child: Container(
-                                                    height: 300,
-                                                    width:
-                                                        MediaQuery.of(context)
-                                                            .size
-                                                            .width,
-                                                    color: Theme.of(context)
-                                                        .primaryColor,
-                                                  ),
-                                                ),
-                                              ),
-                                            );
-                                          },
-                                          imageUrl:
-                                              'https://maps.googleapis.com/maps/api/place/photo?maxwidth=1080&maxheight=1920&photo_reference=${state.googlePlace.photos![0]['photo_reference']}&key=${dotenv.get('GOOGLE_PLACES_API_KEY')}',
-                                          fit: BoxFit.cover,
-                                        ),
-                                      ),
-                                      Positioned(
-                                        left: 10,
-                                        top: 8,
-                                        child: Wrap(
-                                          spacing: 8.0,
-                                          children: [
-                                            CircleAvatar(
-                                              radius: 16,
-                                              child: IconButton(
-                                                onPressed: () {
-                                                  // TODO: Implement webview
-                                                },
-                                                icon: const Icon(
-                                                    Icons.web_rounded,
-                                                    size: 16),
-                                              ),
-                                            ),
-                                            CircleAvatar(
-                                              radius: 16,
-                                              child: IconButton(
-                                                onPressed: () {
-                                                  // TODO: Implement Call Function
-                                                },
-                                                icon: const Icon(Icons.phone,
-                                                    size: 16),
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                  Padding(
-                                    padding: const EdgeInsets.symmetric(
-                                        vertical: 12.0, horizontal: 24.0),
-                                    child: FittedBox(
-                                      child: Text(
-                                        state.googlePlace.name,
-                                        // placeDetails!.name!,
-                                        textAlign: TextAlign.center,
-                                        style: Theme.of(context)
-                                            .textTheme
-                                            .titleLarge!
-                                            .copyWith(
-                                                fontWeight: FontWeight.bold),
-                                      ),
-                                    ),
-                                  ),
-                                  Padding(
-                                    padding: const EdgeInsets.symmetric(
-                                        horizontal: 4.0),
-                                    child: FittedBox(
-                                      child: Wrap(
-                                        spacing: 4.0,
-                                        crossAxisAlignment:
-                                            WrapCrossAlignment.center,
-                                        children: [
-                                          const Icon(
-                                            Icons.place_rounded,
-                                            size: 18,
-                                          ),
-                                          Text(state
-                                              .googlePlace.formattedAddress),
-                                        ],
-                                      ),
-                                    ),
-                                  ),
-                                  Padding(
-                                    padding: const EdgeInsets.all(8.0),
-                                    child: Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceBetween,
+                              padding: const EdgeInsets.all(4.0),
+                              child: Card(
+                                child: Column(
+                                  children: [
+                                    Stack(
+                                      alignment: AlignmentDirectional.bottomEnd,
                                       children: [
-                                        Padding(
-                                          padding: const EdgeInsets.symmetric(
-                                              horizontal: 8.0),
-                                          child: Opacity(
-                                            opacity: 0.9,
-                                            child: SizedBox(
-                                              height: 40,
-                                              child: FittedBox(
-                                                child: Chip(
-                                                  shape: RoundedRectangleBorder(
-                                                      borderRadius:
-                                                          BorderRadius.circular(
-                                                              16)),
-                                                  label: Text(
-                                                    state.googlePlace.type
-                                                        .capitalizeString(),
-                                                    style: Theme.of(context)
-                                                        .textTheme
-                                                        .titleSmall,
+                                        AspectRatio(
+                                          aspectRatio: 16 / 9,
+                                          child: CachedNetworkImage(
+                                            placeholder: (context, url) {
+                                              return AspectRatio(
+                                                aspectRatio: 16 / 9,
+                                                child: Center(
+                                                  child: Animate(
+                                                    onPlay: (controller) {
+                                                      controller.repeat();
+                                                    },
+                                                    effects: const [
+                                                      ShimmerEffect(
+                                                          duration: Duration(
+                                                              seconds: 2))
+                                                    ],
+                                                    child: Container(
+                                                      height: 300,
+                                                      width:
+                                                          MediaQuery.of(context)
+                                                              .size
+                                                              .width,
+                                                      color: Theme.of(context)
+                                                          .primaryColor,
+                                                    ),
                                                   ),
-                                                  avatar: Image.network(
-                                                    state.googlePlace.icon,
-                                                    height: 18,
+                                                ),
+                                              );
+                                            },
+                                            imageUrl:
+                                                'https://maps.googleapis.com/maps/api/place/photo?maxwidth=1080&maxheight=1920&photo_reference=${state.googlePlace.photos![0]['photo_reference']}&key=${dotenv.get('GOOGLE_PLACES_API_KEY')}',
+                                            fit: BoxFit.cover,
+                                          ),
+                                        ),
+                                        Padding(
+                                          padding: const EdgeInsets.all(8.0),
+                                          child: Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.spaceBetween,
+                                            children: [
+                                              Opacity(
+                                                opacity: 0.9,
+                                                child: SizedBox(
+                                                  height: 40,
+                                                  child: FittedBox(
+                                                    child: Chip(
+                                                      label: Wrap(
+                                                        spacing: 6.0,
+                                                        crossAxisAlignment:
+                                                            WrapCrossAlignment
+                                                                .center,
+                                                        children: [
+                                                          RatingBar.builder(
+                                                            onRatingUpdate:
+                                                                (value) => null,
+                                                            ignoreGestures:
+                                                                true,
+                                                            itemSize: 16.0,
+                                                            allowHalfRating:
+                                                                true,
+                                                            initialRating: state
+                                                                .googlePlace
+                                                                .rating,
+                                                            itemBuilder:
+                                                                (context,
+                                                                    index) {
+                                                              return const Icon(
+                                                                Icons.star,
+                                                                size: 12.0,
+                                                                color: Colors
+                                                                    .amber,
+                                                              );
+                                                            },
+                                                          ),
+                                                          Text(state.googlePlace
+                                                              .rating
+                                                              .toString()),
+                                                        ],
+                                                      ),
+                                                    ),
                                                   ),
                                                 ),
                                               ),
-                                            ),
-                                          ),
-                                        ),
-                                        Wrap(
-                                          spacing: 6.0,
-                                          crossAxisAlignment:
-                                              WrapCrossAlignment.center,
-                                          children: [
-                                            RatingBar.builder(
-                                              onRatingUpdate: (value) => null,
-                                              ignoreGestures: true,
-                                              itemSize: 20.0,
-                                              allowHalfRating: true,
-                                              initialRating:
-                                                  state.googlePlace.rating,
-                                              itemBuilder: (context, index) {
-                                                return const Icon(
-                                                  Icons.star,
-                                                  size: 12.0,
-                                                  color: Colors.amber,
-                                                );
-                                              },
-                                            ),
-                                            Text(state.googlePlace.rating
-                                                .toString()),
-                                          ],
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                  Padding(
-                                    padding: const EdgeInsets.only(
-                                        left: 8.0, right: 8.0, bottom: 8.0),
-                                    child: Card(
-                                      color: FlexColor
-                                          .bahamaBlueDarkPrimaryContainer,
-                                      child: Padding(
-                                        padding: const EdgeInsets.symmetric(
-                                            horizontal: 16.0, vertical: 16.0),
-                                        child: Column(
-                                          mainAxisSize: MainAxisSize.min,
-                                          children: [
-                                            Text(
-                                              '"${state.googlePlace.reviews![0]!['text']!.toString()}"',
-                                              maxLines: 4,
-                                              overflow: TextOverflow.ellipsis,
-                                            ),
-                                            Padding(
-                                              padding: const EdgeInsets.only(
-                                                  top: 8.0, right: 8.0),
-                                              child: Row(
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment.end,
+                                              Wrap(
+                                                crossAxisAlignment:
+                                                    WrapCrossAlignment.center,
+                                                spacing: 12.0,
                                                 children: [
-                                                  Wrap(
-                                                    crossAxisAlignment:
-                                                        WrapCrossAlignment
-                                                            .center,
-                                                    spacing: 12.0,
-                                                    children: [
-                                                      state.googlePlace.reviews![
-                                                                      0]![
-                                                                  'profile_photo_url'] !=
-                                                              null
-                                                          ? CircleAvatar(
-                                                              radius: 16,
-                                                              child: CachedNetworkImage(
-                                                                  imageUrl: state
-                                                                          .googlePlace
-                                                                          .reviews![0]![
-                                                                      'profile_photo_url']),
-                                                            )
-                                                          : const SizedBox(),
-                                                      Text(
-                                                          '- ${state.googlePlace.reviews![0]!['author_name']!.toString()}'),
-                                                    ],
+                                                  CircleAvatar(
+                                                    radius: 18,
+                                                    child: IconButton(
+                                                      onPressed: () {
+                                                        // TODO: Implement webview
+                                                      },
+                                                      icon: const Icon(
+                                                          Icons.web_rounded,
+                                                          size: 16),
+                                                    ),
+                                                  ),
+                                                  CircleAvatar(
+                                                    radius: 18,
+                                                    child: IconButton(
+                                                      onPressed: () {
+                                                        // TODO: Implement Call Function
+                                                      },
+                                                      icon: const Icon(
+                                                          Icons.phone,
+                                                          size: 16),
+                                                    ),
                                                   ),
                                                 ],
                                               ),
-                                            ),
-                                          ],
+                                            ],
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                    Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                          vertical: 12.0, horizontal: 24.0),
+                                      child: FittedBox(
+                                        child: Text(
+                                          state.googlePlace.name,
+                                          maxLines: 1,
+                                          overflow: TextOverflow.ellipsis,
+                                          textAlign: TextAlign.center,
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .titleLarge!
+                                              .copyWith(
+                                                  fontWeight: FontWeight.bold),
                                         ),
                                       ),
                                     ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: ElevatedButton.icon(
-                                onPressed: () {
-                                  // print('Place Added: ${placeDetails.name}');
-                                  print(state.googlePlace.addressComponents);
-                                  var placeCity = state
-                                          .googlePlace.addressComponents
-                                          .firstWhere((element) =>
-                                              element['types']?[0] ==
-                                                  'locality' ||
-                                              element['types']?[0] ==
-                                                  'administrative_area_level_3')[
-                                      'short_name'];
-                                  String? placeState = state
-                                          .googlePlace.addressComponents
-                                          .firstWhere((element) =>
-                                              element['types']?[0] ==
-                                              'administrative_area_level_1')[
-                                      'short_name'];
-                                  context
-                                      .read<SavedListsBloc>()
-                                      .add(UpdateSavedLists());
-                                  context.read<SavedPlacesBloc>().add(AddPlace(
-                                      placeList: context
-                                          .read<SavedPlacesBloc>()
-                                          .state
-                                          .placeList!,
-                                      place: Place(
-                                          website: googlePlace.placeId,
-                                          hours: googlePlace.weekDayText,
-                                          reviews: googlePlace.reviews,
-                                          rating: googlePlace.rating,
-                                          name: googlePlace.name,
-                                          address: googlePlace.formattedAddress,
-                                          icon: googlePlace.icon,
-                                          mapsUrl: googlePlace.url,
-                                          phoneNumber:
-                                              googlePlace.formattedPhoneNumber,
-                                          city: placeCity,
-                                          state: placeState,
-                                          type: googlePlace.type,
-                                          mainPhoto: googlePlace.photos?[0]
-                                              ['photo_reference'])));
-                                  Navigator.pop(context);
-                                },
-                                icon:
-                                    const Icon(Icons.add_location_alt_outlined),
-                                label: Text.rich(TextSpan(
-                                  children: [
-                                    const TextSpan(text: 'Add to '),
-                                    TextSpan(
-                                        text: context
-                                            .read<SavedPlacesBloc>()
-                                            .state
-                                            .placeList!
-                                            .name,
-                                        style: const TextStyle(
-                                            fontWeight: FontWeight.bold)),
+                                    Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 16.0),
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          Flexible(
+                                            flex: 2,
+                                            child: FittedBox(
+                                              child: Wrap(
+                                                spacing: 4.0,
+                                                crossAxisAlignment:
+                                                    WrapCrossAlignment.center,
+                                                children: [
+                                                  const Icon(
+                                                    Icons.place_rounded,
+                                                    size: 16,
+                                                  ),
+                                                  Text(state.googlePlace
+                                                      .formattedAddress),
+                                                ],
+                                              ),
+                                            ),
+                                          ),
+                                          Flexible(
+                                            child: Opacity(
+                                              opacity: 0.9,
+                                              child: SizedBox(
+                                                height: 40,
+                                                child: FittedBox(
+                                                  child: Chip(
+                                                    shape:
+                                                        RoundedRectangleBorder(
+                                                            borderRadius:
+                                                                BorderRadius
+                                                                    .circular(
+                                                                        16)),
+                                                    label: Text(
+                                                      state.googlePlace.type
+                                                          .capitalizeString(),
+                                                      style: Theme.of(context)
+                                                          .textTheme
+                                                          .titleSmall,
+                                                    ),
+                                                    avatar: Image.network(
+                                                      state.googlePlace.icon,
+                                                      height: 18,
+                                                    ),
+                                                  ),
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                    Padding(
+                                        padding: const EdgeInsets.symmetric(
+                                            horizontal: 8.0, vertical: 8.0),
+                                        child: ConstrainedBox(
+                                          constraints: const BoxConstraints(
+                                            maxHeight: 220,
+                                          ),
+                                          child: ListView.builder(
+                                              clipBehavior: Clip.antiAlias,
+                                              itemExtent: 250,
+                                              physics:
+                                                  const BouncingScrollPhysics(),
+                                              scrollDirection: Axis.horizontal,
+                                              //controller: scrollController,
+                                              shrinkWrap: true,
+                                              itemCount: state.googlePlace
+                                                      .reviews?.length ??
+                                                  0,
+                                              itemBuilder: (context, index) {
+                                                var thisReview = state
+                                                    .googlePlace
+                                                    .reviews![index];
+                                                return Align(
+                                                  child: Padding(
+                                                    padding: const EdgeInsets
+                                                            .symmetric(
+                                                        horizontal: 4.0),
+                                                    child: Card(
+                                                      elevation: 1.6,
+                                                      child: Center(
+                                                          child: Padding(
+                                                        padding:
+                                                            const EdgeInsets
+                                                                    .symmetric(
+                                                                vertical: 12.0,
+                                                                horizontal:
+                                                                    16.0),
+                                                        child: Column(
+                                                          mainAxisSize:
+                                                              MainAxisSize.min,
+                                                          crossAxisAlignment:
+                                                              CrossAxisAlignment
+                                                                  .start,
+                                                          children: [
+                                                            Text(
+                                                              '"${state.googlePlace.reviews![index]['text']}"',
+                                                              maxLines: 4,
+                                                              overflow:
+                                                                  TextOverflow
+                                                                      .ellipsis,
+                                                            ),
+                                                            SizedBox(
+                                                              height: 40,
+                                                              width: 125,
+                                                              child: FittedBox(
+                                                                child: Wrap(
+                                                                    crossAxisAlignment:
+                                                                        WrapCrossAlignment
+                                                                            .center,
+                                                                    spacing:
+                                                                        8.0,
+                                                                    children: [
+                                                                      RatingBar.builder(
+                                                                          allowHalfRating: true,
+                                                                          itemSize: 12,
+                                                                          itemCount: 5,
+                                                                          ignoreGestures: true,
+                                                                          initialRating: thisReview['rating'].toDouble(),
+                                                                          itemBuilder: (context, index) {
+                                                                            return const Icon(
+                                                                              Icons.star,
+                                                                              color: Colors.amber,
+                                                                            );
+                                                                          },
+                                                                          onRatingUpdate: (value) {}),
+                                                                      Text(
+                                                                        '${thisReview['rating'].toString()}.0',
+                                                                        style: Theme.of(context)
+                                                                            .textTheme
+                                                                            .bodySmall!
+                                                                            .copyWith(
+                                                                              fontWeight: FontWeight.bold,
+                                                                              fontSize: 10,
+                                                                            ),
+                                                                      )
+                                                                    ]),
+                                                              ),
+                                                            ),
+                                                            Padding(
+                                                              padding:
+                                                                  const EdgeInsets
+                                                                          .symmetric(
+                                                                      vertical:
+                                                                          8.0),
+                                                              child: Row(
+                                                                children: [
+                                                                  Flexible(
+                                                                    child:
+                                                                        CircleAvatar(
+                                                                      radius:
+                                                                          16,
+                                                                      child: CachedNetworkImage(
+                                                                          imageUrl:
+                                                                              thisReview['profile_photo_url']),
+                                                                    ),
+                                                                  ),
+                                                                  const SizedBox(
+                                                                    width: 12.0,
+                                                                  ),
+                                                                  Flexible(
+                                                                    flex: 4,
+                                                                    child:
+                                                                        FittedBox(
+                                                                      child:
+                                                                          Text(
+                                                                        thisReview[
+                                                                            'author_name'],
+                                                                        overflow:
+                                                                            TextOverflow.ellipsis,
+                                                                        style: const TextStyle(
+                                                                            fontWeight:
+                                                                                FontWeight.bold),
+                                                                        textAlign:
+                                                                            TextAlign.left,
+                                                                      ),
+                                                                    ),
+                                                                  ),
+                                                                ],
+                                                              ),
+                                                            ),
+                                                          ],
+                                                        ),
+                                                      )),
+                                                    ),
+                                                  ),
+                                                );
+                                              }),
+                                        )),
+                                    Padding(
+                                      padding: const EdgeInsets.all(8.0),
+                                      child: ElevatedButton.icon(
+                                          style: ElevatedButton.styleFrom(
+                                            elevation: 4.0,
+                                          ),
+                                          onPressed: () {
+                                            // print('Place Added: ${placeDetails.name}');
+                                            print(state
+                                                .googlePlace.addressComponents);
+                                            var placeCity = state
+                                                    .googlePlace.addressComponents
+                                                    .firstWhere((element) =>
+                                                        element['types']?[0] ==
+                                                            'locality' ||
+                                                        element['types']?[0] ==
+                                                            'administrative_area_level_3')[
+                                                'short_name'];
+                                            String? placeState = state
+                                                    .googlePlace.addressComponents
+                                                    .firstWhere((element) =>
+                                                        element['types']?[0] ==
+                                                        'administrative_area_level_1')[
+                                                'short_name'];
+                                            context
+                                                .read<SavedListsBloc>()
+                                                .add(UpdateSavedLists());
+                                            context.read<SavedPlacesBloc>().add(
+                                                  AddPlace(
+                                                    placeList: context
+                                                        .read<SavedPlacesBloc>()
+                                                        .state
+                                                        .placeList!,
+                                                    place: Place(
+                                                      placeId:
+                                                          googlePlace.placeId,
+                                                      name: googlePlace.name,
+                                                      type: googlePlace.type,
+                                                      website:
+                                                          googlePlace.website,
+                                                      city: placeCity,
+                                                      state: placeState,
+                                                      rating:
+                                                          googlePlace.rating,
+                                                      address: googlePlace
+                                                          .formattedAddress,
+                                                      phoneNumber: googlePlace
+                                                          .formattedPhoneNumber,
+                                                      icon: googlePlace.icon,
+                                                      mapsUrl: googlePlace.url,
+                                                      mainPhoto: googlePlace
+                                                              .photos?[0]
+                                                          ['photo_reference'],
+                                                      hours: googlePlace
+                                                          .weekDayText,
+                                                      reviews:
+                                                          googlePlace.reviews,
+                                                    ),
+                                                  ),
+                                                );
+                                            Navigator.pop(context);
+                                          },
+                                          icon: const Icon(
+                                              Icons.add_location_alt_outlined),
+                                          label: Text.rich(TextSpan(
+                                            children: [
+                                              const TextSpan(text: 'Add to '),
+                                              TextSpan(
+                                                  text: context
+                                                      .read<SavedPlacesBloc>()
+                                                      .state
+                                                      .placeList!
+                                                      .name,
+                                                  style: const TextStyle(
+                                                      fontWeight:
+                                                          FontWeight.bold)),
+                                            ],
+                                          ))),
+                                    ),
                                   ],
-                                ))),
-                          ),
-                        ],
-                      ),
-                    );
+                                ),
+                              ))
+                        ]));
                   } else {
                     return const Center(
                       child: Text('Something Went Wrong..'),
@@ -445,7 +569,7 @@ class _PlaceSearchBarState extends State<PlaceSearchBar> {
               }
 
               if (query == '') {
-                widget.controller.close();
+                // widget.controller.close();
               }
             },
             transition: CircularFloatingSearchBarTransition(),
