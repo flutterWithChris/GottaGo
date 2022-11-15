@@ -47,5 +47,24 @@
 	<true/>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
+	<!-- Google Sign-In section -->
+	<key>CFBundleURLTypes</key>
+		<array>
+			<dict>
+				<key>CFBundleTypeRole</key>
+				<string>Editor</string>
+				<key>CFBundleURLSchemes</key>
+			<array>
+			<string>$(GOOGLE_SERVICE_REVERSE_CLIENT_ID)</string>
+			</array>
+			</dict>
+		</array>
+<!-- End of the Google Sign-In section -->
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>This app requires access to the photo library.</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>This app does not require access to the microphone.</string>
+	<key>NSCameraUsageDescription</key>
+	<string>This app requires access to the camera.</string>
 </dict>
 </plist>

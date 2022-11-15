@@ -48,7 +48,6 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
   @override
   Future<void> close() {
-    // TODO: implement close
     _authUserSubscription?.cancel();
     _userSubscription?.cancel();
     return super.close();

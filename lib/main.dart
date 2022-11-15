@@ -9,9 +9,11 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:go_router/go_router.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:leggo/bloc/autocomplete/bloc/autocomplete_bloc.dart';
 import 'package:leggo/bloc/bloc/auth/bloc/auth_bloc.dart';
 import 'package:leggo/bloc/bloc/invite/bloc/invite_bloc.dart';
+import 'package:leggo/bloc/onboarding/bloc/onboarding_bloc.dart';
 
 import 'package:leggo/bloc/saved_categories/bloc/saved_lists_bloc.dart';
 import 'package:leggo/bloc/saved_places/bloc/saved_places_bloc.dart';
@@ -19,14 +21,18 @@ import 'package:leggo/category_page.dart';
 import 'package:leggo/cubit/cubit/cubit/view_place_cubit.dart';
 import 'package:leggo/cubit/cubit/login/login_cubit.dart';
 import 'package:leggo/cubit/cubit/random_wheel_cubit.dart';
+import 'package:leggo/cubit/cubit/signup/sign_up_cubit.dart';
 import 'package:leggo/firebase_options.dart';
 import 'package:leggo/login.dart';
 import 'package:leggo/model/place_list.dart';
 import 'package:leggo/random_wheel_page.dart';
 import 'package:leggo/repository/auth_repository.dart';
+import 'package:leggo/repository/database/database_repository.dart';
 import 'package:leggo/repository/place_list_repository.dart';
 import 'package:leggo/repository/places_repository.dart';
+import 'package:leggo/repository/storage/storage_repository.dart';
 import 'package:leggo/repository/user_repository.dart';
+import 'package:leggo/signup.dart';
 import 'package:leggo/widgets/lists/blank_category_card.dart';
 import 'package:leggo/widgets/lists/category_card.dart';
 import 'package:leggo/widgets/lists/create_list_dialog.dart';
@@ -34,11 +40,15 @@ import 'package:leggo/widgets/main_bottom_navbar.dart';
 import 'package:leggo/widgets/lists/sample_category_card.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:reorderables/reorderables.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'bloc/place/place_bloc.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  // * Force onboarding pref
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+  prefs.setInt('initScreen', 0);
   await Future.wait([
     dotenv.load(fileName: '.env'),
     Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform),
@@ -74,6 +84,12 @@ class _MyAppState extends State<MyApp> {
         RepositoryProvider(
           create: (context) => PlacesRepository(),
         ),
+        RepositoryProvider(
+          create: (context) => DatabaseRepository(),
+        ),
+        RepositoryProvider(
+          create: (context) => StorageRepository(),
+        ),
       ],
       child: MultiBlocProvider(
         providers: [
@@ -81,6 +97,15 @@ class _MyAppState extends State<MyApp> {
             create: (context) => AuthBloc(
                 authRepository: context.read<AuthRepository>(),
                 userRepository: context.read<UserRepository>()),
+          ),
+          BlocProvider(
+            create: (context) =>
+                SignUpCubit(authRepository: context.read<AuthRepository>()),
+          ),
+          BlocProvider(
+            create: (context) => OnboardingBloc(
+                databaseRepository: context.read<DatabaseRepository>(),
+                storageRepository: context.read<StorageRepository>()),
           ),
           BlocProvider(
             create: (context) =>
@@ -130,10 +155,9 @@ class _MyAppState extends State<MyApp> {
                 ),
                 visualDensity: FlexColorScheme.comfortablePlatformDensity,
                 useMaterial3: true,
-                // To use the playground font, add GoogleFonts package and uncomment
-                // fontFamily: GoogleFonts.notoSans().fontFamily,
               ),
               darkTheme: FlexThemeData.dark(
+                fontFamily: GoogleFonts.archivo().fontFamily,
                 scheme: FlexScheme.bahamaBlue,
                 surfaceMode: FlexSurfaceMode.highScaffoldLowSurface,
                 blendLevel: 15,
@@ -143,31 +167,7 @@ class _MyAppState extends State<MyApp> {
                 ),
                 visualDensity: FlexColorScheme.comfortablePlatformDensity,
                 useMaterial3: true,
-                // To use the playground font, add GoogleFonts package and uncomment
-                // fontFamily: GoogleFonts.notoSans().fontFamily,
               ),
-// If you do not have a themeMode switch, uncomment this line
-// to let the device system mode control the theme mode:
-// themeMode: ThemeMode.system,
-
-// If you do not have a themeMode switch, uncomment this line
-// to let the device system mode control the theme mode:
-// themeMode: ThemeMode.system,
-
-// If you do not have a themeMode switch, uncomment this line
-// to let the device system mode control the theme mode:
-// themeMode: ThemeMode.system,
-
-// If you do not have a themeMode switch, uncomment this line
-// to let the device system mode control the theme mode:
-// themeMode: ThemeMode.system,
-
-// If you do not have a themeMode switch, uncomment this line
-// to let the device system mode control the theme mode:
-// themeMode: ThemeMode.system,
-
-              // If you do not have a themeMode switch, uncomment this line
-              // to let the device system mode control the theme mode:
               themeMode: ThemeMode.system,
               routeInformationParser: router.routeInformationParser,
               routeInformationProvider: router.routeInformationProvider,
@@ -183,16 +183,20 @@ class _MyAppState extends State<MyApp> {
   late final router = GoRouter(
       initialLocation: '/',
       refreshListenable: GoRouterRefreshStream(bloc.stream),
-      redirect: (context, state) {
-        bool loggedIn = bloc.state.status == AuthStatus.authenticated;
-        // bool loggedIn = true;
+      redirect: (context, state) async {
+        bool loggedIn =
+            context.read<AuthBloc>().state.status == AuthStatus.authenticated;
+        SharedPreferences prefs = await SharedPreferences.getInstance();
+        int? initScreen = prefs.getInt("initScreen");
         bool isLoggingIn = state.location == '/login';
-        bool completedOnboarding = true;
         bool isOnboarding = state.location == '/signup';
+        bool completedOnboarding = initScreen == 1;
 
         if (!loggedIn) {
           return isLoggingIn
-              ? null
+              ? completedOnboarding
+                  ? null
+                  : '/signup'
               : isOnboarding
                   ? null
                   : '/login';
@@ -200,13 +204,16 @@ class _MyAppState extends State<MyApp> {
 
         final isLoggedIn = state.location == '/';
 
-        if (loggedIn && completedOnboarding == false) return null;
         if (loggedIn && isLoggingIn) return isLoggedIn ? null : '/';
-        if (loggedIn && isOnboarding) return isLoggedIn ? null : '/';
 
         return null;
       },
       routes: [
+        GoRoute(
+          name: 'signup',
+          path: '/signup',
+          builder: (context, state) => const SignUp(),
+        ),
         GoRoute(
           path: '/login',
           pageBuilder: (context, state) =>

@@ -1,21 +1,24 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class User {
-  final String? id;
+  final String id;
+  final String userName;
   final String name;
   final String email;
   final String profilePicture;
-  final List<String>? placeListIds;
+  final List<String> placeListIds;
   const User({
-    this.id,
+    required this.id,
+    required this.userName,
     required this.name,
     required this.email,
     required this.profilePicture,
-    this.placeListIds,
+    required this.placeListIds,
   });
 
   User copyWith({
     String? id,
+    String? userName,
     String? name,
     String? email,
     String? profilePicture,
@@ -23,6 +26,7 @@ class User {
   }) {
     return User(
       id: id ?? this.id,
+      userName: userName ?? this.userName,
       name: name ?? this.name,
       email: email ?? this.email,
       profilePicture: profilePicture ?? this.profilePicture,
@@ -32,7 +36,8 @@ class User {
 
   factory User.fromSnapshot(DocumentSnapshot snap) {
     return User(
-      id: snap.id,
+      id: snap['id'],
+      userName: snap['userName'],
       name: snap['name'],
       email: snap['email'],
       profilePicture: snap['profilePicture'],
@@ -42,13 +47,16 @@ class User {
 
   Map<String, Object> toDocument() {
     return {
+      'id': id,
+      'userName': userName,
       'name': name,
       'email': email,
       'profilePicture': profilePicture,
+      'placeListIds': placeListIds,
       //   'placeLists': placeLists!.asMap(),
     };
   }
 
   @override
-  List<Object?> get props => [id!, name, email, profilePicture];
+  List<Object?> get props => [id, name, userName, email, profilePicture];
 }
