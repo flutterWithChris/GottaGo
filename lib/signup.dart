@@ -596,6 +596,51 @@ class _WelcomePageState extends State<WelcomePage> {
                       crossAxisAlignment: WrapCrossAlignment.center,
                       spacing: 8.0,
                       children: [
+                        Platform.isIOS
+                            ? ElevatedButton.icon(
+                                style: ElevatedButton.styleFrom(
+                                    fixedSize: const Size(240, 30)),
+                                onPressed: () {
+                                  context.read<SignUpCubit>().signUpWithApple();
+                                  if (!mounted) return;
+                                  User user = User(
+                                      id: context
+                                          .read<SignUpCubit>()
+                                          .state
+                                          .user!
+                                          .uid,
+                                      userName: '',
+                                      name: context
+                                              .read<SignUpCubit>()
+                                              .state
+                                              .user
+                                              ?.displayName ??
+                                          '',
+                                      email: context
+                                              .read<SignUpCubit>()
+                                              .state
+                                              .user
+                                              ?.email ??
+                                          '',
+                                      profilePicture: '',
+                                      placeListIds: []);
+
+                                  context
+                                      .read<OnboardingBloc>()
+                                      .add(StartOnboarding(user: user));
+                                },
+                                icon: SizedBox(
+                                  height: 18,
+                                  width: 24,
+                                  //  width: 24,
+                                  child: CachedNetworkImage(
+                                    imageUrl:
+                                        'https://www.freepnglogos.com/uploads/apple-logo-png/apple-logo-png-dallas-shootings-don-add-are-speech-zones-used-4.png',
+                                    color: Colors.white,
+                                  ),
+                                ),
+                                label: const Text('Sign Up With Apple'))
+                            : const SizedBox(),
                         ElevatedButton.icon(
                             style: ElevatedButton.styleFrom(
                                 fixedSize: const Size(240, 30)),
@@ -638,25 +683,21 @@ class _WelcomePageState extends State<WelcomePage> {
                                       'https://upload.wikimedia.org/wikipedia/commons/thumb/5/53/Google_%22G%22_Logo.svg/1200px-Google_%22G%22_Logo.svg.png'),
                             ),
                             label: const Text('Sign Up With Google')),
-                        Platform.isIOS
-                            ? ElevatedButton.icon(
-                                style: ElevatedButton.styleFrom(
-                                    fixedSize: const Size(240, 30)),
-                                onPressed: () {
-                                  context.read<SignUpCubit>().signUpWithApple();
-                                },
-                                icon: SizedBox(
-                                  height: 18,
-                                  width: 24,
-                                  //  width: 24,
-                                  child: CachedNetworkImage(
-                                    imageUrl:
-                                        'https://www.freepnglogos.com/uploads/apple-logo-png/apple-logo-png-dallas-shootings-don-add-are-speech-zones-used-4.png',
-                                    color: Colors.white,
-                                  ),
-                                ),
-                                label: const Text('Sign Up With Apple'))
-                            : const SizedBox(),
+                        TextButton(
+                            onPressed: () async {
+                              SharedPreferences prefs =
+                                  await SharedPreferences.getInstance();
+                              prefs.setInt('initScreen', 1);
+                              if (!mounted) return;
+                              context.go('/login');
+                            },
+                            child: const Text.rich(TextSpan(children: [
+                              TextSpan(text: 'Already have an account?'),
+                              TextSpan(
+                                  text: ' Sign In.',
+                                  style:
+                                      TextStyle(fontWeight: FontWeight.bold)),
+                            ])))
                       ],
                     );
                   },
