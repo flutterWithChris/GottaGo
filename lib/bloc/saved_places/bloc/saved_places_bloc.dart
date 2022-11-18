@@ -2,39 +2,59 @@ import 'dart:async';
 
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
+import 'package:leggo/bloc/saved_categories/bloc/saved_lists_bloc.dart';
 import 'package:leggo/model/place.dart';
 import 'package:leggo/model/place_list.dart';
 import 'package:leggo/model/user.dart';
 import 'package:leggo/repository/place_list_repository.dart';
+import 'package:leggo/repository/user_repository.dart';
 
 part 'saved_places_event.dart';
 part 'saved_places_state.dart';
 
 class SavedPlacesBloc extends Bloc<SavedPlacesEvent, SavedPlacesState> {
   final PlaceListRepository _placeListRepository;
+  final SavedListsBloc _savedListsBloc;
+  StreamSubscription? _savedListsSubscription;
+  PlaceList? _currentPlaceList;
   Stream<User>? contributorStream;
-  SavedPlacesBloc({required PlaceListRepository placeListRepository})
+  SavedPlacesBloc(
+      {required PlaceListRepository placeListRepository,
+      required SavedListsBloc savedListsBloc})
       : _placeListRepository = placeListRepository,
+        _savedListsBloc = savedListsBloc,
         super(SavedPlacesLoading()) {
     final List<Place> savedPlaces = [];
     List<User> contributors = [];
+
     User? listOwner;
+    _savedListsSubscription = _savedListsBloc.stream.listen((state) {
+      if (state is SavedListsUpdated) {
+        add(const UpdatePlace());
+      }
+    });
 
     on<SavedPlacesEvent>((event, emit) async {
       if (event is LoadPlaces) {
         emit(SavedPlacesLoading());
         savedPlaces.clear();
         contributors.clear();
-        placeListRepository.getPlaces(event.placeList).listen((place) {
-          savedPlaces.add(place);
-        });
-        if (event.placeList.contributorIds![0] != '') {
-          placeListRepository
-              .getListContributors(event.placeList)!
-              .listen((user) {
-            contributors.add(user);
+
+        _placeListRepository
+            .getPlaceList(event.placeList.placeListId!)!
+            .listen((placeList) {
+          placeListRepository.getPlaces(event.placeList).listen((place) {
+            savedPlaces.add(place);
           });
-        }
+
+          if (placeList.contributorIds.isNotEmpty) {
+            for (String userId in placeList.contributorIds) {
+              UserRepository().getUser(userId).listen((user) {
+                contributors.add(user);
+              });
+            }
+          }
+        });
 
         placeListRepository.getListOwner(event.placeList).listen((user) {
           listOwner = user;
@@ -62,8 +82,8 @@ class SavedPlacesBloc extends Bloc<SavedPlacesEvent, SavedPlacesState> {
         add(LoadPlaces(placeList: event.placeList));
       }
       if (event is UpdatePlace) {
-        emit(SavedPlacesUpdated(places: savedPlaces));
-        add(LoadPlaces(placeList: event.placeList));
+        // emit(SavedPlacesUpdated(places: savedPlaces));
+        add(LoadPlaces(placeList: state.placeList!));
       }
     });
   }

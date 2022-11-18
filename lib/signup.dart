@@ -13,6 +13,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:leggo/bloc/onboarding/bloc/onboarding_bloc.dart';
 import 'package:leggo/cubit/cubit/signup/sign_up_cubit.dart';
 import 'package:leggo/model/user.dart';
+import 'package:leggo/repository/database/database_repository.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
@@ -435,10 +436,9 @@ class _ProfileInfoState extends State<ProfileInfo> {
                             userNameFieldController.value.text != '' &&
                             userNameFieldController.value.text.length > 2
                         ? () async {
-                            bool userNameAvailable = true;
-                            // bool userNameAvailable = await DatabaseRepository()
-                            //     .checkUsernameAvailability(
-                            //         userNameFieldController.value.text);
+                            bool userNameAvailable = await DatabaseRepository()
+                                .checkUsernameAvailability(
+                                    userNameFieldController.value.text);
                             if (userNameAvailable == true) {
                               if (!mounted) return;
                               context.read<OnboardingBloc>().add(UpdateUser(

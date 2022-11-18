@@ -49,6 +49,18 @@ class DatabaseRepository extends BaseDatabaseRepository {
   }
 
   @override
+  Future<String?> checkUsernameExists(String userName) async {
+    var doc =
+        await _firebaseFirestore.collection('usernames').doc(userName).get();
+    if (doc.exists == false) {
+      return null;
+    } else {
+      print('User Exist: ${doc.get('userId')}');
+      return doc.get('userId');
+    }
+  }
+
+  @override
   Future<void> registerUsername(User user) async {
     await _firebaseFirestore
         .collection('usernames')
