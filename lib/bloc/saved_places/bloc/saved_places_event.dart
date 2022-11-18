@@ -6,7 +6,7 @@ abstract class SavedPlacesEvent extends Equatable {
   const SavedPlacesEvent({this.place, this.placeList});
 
   @override
-  List<Object> get props => [place!];
+  List<Object?> get props => [place];
 }
 
 class LoadPlaces extends SavedPlacesEvent {
@@ -28,7 +28,7 @@ class AddPlace extends SavedPlacesEvent {
   const AddPlace({required this.place, required this.placeList});
   @override
   // TODO: implement props
-  List<Object> get props => [place, placeList];
+  List<Object?> get props => [place, placeList];
 }
 
 class RemovePlace extends SavedPlacesEvent {
@@ -42,19 +42,19 @@ class RemovePlace extends SavedPlacesEvent {
   });
   @override
   // TODO: implement props
-  List<Object> get props => [place];
+  List<Object> get props => [place, placeList];
 }
 
 class UpdatePlace extends SavedPlacesEvent {
   @override
-  final Place place;
+  final PlaceList? placeList;
   @override
-  final PlaceList placeList;
+  final Place? place;
   const UpdatePlace({
-    required this.place,
-    required this.placeList,
+    this.place,
+    this.placeList,
   });
   @override
   // TODO: implement props
-  List<Object> get props => [place];
+  List<Object?> get props => [place, placeList];
 }

@@ -27,6 +27,19 @@ class UserRepository extends BaseUserRepository {
         .map((snap) => User.fromSnapshot(snap));
   }
 
+  Future<Stream<User>?> getUserByUsername(String userId) async {
+    try {
+      return _firebaseFirestore
+          .collection('users')
+          .doc(userId)
+          .snapshots()
+          .map((event) => User.fromSnapshot(event));
+    } on FirebaseException catch (e) {
+      print(e.message);
+      return null;
+    }
+  }
+
   @override
   Future<void> updateUser(User user) {
     // TODO: implement updateUser

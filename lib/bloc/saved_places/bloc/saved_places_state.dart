@@ -2,12 +2,11 @@ part of 'saved_places_bloc.dart';
 
 class SavedPlacesState extends Equatable {
   final PlaceList? placeList;
-  const SavedPlacesState({
-    this.placeList,
-  });
+  final List<User>? contributors;
+  const SavedPlacesState({this.placeList, this.contributors});
 
   @override
-  List<Object?> get props => [placeList];
+  List<Object?> get props => [placeList, contributors];
 }
 
 class SavedPlacesLoading extends SavedPlacesState {}
@@ -15,6 +14,7 @@ class SavedPlacesLoading extends SavedPlacesState {}
 class SavedPlacesLoaded extends SavedPlacesState {
   final User listOwner;
   final List<Place> places;
+  @override
   final List<User> contributors;
   @override
   final PlaceList placeList;

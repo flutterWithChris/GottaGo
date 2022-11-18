@@ -54,6 +54,8 @@ class CreateListDialog extends StatelessWidget {
                     print('PlaceList Added: ${listNameController.value.text}');
                     context.read<SavedListsBloc>().add(AddList(
                             placeList: PlaceList(
+                          placeCount: 0,
+                          contributorIds: [],
                           listOwnerId: FirebaseAuth.instance.currentUser!.uid,
                           name: listNameController.value.text,
                         )));

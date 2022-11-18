@@ -4,6 +4,7 @@ import 'dart:math';
 import 'package:avatar_stack/avatar_stack.dart';
 import 'package:avatar_stack/positions.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flex_color_scheme/flex_color_scheme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/animate.dart';
 import 'package:flutter_animate/effects/effects.dart';
@@ -69,10 +70,10 @@ class _CategoryPageState extends State<CategoryPage> {
           },
         ),
         body: BlocBuilder<SavedPlacesBloc, SavedPlacesState>(
-          buildWhen: (previous, current) =>
-              previous.placeList != current.placeList,
+          // buildWhen: (previous, current) =>
+          //     previous.placeList != current.placeList,
           builder: (context, state) {
-            print('Current State: ${state.toString()}');
+            print('Cotribtors: ${state.contributors}');
             if (state is SavedPlacesLoading || state is SavedPlacesUpdated) {
               rows = [
                 for (int i = 0; i < 5; i++)
@@ -133,14 +134,18 @@ class _CategoryPageState extends State<CategoryPage> {
             }
 
             if (state is SavedPlacesLoaded) {
-              List<User> contributors = state.contributors;
+              List<User>? contributors =
+                  context.watch<SavedPlacesBloc>().state.contributors;
               List<String> contributorAvatars = [];
               List<Place> places = state.places;
 
               contributorAvatars.add(state.listOwner.profilePicture);
-              for (User user in contributors) {
-                contributorAvatars.add(user.profilePicture);
+              if (contributors != null) {
+                for (User user in contributors) {
+                  contributorAvatars.add(user.profilePicture);
+                }
               }
+
               void _onReorder(int oldIndex, int newIndex) {
                 Place place = state.places.removeAt(oldIndex);
                 state.places.insert(newIndex, place);
@@ -348,7 +353,7 @@ class CategoryPageAppBar extends StatefulWidget {
     required this.listOwner,
   }) : super(key: key);
 
-  final List<User> contributors;
+  final List<User>? contributors;
   final PlaceList placeList;
   final User listOwner;
   final ScrollController scrollController;
@@ -450,18 +455,33 @@ class _CategoryPageAppBarState extends State<CategoryPageAppBar> {
                     begin: Offset(0.5, 0.0),
                     end: Offset(0.0, 0.0)),
               ],
-              child: AvatarStack(
-                settings: RestrictedPositions(
-                    align: StackAlign.right, laying: StackLaying.first),
-                borderWidth: 2.0,
-                borderColor: Theme.of(context).chipTheme.backgroundColor,
-                width: 70,
-                height: 40,
-                avatars: [
-                  CachedNetworkImageProvider(widget.listOwner.profilePicture),
-                  for (User user in widget.contributors.reversed)
-                    CachedNetworkImageProvider(user.profilePicture),
-                ],
+              child: BlocBuilder<SavedPlacesBloc, SavedPlacesState>(
+                builder: (context, state) {
+                  if (state is SavedPlacesLoading) {
+                    return LoadingAnimationWidget.beat(
+                        color: FlexColor.bahamaBlueDarkSecondary, size: 18.0);
+                  }
+                  if (state is SavedPlacesLoaded) {
+                    return AvatarStack(
+                      settings: RestrictedPositions(
+                          align: StackAlign.right, laying: StackLaying.first),
+                      borderWidth: 2.0,
+                      borderColor: Theme.of(context).chipTheme.backgroundColor,
+                      width: 70,
+                      height: 40,
+                      avatars: [
+                        CachedNetworkImageProvider(
+                            widget.listOwner.profilePicture),
+                        for (User user in state.contributors)
+                          CachedNetworkImageProvider(user.profilePicture),
+                      ],
+                    );
+                  } else {
+                    return const Center(
+                      child: Text('Error Loading Avatars!'),
+                    );
+                  }
+                },
               ),
             ),
           ),
@@ -476,9 +496,12 @@ class _CategoryPageAppBarState extends State<CategoryPageAppBar> {
               onTap: () {
                 WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
                   showDialog(
+                    useRootNavigator: false,
                     context: context,
-                    builder: (context) {
-                      return InviteDialog(placeList: widget.placeList);
+                    builder: (dialogContext) {
+                      return InviteDialog(
+                          placeList: widget.placeList,
+                          dialogContext: dialogContext);
                     },
                   );
                 });

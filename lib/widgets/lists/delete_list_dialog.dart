@@ -1,11 +1,12 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:leggo/bloc/saved_categories/bloc/saved_lists_bloc.dart';
 import 'package:leggo/model/place_list.dart';
 
 class DeleteListDialog extends StatefulWidget {
+  final PlaceList placeList;
   const DeleteListDialog({
+    required this.placeList,
     Key? key,
   }) : super(key: key);
 
@@ -66,11 +67,9 @@ class _DeleteListDialogState extends State<DeleteListDialog> {
                 onPressed: buttonEnabled
                     ? () {
                         if (deleteConfirmFieldController.text.isNotEmpty) {
-                          context.read<SavedListsBloc>().add(RemoveList(
-                              placeList: PlaceList(
-                                  listOwnerId:
-                                      FirebaseAuth.instance.currentUser!.uid,
-                                  name: deleteConfirmFieldController.text)));
+                          context
+                              .read<SavedListsBloc>()
+                              .add(RemoveList(placeList: widget.placeList));
                           Navigator.pop(context);
                         }
                       }

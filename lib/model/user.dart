@@ -36,7 +36,7 @@ class User {
 
   factory User.fromSnapshot(DocumentSnapshot snap) {
     return User(
-      id: snap['id'],
+      id: snap.id,
       userName: snap['userName'],
       name: snap['name'],
       email: snap['email'],
