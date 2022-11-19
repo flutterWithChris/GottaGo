@@ -16,7 +16,6 @@ import 'package:leggo/bloc/bloc/invite/bloc/invite_bloc.dart';
 import 'package:leggo/bloc/bloc/invite_inbox/invite_inbox_bloc.dart';
 import 'package:leggo/bloc/onboarding/bloc/onboarding_bloc.dart';
 
-
 import 'package:leggo/bloc/saved_categories/bloc/saved_lists_bloc.dart';
 import 'package:leggo/bloc/saved_places/bloc/saved_places_bloc.dart';
 import 'package:leggo/category_page.dart';
@@ -46,7 +45,6 @@ import 'package:leggo/widgets/lists/sample_category_card.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:reorderables/reorderables.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
 
 import 'bloc/place/place_bloc.dart';
 
@@ -179,7 +177,6 @@ class _MyAppState extends State<MyApp> {
                 surfaceMode: FlexSurfaceMode.highScaffoldLowSurface,
                 blendLevel: 15,
                 appBarOpacity: 0.90,
-
                 subThemesData: const FlexSubThemesData(
                   blendOnLevel: 30,
                 ),
@@ -374,6 +371,11 @@ class _MyHomePageState extends State<MyHomePage> {
                         effects: const [SlideEffect()],
                         child: CategoryCard(placeList: placeList))
                 ];
+                for (PlaceList placeList in samplePlaceLists) {
+                  rows.add(Animate(
+                      effects: const [SlideEffect()],
+                      child: SampleCategoryCard(placeList: placeList)));
+                }
               } else {
                 rows.clear();
                 // List<SampleCategoryCard> sampleCategoryCards = [];
@@ -430,7 +432,7 @@ class _MyHomePageState extends State<MyHomePage> {
                       enabled: false,
                       delegate: ReorderableSliverChildBuilderDelegate(
                           childCount: state.placeLists!.isNotEmpty
-                              ? state.placeLists!.length
+                              ? 6 - state.placeLists!.length
                               : 6, (context, index) {
                         return rows[index];
                       }),
