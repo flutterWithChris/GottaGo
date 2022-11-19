@@ -44,7 +44,9 @@ class CategoryCard extends StatelessWidget {
                                       showDialog(
                                         context: context,
                                         builder: (context) {
-                                          return const DeleteListDialog();
+                                          return DeleteListDialog(
+                                            placeList: placeList,
+                                          );
                                         },
                                       );
                                     });
