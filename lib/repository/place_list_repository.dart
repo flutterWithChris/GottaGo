@@ -240,7 +240,7 @@ class PlaceListRepository {
           .collection('place_lists')
           .doc(placeList.placeListId)
           .collection('places')
-          .doc(place.name)
+          .doc(place.placeId)
           .set(place.toDocument());
     } on FirebaseException catch (e) {
       final SnackBar snackBar = SnackBar(

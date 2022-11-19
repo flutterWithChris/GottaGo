@@ -162,24 +162,29 @@ class ViewPlaceSheet extends StatelessWidget {
                         crossAxisAlignment: WrapCrossAlignment.center,
                         spacing: 14.0,
                         children: [
-                          CircleAvatar(
-                            radius: 18,
-                            child: IconButton(
-                              onPressed: () async {
-                                await launchUrl(placeWebsite);
-                              },
-                              icon: const Icon(Icons.web_rounded, size: 16),
-                            ),
-                          ),
-                          CircleAvatar(
-                            radius: 18,
-                            child: IconButton(
-                              onPressed: () async {
-                                await launchUrl(placePhoneNumber);
-                              },
-                              icon: const Icon(Icons.phone, size: 16),
-                            ),
-                          ),
+                          selectedPlace.phoneNumber != null
+                              ? CircleAvatar(
+                                  radius: 18,
+                                  child: IconButton(
+                                    onPressed: () async {
+                                      await launchUrl(placeWebsite);
+                                    },
+                                    icon:
+                                        const Icon(Icons.web_rounded, size: 16),
+                                  ),
+                                )
+                              : const SizedBox(),
+                          selectedPlace.website != null
+                              ? CircleAvatar(
+                                  radius: 18,
+                                  child: IconButton(
+                                    onPressed: () async {
+                                      await launchUrl(placePhoneNumber);
+                                    },
+                                    icon: const Icon(Icons.phone, size: 16),
+                                  ),
+                                )
+                              : const SizedBox(),
                         ],
                       ),
                     ),

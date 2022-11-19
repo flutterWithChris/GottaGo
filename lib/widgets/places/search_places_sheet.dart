@@ -84,7 +84,7 @@ class _SearchPlacesSheetState extends State<SearchPlacesSheet> {
                                 child: Column(
                                   children: [
                                     Stack(
-                                      alignment: AlignmentDirectional.bottomEnd,
+                                      alignment: AlignmentDirectional.topCenter,
                                       children: [
                                         AspectRatio(
                                           aspectRatio: 16 / 9,
@@ -120,18 +120,81 @@ class _SearchPlacesSheetState extends State<SearchPlacesSheet> {
                                             fit: BoxFit.cover,
                                           ),
                                         ),
+                                        Positioned(
+                                          right: 8.0,
+                                          top: 8.0,
+                                          child: Wrap(
+                                            crossAxisAlignment:
+                                                WrapCrossAlignment.center,
+                                            spacing: 12.0,
+                                            children: [
+                                              CircleAvatar(
+                                                radius: 18,
+                                                child: IconButton(
+                                                  onPressed: () {
+                                                    // TODO: Implement webview
+                                                  },
+                                                  icon: const Icon(
+                                                      Icons.web_rounded,
+                                                      size: 16),
+                                                ),
+                                              ),
+                                              CircleAvatar(
+                                                radius: 18,
+                                                child: IconButton(
+                                                  onPressed: () {
+                                                    // TODO: Implement Call Function
+                                                  },
+                                                  icon: const Icon(Icons.phone,
+                                                      size: 16),
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                        Positioned(
+                                          bottom: 0,
+                                          child: Container(
+                                            alignment: Alignment.center,
+                                            height: 24.0,
+                                            width: MediaQuery.of(context)
+                                                .size
+                                                .width,
+                                            color:
+                                                Colors.white.withOpacity(0.8),
+                                            child: Wrap(
+                                              spacing: 4.0,
+                                              crossAxisAlignment:
+                                                  WrapCrossAlignment.center,
+                                              children: [
+                                                const Icon(
+                                                  Icons.place_rounded,
+                                                  size: 16,
+                                                ),
+                                                Text(state.googlePlace
+                                                    .formattedAddress),
+                                              ],
+                                            ),
+                                          ),
+                                        ),
                                         Padding(
-                                          padding: const EdgeInsets.all(8.0),
+                                          padding: const EdgeInsets.all(4.0),
                                           child: Row(
                                             mainAxisAlignment:
                                                 MainAxisAlignment.spaceBetween,
                                             children: [
                                               Opacity(
-                                                opacity: 0.9,
+                                                opacity: 0.85,
                                                 child: SizedBox(
                                                   height: 40,
                                                   child: FittedBox(
                                                     child: Chip(
+                                                      shape:
+                                                          RoundedRectangleBorder(
+                                                              borderRadius:
+                                                                  BorderRadius
+                                                                      .circular(
+                                                                          16)),
                                                       label: Wrap(
                                                         spacing: 6.0,
                                                         crossAxisAlignment:
@@ -169,34 +232,32 @@ class _SearchPlacesSheetState extends State<SearchPlacesSheet> {
                                                   ),
                                                 ),
                                               ),
-                                              Wrap(
-                                                crossAxisAlignment:
-                                                    WrapCrossAlignment.center,
-                                                spacing: 12.0,
-                                                children: [
-                                                  CircleAvatar(
-                                                    radius: 18,
-                                                    child: IconButton(
-                                                      onPressed: () {
-                                                        // TODO: Implement webview
-                                                      },
-                                                      icon: const Icon(
-                                                          Icons.web_rounded,
-                                                          size: 16),
+                                              Opacity(
+                                                opacity: 0.85,
+                                                child: SizedBox(
+                                                  height: 40,
+                                                  child: FittedBox(
+                                                    child: Chip(
+                                                      shape:
+                                                          RoundedRectangleBorder(
+                                                              borderRadius:
+                                                                  BorderRadius
+                                                                      .circular(
+                                                                          16)),
+                                                      label: Text(
+                                                        state.googlePlace.type
+                                                            .capitalizeString(),
+                                                        style: Theme.of(context)
+                                                            .textTheme
+                                                            .titleSmall,
+                                                      ),
+                                                      avatar: Image.network(
+                                                        state.googlePlace.icon,
+                                                        height: 18,
+                                                      ),
                                                     ),
                                                   ),
-                                                  CircleAvatar(
-                                                    radius: 18,
-                                                    child: IconButton(
-                                                      onPressed: () {
-                                                        // TODO: Implement Call Function
-                                                      },
-                                                      icon: const Icon(
-                                                          Icons.phone,
-                                                          size: 16),
-                                                    ),
-                                                  ),
-                                                ],
+                                                ),
                                               ),
                                             ],
                                           ),
@@ -221,68 +282,11 @@ class _SearchPlacesSheetState extends State<SearchPlacesSheet> {
                                       ),
                                     ),
                                     Padding(
-                                      padding: const EdgeInsets.symmetric(
-                                          horizontal: 16.0),
-                                      child: Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.spaceBetween,
-                                        children: [
-                                          Flexible(
-                                            flex: 2,
-                                            child: FittedBox(
-                                              child: Wrap(
-                                                spacing: 4.0,
-                                                crossAxisAlignment:
-                                                    WrapCrossAlignment.center,
-                                                children: [
-                                                  const Icon(
-                                                    Icons.place_rounded,
-                                                    size: 16,
-                                                  ),
-                                                  Text(state.googlePlace
-                                                      .formattedAddress),
-                                                ],
-                                              ),
-                                            ),
-                                          ),
-                                          Flexible(
-                                            child: Opacity(
-                                              opacity: 0.9,
-                                              child: SizedBox(
-                                                height: 40,
-                                                child: FittedBox(
-                                                  child: Chip(
-                                                    shape:
-                                                        RoundedRectangleBorder(
-                                                            borderRadius:
-                                                                BorderRadius
-                                                                    .circular(
-                                                                        16)),
-                                                    label: Text(
-                                                      state.googlePlace.type
-                                                          .capitalizeString(),
-                                                      style: Theme.of(context)
-                                                          .textTheme
-                                                          .titleSmall,
-                                                    ),
-                                                    avatar: Image.network(
-                                                      state.googlePlace.icon,
-                                                      height: 18,
-                                                    ),
-                                                  ),
-                                                ),
-                                              ),
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                    Padding(
                                         padding: const EdgeInsets.symmetric(
-                                            horizontal: 8.0, vertical: 8.0),
+                                            horizontal: 8.0, vertical: 0.0),
                                         child: ConstrainedBox(
                                           constraints: const BoxConstraints(
-                                            maxHeight: 220,
+                                            maxHeight: 210,
                                           ),
                                           child: ListView.builder(
                                               clipBehavior: Clip.antiAlias,
@@ -416,7 +420,8 @@ class _SearchPlacesSheetState extends State<SearchPlacesSheet> {
                                               }),
                                         )),
                                     Padding(
-                                      padding: const EdgeInsets.all(8.0),
+                                      padding: const EdgeInsets.only(
+                                          top: 8.0, bottom: 16.0),
                                       child: ElevatedButton.icon(
                                           style: ElevatedButton.styleFrom(
                                             elevation: 4.0,
