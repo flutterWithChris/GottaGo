@@ -36,25 +36,12 @@ class SavedListsBloc extends Bloc<SavedListsEvent, SavedListsState> {
       myPlaceLists.clear();
       sharedPlaceLists.clear();
       if (event is LoadSavedLists) {
-        // _userRepository
-        //     .getUser(auth.FirebaseAuth.instance.currentUser!.uid)
-        //     .listen((user) {
-        //   placeListRepository.getMyPlaceLists(user)?.listen((placeList) async {
-        //     placeCount =
-        //         await placeListRepository.getPlaceListItemCount(placeList);
-        //     myPlaceLists.add(placeList.copyWith(placeCount: placeCount));
-        //   });
-        // });
-        print(
-            'Place List Ids Null?: ${_profileBloc.state.user.placeListIds == null}');
         if (_profileBloc.state.user.placeListIds != null) {
           await emit.forEach(
-            placeListRepository
+            await placeListRepository
                 .getMyPlaceLists(_profileBloc.state.user.placeListIds!),
             onData: (placeList) {
-              //  placeCount =
-              // await placeListRepository.getPlaceListItemCount(placeList);
-              myPlaceLists.add(placeList!.copyWith(placeCount: placeCount));
+              myPlaceLists.add(placeList!);
               return SavedListsLoaded(
                   placeLists: myPlaceLists, sharedPlaceLists: sharedPlaceLists);
             },
@@ -64,23 +51,6 @@ class SavedListsBloc extends Bloc<SavedListsEvent, SavedListsState> {
           emit(SavedListsLoaded(
               placeLists: const [], sharedPlaceLists: const []));
         }
-        // placeListRepository.getMyPlaceLists(user)?.listen((placeList) async {
-        //   placeCount =
-        //       await placeListRepository.getPlaceListItemCount(placeList);
-        //   myPlaceLists.add(placeList.copyWith(placeCount: placeCount));
-        // });
-
-        // Get Place List & Fetch Contributors
-
-        // placeListRepository.getSharedPlaceLists().listen((placeList) async {
-        //   placeCount =
-        //       await placeListRepository.getPlaceListItemCount(placeList);
-        //   sharedPlaceLists.add(placeList.copyWith(placeCount: placeCount));
-        // });
-
-        // await Future.delayed(const Duration(milliseconds: 500), () {});
-        // emit(SavedListsLoaded(
-        //     placeLists: myPlaceLists, sharedPlaceLists: sharedPlaceLists));
       }
       if (event is AddList) {
         await placeListRepository.createPlaceList(event.placeList);

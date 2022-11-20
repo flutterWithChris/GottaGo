@@ -283,14 +283,16 @@ class PlaceListRepository {
     }
   }
 
-  Stream<PlaceList?> getMyPlaceLists(List<String> placeListIds) {
+  Future<Stream<PlaceList?>> getMyPlaceLists(List<String> placeListIds) async {
     try {
       for (String placeListId in placeListIds) {
+        int placeCount = await getPlaceListItemCount(placeListId);
         return _firebaseFirestore
             .collection('place_lists')
             .doc(placeListId)
             .snapshots()
-            .map((snap) => PlaceList.fromSnapshot(snap));
+            .map((snap) =>
+                PlaceList.fromSnapshot(snap).copyWith(placeCount: placeCount));
       }
       throw Exception();
     } on FirebaseException catch (e) {
@@ -335,14 +337,15 @@ class PlaceListRepository {
     }
   }
 
-  Future<int> getPlaceListItemCount(PlaceList placeList) {
+  Future<int> getPlaceListItemCount(String placeListId) async {
     try {
-      return _firebaseFirestore
+      AggregateQuerySnapshot placeCount = await _firebaseFirestore
           .collection('place_lists')
-          .doc(placeList.placeListId)
+          .doc(placeListId)
           .collection('places')
-          .get()
-          .then((value) => value.size);
+          .count()
+          .get();
+      return placeCount.count;
     } on FirebaseException catch (e) {
       final SnackBar snackBar = SnackBar(
         content: Text(e.message.toString()),
