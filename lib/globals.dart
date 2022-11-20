@@ -1,12 +1,31 @@
 import 'dart:core';
 
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class Globals {
   Globals._internal();
   static final Globals _globals = Globals._internal();
   factory Globals() {
     return _globals;
+  }
+}
+
+Future<void> launchWebView(Uri url) async {
+  if (!await launchUrl(url)) {
+    snackbarKey.currentState!.showSnackBar(const SnackBar(
+      content: Text('Failed to launch WebView!'),
+      backgroundColor: Colors.red,
+    ));
+  }
+}
+
+Future<void> launchCall(Uri phoneNumber) async {
+  if (!await launchUrl(phoneNumber)) {
+    snackbarKey.currentState!.showSnackBar(const SnackBar(
+      content: Text('Error Starting a Call!'),
+      backgroundColor: Colors.red,
+    ));
   }
 }
 

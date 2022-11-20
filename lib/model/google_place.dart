@@ -1,36 +1,36 @@
 import 'package:leggo/model/geometry.dart';
 
 class GooglePlace {
-  final Geometry geometry;
-  final String name;
-  final String formattedAddress;
-  final List<dynamic> addressComponents;
-  final String formattedPhoneNumber;
-  final String placeId;
-  final double rating;
-  final String type;
-  final String icon;
-  final List<String> weekDayText;
-  final String website;
-  final String url;
+  final Geometry? geometry;
+  final String? name;
+  final String? formattedAddress;
+  final List<dynamic>? addressComponents;
+  final String? formattedPhoneNumber;
+  final String? placeId;
+  final double? rating;
+  final String? type;
+  final String? icon;
+  final List<String>? weekDayText;
+  final String? website;
+  final String? url;
   final List<dynamic>? reviews;
   final List<dynamic>? photos;
 
   GooglePlace({
-    required this.geometry,
-    required this.placeId,
-    required this.weekDayText,
-    required this.formattedAddress,
-    required this.formattedPhoneNumber,
-    required this.name,
-    required this.addressComponents,
-    required this.rating,
-    required this.icon,
-    required this.type,
-    required this.reviews,
+    this.geometry,
+    this.placeId,
+    this.weekDayText,
+    this.formattedAddress,
+    this.formattedPhoneNumber,
+    this.name,
+    this.addressComponents,
+    this.rating,
+    this.icon,
+    this.type,
+    this.reviews,
     this.photos,
-    required this.url,
-    required this.website,
+    this.url,
+    this.website,
   });
 
   factory GooglePlace.fromJson(Map<dynamic, dynamic> parsedJson) {

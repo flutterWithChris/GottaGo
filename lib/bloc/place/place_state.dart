@@ -1,10 +1,11 @@
 part of 'place_bloc.dart';
 
 abstract class PlaceState extends Equatable {
-  const PlaceState();
+  final GooglePlace? googlePlace;
+  const PlaceState({this.googlePlace});
 
   @override
-  List<Object> get props => [];
+  List<Object?> get props => [googlePlace];
 }
 
 class PlaceLoading extends PlaceState {}
