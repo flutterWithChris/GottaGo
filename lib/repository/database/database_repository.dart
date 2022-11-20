@@ -55,7 +55,6 @@ class DatabaseRepository extends BaseDatabaseRepository {
     if (doc.exists == false) {
       return null;
     } else {
-      print('User Exist: ${doc.get('userId')}');
       return doc.get('userId');
     }
   }

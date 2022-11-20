@@ -427,9 +427,6 @@ class _SearchPlacesSheetState extends State<SearchPlacesSheet> {
                                             elevation: 4.0,
                                           ),
                                           onPressed: () {
-                                            // print('Place Added: ${placeDetails.name}');
-                                            print(state
-                                                .googlePlace.addressComponents);
                                             var placeCity = state
                                                     .googlePlace.addressComponents
                                                     .firstWhere((element) =>
@@ -556,7 +553,6 @@ class _PlaceSearchBarState extends State<PlaceSearchBar> {
                 setState(() {
                   searchbarFocused = true;
                 });
-                print("Searchbar Focused**");
               } else if (focus == false) {
                 setState(() {
                   searchbarFocused = false;
@@ -599,7 +595,6 @@ class _PlaceSearchBarState extends State<PlaceSearchBar> {
                           shrinkWrap: true,
                           itemCount: state.autocomplete?.length ?? 1,
                           itemBuilder: (context, index) {
-                            print('SEARCH RESULTS NOT EMPTY');
                             if (state.autocomplete != null) {
                               return Column(
                                 mainAxisSize: MainAxisSize.min,
@@ -609,8 +604,6 @@ class _PlaceSearchBarState extends State<PlaceSearchBar> {
                                         vertical: 4.0),
                                     child: ListTile(
                                       onTap: () => {
-                                        print(
-                                            'Selected Place Id: ${state.autocomplete![index].placeId}'),
                                         context.read<PlaceBloc>().add(LoadPlace(
                                             placeId: state.autocomplete![index]
                                                 .placeId!)),

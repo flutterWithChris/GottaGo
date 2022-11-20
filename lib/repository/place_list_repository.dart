@@ -105,13 +105,9 @@ class PlaceListRepository {
     try {
       String? userId = await DatabaseRepository().checkUsernameExists(userName);
       if (userId == null) {
-        print('USER ID IS NULL');
         return false;
       } else {
-        print('GETTING USER INVITE CONTRIBUTOR');
         UserRepository().getUser(userId).listen((user) async {
-          print('Listener Got User: ${user.id}');
-
           Invite invite = Invite(
               invitedUserId: user.id!,
               inviteeName: user.name!,

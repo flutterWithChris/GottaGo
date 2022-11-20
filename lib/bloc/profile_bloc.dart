@@ -24,7 +24,6 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
           : add(ResetProfile());
     });
     on<LoadProfile>((event, emit) async {
-      print('Loading Profile: ${event.userId}');
       await emit.forEach(_userRepository.getUser(event.userId), onData: (user) {
         return ProfileLoaded(user: user);
       });

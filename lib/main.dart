@@ -144,6 +144,7 @@ class _MyAppState extends State<MyApp> {
           ),
           BlocProvider(
             create: (context) => SavedPlacesBloc(
+                userRepository: context.read<UserRepository>(),
                 savedListsBloc: context.read<SavedListsBloc>(),
                 placeListRepository: context.read<PlaceListRepository>()),
           ),
