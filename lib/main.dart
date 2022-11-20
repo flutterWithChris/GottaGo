@@ -165,6 +165,7 @@ class _MyAppState extends State<MyApp> {
                 blendLevel: 20,
                 appBarOpacity: 0.95,
                 subThemesData: const FlexSubThemesData(
+                  defaultRadius: 20.0,
                   blendOnLevel: 20,
                   blendOnColors: false,
                 ),
@@ -178,6 +179,7 @@ class _MyAppState extends State<MyApp> {
                 blendLevel: 15,
                 appBarOpacity: 0.90,
                 subThemesData: const FlexSubThemesData(
+                  defaultRadius: 20.0,
                   blendOnLevel: 30,
                 ),
                 visualDensity: FlexColorScheme.comfortablePlatformDensity,
@@ -187,7 +189,6 @@ class _MyAppState extends State<MyApp> {
               routeInformationParser: router.routeInformationParser,
               routeInformationProvider: router.routeInformationProvider,
               routerDelegate: router.routerDelegate,
-              title: 'Flutter Demo',
             );
           },
         ),

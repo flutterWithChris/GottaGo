@@ -82,7 +82,8 @@ class AuthRepository extends BaseAuthRepository {
     }
   }
 
-  Future<auth.User> signInWithApple({List<Scope> scopes = const []}) async {
+  Future<auth.User?> signInWithApple(
+      {List<Scope> scopes = const [Scope.email, Scope.fullName]}) async {
     // 1. perform the sign-in request
     final result = await TheAppleSignIn.performRequests(
         [AppleIdRequest(requestedScopes: scopes)]);
@@ -109,11 +110,14 @@ class AuthRepository extends BaseAuthRepository {
           }
         }
         return firebaseUser;
+
       case AuthorizationStatus.error:
-        throw PlatformException(
-          code: 'ERROR_AUTHORIZATION_DENIED',
-          message: result.error.toString(),
-        );
+        {
+          throw PlatformException(
+            code: 'ERROR_AUTHORIZATION_DENIED',
+            message: result.error.toString(),
+          );
+        }
 
       case AuthorizationStatus.cancelled:
         throw PlatformException(

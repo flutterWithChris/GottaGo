@@ -534,40 +534,7 @@ class _WelcomePageState extends State<WelcomePage> {
         return Padding(
           padding: const EdgeInsets.symmetric(horizontal: 36.0),
           child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Stack(
-                  alignment: Alignment.center,
-                  children: const [
-                    Icon(
-                      FontAwesomeIcons.locationPin,
-                      color: FlexColor.bahamaBlueDarkSecondaryContainer,
-                      size: 55,
-                    ),
-                    Positioned(
-                      top: 12.0,
-                      child: Icon(
-                        FontAwesomeIcons.solidHeart,
-                        fill: 1.0,
-                        color: Colors.white,
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(
-                  width: 4.0,
-                ),
-                Text(
-                  'GottaGo',
-                  style: GoogleFonts.exo2(
-                          fontWeight: FontWeight.w700,
-                          fontStyle: FontStyle.italic)
-                      .copyWith(fontSize: 60),
-                ),
-              ],
-            ),
+            const MainLogo(),
             const Text(
               'Save places you want to visit, share them with friends, & let fate decide your plans.',
               textAlign: TextAlign.center,
@@ -705,6 +672,49 @@ class _WelcomePageState extends State<WelcomePage> {
           ]),
         );
       },
+    );
+  }
+}
+
+class MainLogo extends StatelessWidget {
+  const MainLogo({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.center,
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Stack(
+          alignment: Alignment.center,
+          children: const [
+            Icon(
+              FontAwesomeIcons.locationPin,
+              color: FlexColor.bahamaBlueDarkSecondaryContainer,
+              size: 55,
+            ),
+            Positioned(
+              top: 12.0,
+              child: Icon(
+                FontAwesomeIcons.solidHeart,
+                fill: 1.0,
+                color: Colors.white,
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(
+          width: 4.0,
+        ),
+        Text(
+          'GottaGo',
+          style: GoogleFonts.exo2(
+                  fontWeight: FontWeight.w700, fontStyle: FontStyle.italic)
+              .copyWith(fontSize: 60),
+        ),
+      ],
     );
   }
 }
