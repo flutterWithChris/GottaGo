@@ -19,31 +19,6 @@ class LoginPage extends StatelessWidget {
       // resizeToAvoidBottomInset: false,
       body: CustomScrollView(
         slivers: [
-          // SliverAppBar.medium(
-          //   // leading: Padding(
-          //   //   padding: const EdgeInsets.symmetric(horizontal: 8.0),
-          //   //   child: IconButton(
-          //   //     onPressed: () {},
-          //   //     icon: const Icon(Icons.menu),
-          //   //   ),
-          //   // ),
-          //   title: Wrap(
-          //     spacing: 18.0,
-          //     children: const [
-          //       Icon(FontAwesomeIcons.buildingCircleCheck),
-          //       Text(
-          //         'GottaGo',
-          //         style: TextStyle(fontWeight: FontWeight.bold),
-          //       ),
-          //     ],
-          //   ),
-          //   expandedHeight: 120,
-          //   actions: [
-          //     IconButton(
-          //         onPressed: () {}, icon: const Icon(Icons.more_vert))
-          //   ],
-          // ),
-
           SliverFillRemaining(
             // hasScrollBody: false,
             child: Form(
@@ -51,81 +26,6 @@ class LoginPage extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   const MainLogo(),
-
-                  // BlocBuilder<LoginCubit, LoginState>(
-                  //   buildWhen: (previous, current) =>
-                  //       previous.password != current.password,
-                  //   builder: (context, state) {
-                  //     return SizedBox(
-                  //       width: 350,
-                  //       child: TextField(
-                  //         onChanged: (email) {
-                  //           context.read<LoginCubit>().emailChanged(email);
-                  //         },
-                  //         controller: emailFieldController,
-                  //         keyboardType: TextInputType.emailAddress,
-                  //         decoration: InputDecoration(
-                  //             enabledBorder: OutlineInputBorder(
-                  //                 borderSide: BorderSide(
-                  //                     color: Theme.of(context).highlightColor,
-                  //                     width: 1.0),
-                  //                 borderRadius: BorderRadius.circular(20.0)),
-                  //             focusedBorder: OutlineInputBorder(
-                  //                 borderSide: BorderSide(
-                  //                     color: Theme.of(context).primaryColor,
-                  //                     width: 2.0),
-                  //                 borderRadius: BorderRadius.circular(20.0)),
-                  //             label: const Text('Email Address'),
-                  //             prefixIcon: const Icon(Icons.email_rounded)),
-                  //       ),
-                  //     );
-                  //   },
-                  // ),
-                  // const SizedBox(
-                  //   height: 12.0,
-                  // ),
-                  // SizedBox(
-                  //   width: 350,
-                  //   child: TextField(
-                  //     onChanged: (password) {
-                  //       context.read<LoginCubit>().passwordChanged(password);
-                  //     },
-                  //     controller: passFieldController,
-                  //     keyboardType: TextInputType.text,
-                  //     obscureText: true,
-                  //     decoration: InputDecoration(
-                  //         enabledBorder: OutlineInputBorder(
-                  //             borderSide: BorderSide(
-                  //                 color: Theme.of(context).highlightColor,
-                  //                 width: 1.0),
-                  //             borderRadius: BorderRadius.circular(20.0)),
-                  //         focusedBorder: OutlineInputBorder(
-                  //             borderSide: BorderSide(
-                  //                 color: Theme.of(context).primaryColor,
-                  //                 width: 2.0),
-                  //             borderRadius: BorderRadius.circular(20.0)),
-                  //         prefixIcon: const Icon(Icons.lock),
-                  //         label: const Text('Password')),
-                  //   ),
-                  // ),
-                  // SizedBox(
-                  //   width: 350,
-                  //   child: Row(
-                  //     mainAxisAlignment: MainAxisAlignment.start,
-                  //     children: [
-                  //       TextButton(
-                  //           onPressed: () {},
-                  //           child: const Text('Forgot Password?')),
-                  //     ],
-                  //   ),
-                  // ),
-                  // ElevatedButton(
-                  //     style: ElevatedButton.styleFrom(
-                  //         fixedSize: const Size(225, 32)),
-                  //     onPressed: () async {
-                  //       await context.read<LoginCubit>().logInWithCredentials();
-                  //     },
-                  //     child: const Text('Login')),
                   Platform.isIOS
                       ? ElevatedButton.icon(
                           style: ElevatedButton.styleFrom(
@@ -187,7 +87,6 @@ class LoginPage extends StatelessWidget {
                                 context.pushNamed('signup');
                               },
                               child: RichText(
-                                //textAlign: TextAlign.end,
                                 text: TextSpan(
                                     style: TextStyle(
                                         color: Theme.of(context).brightness ==
