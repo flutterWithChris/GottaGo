@@ -113,8 +113,8 @@ class PlaceListRepository {
           print('Listener Got User: ${user.id}');
 
           Invite invite = Invite(
-              invitedUserId: user.id,
-              inviteeName: user.name,
+              invitedUserId: user.id!,
+              inviteeName: user.name!,
               listOwnerId: firebaseUser.uid,
               inviterName: firebaseUser.displayName!,
               placeListId: placeList.placeListId!,
@@ -283,16 +283,16 @@ class PlaceListRepository {
     }
   }
 
-  Stream<PlaceList>? getMyPlaceLists(User user) {
+  Stream<PlaceList?> getMyPlaceLists(List<String> placeListIds) {
     try {
-      for (String placeListId in user.placeListIds) {
+      for (String placeListId in placeListIds) {
         return _firebaseFirestore
             .collection('place_lists')
             .doc(placeListId)
             .snapshots()
             .map((snap) => PlaceList.fromSnapshot(snap));
       }
-      return null;
+      throw Exception();
     } on FirebaseException catch (e) {
       final SnackBar snackBar = SnackBar(
         content: Text(e.message.toString()),
@@ -301,7 +301,8 @@ class PlaceListRepository {
       snackbarKey.currentState?.showSnackBar(snackBar);
       (e, stack) =>
           FirebaseCrashlytics.instance.recordError(e, stack, fatal: true);
-      return null;
+      //return null;
+      throw Exception();
     }
   }
 

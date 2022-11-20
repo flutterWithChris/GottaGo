@@ -15,6 +15,7 @@ import 'package:leggo/bloc/bloc/invite/bloc/invite_bloc.dart';
 
 import 'package:leggo/bloc/bloc/invite_inbox/invite_inbox_bloc.dart';
 import 'package:leggo/bloc/onboarding/bloc/onboarding_bloc.dart';
+import 'package:leggo/bloc/profile_bloc.dart';
 
 import 'package:leggo/bloc/saved_categories/bloc/saved_lists_bloc.dart';
 import 'package:leggo/bloc/saved_places/bloc/saved_places_bloc.dart';
@@ -119,12 +120,21 @@ class _MyAppState extends State<MyApp> {
                 LoginCubit(authRepository: context.read<AuthRepository>()),
           ),
           BlocProvider(
+            create: (context) => ProfileBloc(
+                userRepository: context.read<UserRepository>(),
+                authBloc: context.read<AuthBloc>())
+              ..add(LoadProfile(
+                  userId: context.read<AuthBloc>().state.authUser!.uid)),
+          ),
+          BlocProvider(
             create: (context) => InviteInboxBloc(
                 inviteRepository: context.read<InviteRepository>())
               ..add(LoadInvites()),
           ),
           BlocProvider(
             create: (context) => SavedListsBloc(
+                profileBloc: context.read<ProfileBloc>(),
+                userRepository: context.read<UserRepository>(),
                 placeListRepository: context.read<PlaceListRepository>())
               ..add(LoadSavedLists()),
           ),

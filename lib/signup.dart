@@ -326,7 +326,7 @@ class _ProfileInfoState extends State<ProfileInfo> {
                                 color: FlexColor.bahamaBlueDarkSecondary,
                                 size: 30.0),
                           ),
-                          imageUrl: state.user.profilePicture,
+                          imageUrl: state.user.profilePicture!,
                           imageBuilder: (context, imageProvider) =>
                               CircleAvatar(
                             foregroundImage: imageProvider,

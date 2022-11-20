@@ -138,10 +138,10 @@ class _CategoryPageState extends State<CategoryPage> {
               List<String> contributorAvatars = [];
               List<Place> places = state.places;
 
-              contributorAvatars.add(state.listOwner.profilePicture);
+              contributorAvatars.add(state.listOwner.profilePicture!);
               if (contributors != null) {
                 for (User user in contributors) {
-                  contributorAvatars.add(user.profilePicture);
+                  contributorAvatars.add(user.profilePicture!);
                 }
               }
 
@@ -472,9 +472,9 @@ class _CategoryPageAppBarState extends State<CategoryPageAppBar> {
                       height: 40,
                       avatars: [
                         CachedNetworkImageProvider(
-                            widget.listOwner.profilePicture),
+                            widget.listOwner.profilePicture!),
                         for (User user in state.contributors)
-                          CachedNetworkImageProvider(user.profilePicture),
+                          CachedNetworkImageProvider(user.profilePicture!),
                       ],
                     );
                   } else {
