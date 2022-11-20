@@ -15,14 +15,17 @@ part 'saved_places_state.dart';
 class SavedPlacesBloc extends Bloc<SavedPlacesEvent, SavedPlacesState> {
   final PlaceListRepository _placeListRepository;
   final SavedListsBloc _savedListsBloc;
+  final UserRepository _userRepository;
   StreamSubscription? _savedListsSubscription;
   PlaceList? _currentPlaceList;
   Stream<User>? contributorStream;
-  SavedPlacesBloc(
-      {required PlaceListRepository placeListRepository,
-      required SavedListsBloc savedListsBloc})
-      : _placeListRepository = placeListRepository,
+  SavedPlacesBloc({
+    required PlaceListRepository placeListRepository,
+    required SavedListsBloc savedListsBloc,
+    required UserRepository userRepository,
+  })  : _placeListRepository = placeListRepository,
         _savedListsBloc = savedListsBloc,
+        _userRepository = userRepository,
         super(SavedPlacesLoading()) {
     final List<Place> savedPlaces = [];
     List<User> contributors = [];
@@ -49,7 +52,7 @@ class SavedPlacesBloc extends Bloc<SavedPlacesEvent, SavedPlacesState> {
 
           if (placeList.contributorIds.isNotEmpty) {
             for (String userId in placeList.contributorIds) {
-              UserRepository().getUser(userId).listen((user) {
+              _userRepository.getUser(userId).listen((user) {
                 contributors.add(user);
               });
             }

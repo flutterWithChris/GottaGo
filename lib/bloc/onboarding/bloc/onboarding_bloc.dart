@@ -26,7 +26,7 @@ class OnboardingBloc extends Bloc<OnboardingEvent, OnboardingState> {
       emit(OnboardingLoading());
       await _storageRepository.uploadImage(user, event.image);
 
-      _databaseRepository.getUser(user.id).listen((user) {
+      _databaseRepository.getUser(user.id!).listen((user) {
         add(UpdateUser(user: user));
       });
     });

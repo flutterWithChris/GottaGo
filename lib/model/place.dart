@@ -17,19 +17,19 @@ class Place {
   final List<dynamic>? hours;
 
   Place({
-    required this.placeId,
-    required this.name,
-    required this.address,
-    required this.city,
-    required this.state,
+    this.placeId,
+    this.name,
+    this.address,
+    this.city,
+    this.state,
     this.phoneNumber,
-    required this.icon,
+    this.icon,
     this.reviews,
     this.rating,
     this.website,
-    required this.type,
-    required this.mapsUrl,
-    required this.mainPhoto,
+    this.type,
+    this.mapsUrl,
+    this.mainPhoto,
     this.hours,
   });
 

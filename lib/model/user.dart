@@ -1,20 +1,26 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class User {
-  final String id;
-  final String userName;
-  final String name;
-  final String email;
-  final String profilePicture;
-  final List<String> placeListIds;
+  final String? id;
+  final String? userName;
+  final String? name;
+  final String? email;
+  final String? profilePicture;
+  final List<String>? placeListIds;
+
   const User({
-    required this.id,
-    required this.userName,
-    required this.name,
-    required this.email,
-    required this.profilePicture,
-    required this.placeListIds,
+    this.id,
+    this.userName,
+    this.name,
+    this.email,
+    this.profilePicture,
+    this.placeListIds,
   });
+
+  static const empty = User(id: '');
+
+  bool get isEmpty => this == User.empty;
+  bool get isNotEmpty => this != User.empty;
 
   User copyWith({
     String? id,
@@ -45,7 +51,7 @@ class User {
     );
   }
 
-  Map<String, Object> toDocument() {
+  Map<String, dynamic> toDocument() {
     return {
       'id': id,
       'userName': userName,

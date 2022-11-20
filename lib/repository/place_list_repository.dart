@@ -105,16 +105,12 @@ class PlaceListRepository {
     try {
       String? userId = await DatabaseRepository().checkUsernameExists(userName);
       if (userId == null) {
-        print('USER ID IS NULL');
         return false;
       } else {
-        print('GETTING USER INVITE CONTRIBUTOR');
         UserRepository().getUser(userId).listen((user) async {
-          print('Listener Got User: ${user.id}');
-
           Invite invite = Invite(
-              invitedUserId: user.id,
-              inviteeName: user.name,
+              invitedUserId: user.id!,
+              inviteeName: user.name!,
               listOwnerId: firebaseUser.uid,
               inviterName: firebaseUser.displayName!,
               placeListId: placeList.placeListId!,
@@ -283,16 +279,18 @@ class PlaceListRepository {
     }
   }
 
-  Stream<PlaceList>? getMyPlaceLists(User user) {
+  Future<Stream<PlaceList?>> getMyPlaceLists(List<String> placeListIds) async {
     try {
-      for (String placeListId in user.placeListIds) {
+      for (String placeListId in placeListIds) {
+        int placeCount = await getPlaceListItemCount(placeListId);
         return _firebaseFirestore
             .collection('place_lists')
             .doc(placeListId)
             .snapshots()
-            .map((snap) => PlaceList.fromSnapshot(snap));
+            .map((snap) =>
+                PlaceList.fromSnapshot(snap).copyWith(placeCount: placeCount));
       }
-      return null;
+      throw Exception();
     } on FirebaseException catch (e) {
       final SnackBar snackBar = SnackBar(
         content: Text(e.message.toString()),
@@ -301,7 +299,8 @@ class PlaceListRepository {
       snackbarKey.currentState?.showSnackBar(snackBar);
       (e, stack) =>
           FirebaseCrashlytics.instance.recordError(e, stack, fatal: true);
-      return null;
+      //return null;
+      throw Exception();
     }
   }
 
@@ -334,14 +333,15 @@ class PlaceListRepository {
     }
   }
 
-  Future<int> getPlaceListItemCount(PlaceList placeList) {
+  Future<int> getPlaceListItemCount(String placeListId) async {
     try {
-      return _firebaseFirestore
+      AggregateQuerySnapshot placeCount = await _firebaseFirestore
           .collection('place_lists')
-          .doc(placeList.placeListId)
+          .doc(placeListId)
           .collection('places')
-          .get()
-          .then((value) => value.size);
+          .count()
+          .get();
+      return placeCount.count;
     } on FirebaseException catch (e) {
       final SnackBar snackBar = SnackBar(
         content: Text(e.message.toString()),
