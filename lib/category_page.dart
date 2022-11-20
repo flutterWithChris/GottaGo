@@ -73,7 +73,6 @@ class _CategoryPageState extends State<CategoryPage> {
           // buildWhen: (previous, current) =>
           //     previous.placeList != current.placeList,
           builder: (context, state) {
-            print('Cotribtors: ${state.contributors}');
             if (state is SavedPlacesLoading || state is SavedPlacesUpdated) {
               rows = [
                 for (int i = 0; i < 5; i++)
