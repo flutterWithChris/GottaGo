@@ -39,8 +39,8 @@ class SignUpCubit extends Cubit<SignUpState> {
   void signUpWithApple() async {
     emit(state.copyWith(status: SignupStatus.submitting));
     try {
-      await _authRepository.signInWithApple();
-      emit(state.copyWith(status: SignupStatus.success));
+      auth.User? user = await _authRepository.signInWithApple();
+      emit(state.copyWith(status: SignupStatus.success, user: user));
     } catch (_) {}
   }
 }

@@ -1,7 +1,6 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:firebase_auth/firebase_auth.dart' as auth;
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:leggo/repository/auth_repository.dart';
 
 part 'login_state.dart';
@@ -37,8 +36,8 @@ class LoginCubit extends Cubit<LoginState> {
     if (state.status == LoginStatus.submitting) return;
     emit(state.copyWith(status: LoginStatus.submitting));
 
-    User? user = await _authRepository.signInWithGoogle();
-    user is User
+    auth.User? user = await _authRepository.signInWithGoogle();
+    user is auth.User
         ? emit(state.copyWith(status: LoginStatus.success))
         : emit(state.copyWith(status: LoginStatus.error));
   }
@@ -47,8 +46,8 @@ class LoginCubit extends Cubit<LoginState> {
     if (state.status == LoginStatus.submitting) return;
     emit(state.copyWith(status: LoginStatus.submitting));
 
-    User? user = await _authRepository.signInWithApple();
-    user is User
+    auth.User? user = await _authRepository.signInWithApple();
+    user is auth.User
         ? emit(state.copyWith(status: LoginStatus.success))
         : emit(state.copyWith(status: LoginStatus.error));
   }

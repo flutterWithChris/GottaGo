@@ -6,6 +6,7 @@ import 'package:flutter_animate/animate.dart';
 import 'package:flutter_animate/effects/effects.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:flutterfire_ui/auth.dart' hide AuthState;
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -54,10 +55,13 @@ void main() async {
   // * Force onboarding pref
   SharedPreferences prefs = await SharedPreferences.getInstance();
   prefs.setInt('initScreen', 0);
+
   await Future.wait([
     dotenv.load(fileName: '.env'),
     Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform),
   ]);
+  FlutterFireUIAuth.configureProviders(
+      [GoogleProviderConfiguration(clientId: dotenv.get('GOOGLE_CLIENT_ID'))]);
 
   runApp(const MyApp());
 }

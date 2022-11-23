@@ -303,7 +303,9 @@ class _ProfileInfoState extends State<ProfileInfo> {
                               style: Theme.of(context)
                                   .textTheme
                                   .titleSmall!
-                                  .copyWith(fontWeight: FontWeight.bold),
+                                  .copyWith(
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.white),
                             )),
                       );
                     }
@@ -461,8 +463,8 @@ class _ProfileInfoState extends State<ProfileInfo> {
                         : null,
                     child: BlocConsumer<OnboardingBloc, OnboardingState>(
                       listener: (context, state) async {
-                        if (state.user!.profilePicture != '' &&
-                            state.user!.userName != '') {
+                        if (state.user?.profilePicture != '' &&
+                            state.user?.userName != '') {
                           await Future.delayed(
                             const Duration(milliseconds: 800),
                             () async => await widget.pageController.nextPage(
