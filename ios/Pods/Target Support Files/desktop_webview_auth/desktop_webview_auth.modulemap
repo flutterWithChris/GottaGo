@@ -1,0 +1,6 @@
+framework module desktop_webview_auth {
+  umbrella header "desktop_webview_auth-umbrella.h"
+
+  export *
+  module * { export * }
+}
