@@ -569,8 +569,10 @@ class _WelcomePageState extends State<WelcomePage> {
                             ? ElevatedButton.icon(
                                 style: ElevatedButton.styleFrom(
                                     fixedSize: const Size(240, 30)),
-                                onPressed: () {
-                                  context.read<SignUpCubit>().signUpWithApple();
+                                onPressed: () async {
+                                  await context
+                                      .read<SignUpCubit>()
+                                      .signUpWithApple();
                                   if (!mounted) return;
                                   User user = User(
                                       id: context
