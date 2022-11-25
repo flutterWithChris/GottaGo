@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flex_color_scheme/flex_color_scheme.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_animate/animate.dart';
 import 'package:flutter_animate/effects/effects.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -12,6 +13,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:leggo/bloc/onboarding/bloc/onboarding_bloc.dart';
 import 'package:leggo/cubit/cubit/signup/sign_up_cubit.dart';
+import 'package:leggo/globals.dart';
 import 'package:leggo/model/user.dart';
 import 'package:leggo/repository/database/database_repository.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
@@ -370,6 +372,12 @@ class _ProfileInfoState extends State<ProfileInfo> {
           child: FractionallySizedBox(
             widthFactor: 0.70,
             child: TextFormField(
+              inputFormatters: [
+                FilteringTextInputFormatter.deny(
+                  RegExp('[ ]'),
+                ),
+                LowerCaseTextFormatter(),
+              ],
               validator: (value) {
                 if (value!.length < 3) {
                   return 'Must be 3 characters or more.';
