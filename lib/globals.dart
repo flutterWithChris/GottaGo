@@ -1,6 +1,7 @@
 import 'dart:core';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class Globals {
@@ -54,4 +55,13 @@ String capitalizeAllWord(String value) {
     }
   }
   return result;
+}
+
+class LowerCaseTextFormatter extends TextInputFormatter {
+  @override
+  TextEditingValue formatEditUpdate(
+      TextEditingValue oldValue, TextEditingValue newValue) {
+    return TextEditingValue(
+        text: newValue.text.toLowerCase(), selection: newValue.selection);
+  }
 }

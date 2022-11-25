@@ -35,21 +35,24 @@ class SavedListsBloc extends Bloc<SavedListsEvent, SavedListsState> {
     on<SavedListsEvent>((event, emit) async {
       myPlaceLists.clear();
       sharedPlaceLists.clear();
+      StreamSubscription placeListSubscription;
       if (event is LoadSavedLists) {
+        print('Place Ids: ${_profileBloc.state.user.placeListIds}');
         if (_profileBloc.state.user.placeListIds != null) {
-          await emit.forEach(
-            await placeListRepository
-                .getMyPlaceLists(_profileBloc.state.user.placeListIds!),
-            onData: (placeList) {
-              myPlaceLists.add(placeList!);
-              return SavedListsLoaded(
-                  placeLists: myPlaceLists, sharedPlaceLists: sharedPlaceLists);
-            },
-            onError: (error, stackTrace) => SavedListsFailed(),
-          );
-        } else {
-          emit(SavedListsLoaded(
-              placeLists: const [], sharedPlaceLists: const []));
+          for (String placeListId in _profileBloc.state.user.placeListIds!) {
+            int placeCount =
+                await placeListRepository.getPlaceListItemCount(placeListId);
+            placeListSubscription = placeListRepository
+                .getPlaceList(placeListId)!
+                .listen((placeList) {
+              myPlaceLists.add(placeList.copyWith(placeCount: placeCount));
+            });
+          }
+          await Future.delayed(
+              const Duration(milliseconds: 300),
+              () => emit(SavedListsLoaded(
+                  placeLists: myPlaceLists,
+                  sharedPlaceLists: sharedPlaceLists)));
         }
       }
       if (event is AddList) {

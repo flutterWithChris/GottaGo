@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flex_color_scheme/flex_color_scheme.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_animate/animate.dart';
 import 'package:flutter_animate/effects/effects.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -12,6 +13,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:leggo/bloc/onboarding/bloc/onboarding_bloc.dart';
 import 'package:leggo/cubit/cubit/signup/sign_up_cubit.dart';
+import 'package:leggo/globals.dart';
 import 'package:leggo/model/user.dart';
 import 'package:leggo/repository/database/database_repository.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
@@ -66,7 +68,15 @@ class _IntroPaywallState extends State<IntroPaywall> {
   bool yearlySelected = false;
 
   @override
+  void initState() {
+    // TODO: implement initState
+
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
+    FocusManager.instance.primaryFocus?.unfocus();
     return Column(mainAxisAlignment: MainAxisAlignment.center, children: [
       Text(
         'Try Premium For Free!',
@@ -114,7 +124,7 @@ class _IntroPaywallState extends State<IntroPaywall> {
                         text: 'Random wheel ',
                         style: TextStyle(fontWeight: FontWeight.bold),
                       ),
-                      TextSpan(text: 'makes choosing plans easy.'),
+                      TextSpan(text: 'to help choose a place!'),
                     ],
                   ),
                   icon: FontAwesomeIcons.dice,
@@ -225,16 +235,21 @@ class FeatureChecklistItem extends StatelessWidget {
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 12.0),
-      child: Wrap(
-        crossAxisAlignment: WrapCrossAlignment.center,
-        spacing: wrapSpacing,
+      child: Row(
         children: [
-          Icon(
-            icon,
-            size: iconSize,
-            color: FlexColor.bahamaBlueDarkPrimaryVariant,
+          Flexible(
+            child: Icon(
+              icon,
+              size: iconSize,
+              color: FlexColor.bahamaBlueDarkPrimaryVariant,
+            ),
           ),
-          Text.rich(description),
+          Flexible(
+              flex: 10,
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                child: Text.rich(description),
+              )),
         ],
       ),
     );
@@ -370,6 +385,12 @@ class _ProfileInfoState extends State<ProfileInfo> {
           child: FractionallySizedBox(
             widthFactor: 0.70,
             child: TextFormField(
+              inputFormatters: [
+                FilteringTextInputFormatter.deny(
+                  RegExp('[ ]'),
+                ),
+                LowerCaseTextFormatter(),
+              ],
               validator: (value) {
                 if (value!.length < 3) {
                   return 'Must be 3 characters or more.';
@@ -463,8 +484,10 @@ class _ProfileInfoState extends State<ProfileInfo> {
                         : null,
                     child: BlocConsumer<OnboardingBloc, OnboardingState>(
                       listener: (context, state) async {
-                        if (state.user?.profilePicture != '' &&
-                            state.user?.userName != '') {
+                        if (state.user?.profilePicture != null &&
+                            state.user?.profilePicture != '' &&
+                            state.user?.userName != '' &&
+                            state.user?.userName != null) {
                           await Future.delayed(
                             const Duration(milliseconds: 800),
                             () async => await widget.pageController.nextPage(
@@ -712,11 +735,14 @@ class MainLogo extends StatelessWidget {
         const SizedBox(
           width: 4.0,
         ),
-        Text(
-          'GottaGo',
-          style: GoogleFonts.exo2(
-                  fontWeight: FontWeight.w700, fontStyle: FontStyle.italic)
-              .copyWith(fontSize: 60),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 8.0),
+          child: Text(
+            'GottaGo',
+            style: GoogleFonts.exo2(
+                    fontWeight: FontWeight.w700, fontStyle: FontStyle.italic)
+                .copyWith(fontSize: 60),
+          ),
         ),
       ],
     );
