@@ -68,7 +68,15 @@ class _IntroPaywallState extends State<IntroPaywall> {
   bool yearlySelected = false;
 
   @override
+  void initState() {
+    // TODO: implement initState
+
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
+    FocusManager.instance.primaryFocus?.unfocus();
     return Column(mainAxisAlignment: MainAxisAlignment.center, children: [
       Text(
         'Try Premium For Free!',
@@ -116,7 +124,7 @@ class _IntroPaywallState extends State<IntroPaywall> {
                         text: 'Random wheel ',
                         style: TextStyle(fontWeight: FontWeight.bold),
                       ),
-                      TextSpan(text: 'makes choosing plans easy.'),
+                      TextSpan(text: 'to help choose a place!'),
                     ],
                   ),
                   icon: FontAwesomeIcons.dice,
@@ -227,16 +235,21 @@ class FeatureChecklistItem extends StatelessWidget {
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 12.0),
-      child: Wrap(
-        crossAxisAlignment: WrapCrossAlignment.center,
-        spacing: wrapSpacing,
+      child: Row(
         children: [
-          Icon(
-            icon,
-            size: iconSize,
-            color: FlexColor.bahamaBlueDarkPrimaryVariant,
+          Flexible(
+            child: Icon(
+              icon,
+              size: iconSize,
+              color: FlexColor.bahamaBlueDarkPrimaryVariant,
+            ),
           ),
-          Text.rich(description),
+          Flexible(
+              flex: 10,
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                child: Text.rich(description),
+              )),
         ],
       ),
     );
@@ -471,8 +484,10 @@ class _ProfileInfoState extends State<ProfileInfo> {
                         : null,
                     child: BlocConsumer<OnboardingBloc, OnboardingState>(
                       listener: (context, state) async {
-                        if (state.user?.profilePicture != '' &&
-                            state.user?.userName != '') {
+                        if (state.user?.profilePicture != null &&
+                            state.user?.profilePicture != '' &&
+                            state.user?.userName != '' &&
+                            state.user?.userName != null) {
                           await Future.delayed(
                             const Duration(milliseconds: 800),
                             () async => await widget.pageController.nextPage(
@@ -720,11 +735,14 @@ class MainLogo extends StatelessWidget {
         const SizedBox(
           width: 4.0,
         ),
-        Text(
-          'GottaGo',
-          style: GoogleFonts.exo2(
-                  fontWeight: FontWeight.w700, fontStyle: FontStyle.italic)
-              .copyWith(fontSize: 60),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 8.0),
+          child: Text(
+            'GottaGo',
+            style: GoogleFonts.exo2(
+                    fontWeight: FontWeight.w700, fontStyle: FontStyle.italic)
+                .copyWith(fontSize: 60),
+          ),
         ),
       ],
     );

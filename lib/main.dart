@@ -136,12 +136,10 @@ class _MyAppState extends State<MyApp> {
               ..add(LoadInvites()),
           ),
           BlocProvider(
-            create: (context) => SavedListsBloc(
-                profileBloc: context.read<ProfileBloc>(),
-                userRepository: context.read<UserRepository>(),
-                placeListRepository: context.read<PlaceListRepository>())
-              ..add(LoadSavedLists()),
-          ),
+              create: (context) => SavedListsBloc(
+                  profileBloc: context.read<ProfileBloc>(),
+                  userRepository: context.read<UserRepository>(),
+                  placeListRepository: context.read<PlaceListRepository>())),
           BlocProvider(
             create: (context) => InviteBloc(
                 placeListRepository: context.read<PlaceListRepository>()),
@@ -331,150 +329,140 @@ class _MyHomePageState extends State<MyHomePage> {
           placeCount: 10,
           contributorIds: []),
     ];
-    return SafeArea(
-      child: Scaffold(
-        floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
-        bottomNavigationBar: const MainBottomNavBar(),
-        body: BlocBuilder<SavedListsBloc, SavedListsState>(
-          builder: (context, state) {
-            if (state is SavedListsLoading || state is SavedListsUpdated) {
-              return Center(
-                child: LoadingAnimationWidget.inkDrop(
-                    color: FlexColor.materialDarkPrimaryHc, size: 40.0),
-              );
-            }
-            if (state is SavedListsFailed) {
-              return const Center(
-                child: Text('Error Loading Lists!'),
-              );
-            }
-            if (state is SavedListsLoaded) {
-              final ScrollController mainScrollController = ScrollController();
-
-              // void addCategoriesToList() {
-              //   for (PlaceList placeList in state.placeLists!) {
-              //     rows.add(CategoryCard(placeList: placeList));
-              //   }
-              // }
-
-              void _onReorder(int oldIndex, int newIndex) {
-                PlaceList placeList = state.placeLists!.removeAt(oldIndex);
-                state.placeLists!.insert(newIndex, placeList);
-                setState(() {
-                  Widget row = rows.removeAt(oldIndex);
-                  rows.insert(newIndex, row);
-                });
-              }
-
-              void _onReorderSampleItem(int oldIndex, int newIndex) {
-                PlaceList placeList = samplePlaceLists.removeAt(oldIndex);
-                samplePlaceLists.insert(newIndex, placeList);
-                setState(() {
-                  Widget row = rows.removeAt(oldIndex);
-                  rows.insert(newIndex, row);
-                });
-              }
-
-              // if (state.placeLists!.isNotEmpty) {
-              //   addCategoriesToList();
-              // }
-
-              if (state.placeLists!.isNotEmpty) {
-                rows.clear();
-                rows = [
-                  for (PlaceList placeList in state.placeLists!)
-                    Animate(
-                        effects: const [SlideEffect()],
-                        child: CategoryCard(placeList: placeList))
-                ];
-                for (PlaceList placeList in samplePlaceLists) {
-                  rows.add(Animate(
-                      effects: const [SlideEffect()],
-                      child: SampleCategoryCard(placeList: placeList)));
-                }
-              } else {
-                rows.clear();
-                // List<SampleCategoryCard> sampleCategoryCards = [];
-                for (PlaceList placeList in samplePlaceLists) {
-                  rows.add(Animate(
-                      effects: const [SlideEffect()],
-                      child: SampleCategoryCard(placeList: placeList)));
-                }
-                rows.insert(
-                    0,
-                    Animate(
-                        effects: const [SlideEffect()],
-                        child: const BlankCategoryCard()));
-              }
-
-              return CustomScrollView(
-                controller: mainScrollController,
-                slivers: [
-                  SliverAppBar.medium(
-                    leading: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                      child: IconButton(
-                        onPressed: () {},
-                        icon: const Icon(Icons.menu),
-                      ),
-                    ),
-                    title: Wrap(
-                      spacing: 18.0,
-                      children: const [
-                        Icon(FontAwesomeIcons.buildingCircleCheck),
-                        Text(
-                          'GottaGo',
-                          style: TextStyle(fontWeight: FontWeight.bold),
-                        ),
-                      ],
-                    ),
-                    expandedHeight: 120,
-                    actions: [
-                      const InboxButton(),
-                      // IconButton(
-                      //     onPressed: () {}, icon: const Icon(Icons.more_vert)),
-                      IconButton(
-                          onPressed: () {
-                            context.read<LoginCubit>().logout();
-                          },
-                          icon: const Icon(Icons.logout_rounded)),
-                    ],
-                  ),
-                  // Main List View
-                  const SliverToBoxAdapter(
-                    child: SizedBox(height: 12.0),
-                  ),
-                  ReorderableSliverList(
-                      enabled: false,
-                      delegate: ReorderableSliverChildBuilderDelegate(
-                          childCount: state.placeLists!.isNotEmpty
-                              ? 6 - state.placeLists!.length
-                              : 6, (context, index) {
-                        return rows[index];
-                      }),
-                      onReorder: _onReorderSampleItem)
-                ],
-              );
-            } else {
-              return const Center(
-                child: Text('Something Went Wrong...'),
-              );
-            }
-          },
-        ),
-        floatingActionButton: FloatingActionButton(
-          shape: const StadiumBorder(),
-          onPressed: () {
-            showDialog(
-              context: context,
-              builder: (context) {
-                return const CreateListDialog();
-              },
+    return Scaffold(
+      floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
+      bottomNavigationBar: const MainBottomNavBar(),
+      body: BlocBuilder<SavedListsBloc, SavedListsState>(
+        builder: (context, state) {
+          if (state is SavedListsLoading || state is SavedListsUpdated) {
+            return Center(
+              child: LoadingAnimationWidget.inkDrop(
+                  color: FlexColor.materialDarkPrimaryHc, size: 40.0),
             );
-          },
-          tooltip: 'Increment',
-          child: const Icon(Icons.add_circle_outline_rounded),
-        ),
+          }
+          if (state is SavedListsFailed) {
+            return const Center(
+              child: Text('Error Loading Lists!'),
+            );
+          }
+          if (state is SavedListsLoaded) {
+            final ScrollController mainScrollController = ScrollController();
+
+            // void addCategoriesToList() {
+            //   for (PlaceList placeList in state.placeLists!) {
+            //     rows.add(CategoryCard(placeList: placeList));
+            //   }
+            // }
+
+            void _onReorder(int oldIndex, int newIndex) {
+              PlaceList placeList = state.placeLists!.removeAt(oldIndex);
+              state.placeLists!.insert(newIndex, placeList);
+              setState(() {
+                Widget row = rows.removeAt(oldIndex);
+                rows.insert(newIndex, row);
+              });
+            }
+
+            void _onReorderSampleItem(int oldIndex, int newIndex) {
+              PlaceList placeList = samplePlaceLists.removeAt(oldIndex);
+              samplePlaceLists.insert(newIndex, placeList);
+              setState(() {
+                Widget row = rows.removeAt(oldIndex);
+                rows.insert(newIndex, row);
+              });
+            }
+
+            // if (state.placeLists!.isNotEmpty) {
+            //   addCategoriesToList();
+            // }
+
+            if (state.placeLists!.isNotEmpty) {
+              rows.clear();
+              rows = [
+                for (PlaceList placeList in state.placeLists!)
+                  Animate(
+                      effects: const [SlideEffect()],
+                      child: CategoryCard(placeList: placeList))
+              ];
+              for (PlaceList placeList in samplePlaceLists) {
+                rows.add(Animate(
+                    effects: const [SlideEffect()],
+                    child: SampleCategoryCard(placeList: placeList)));
+              }
+            } else {
+              rows.clear();
+              // List<SampleCategoryCard> sampleCategoryCards = [];
+              for (PlaceList placeList in samplePlaceLists) {
+                rows.add(Animate(
+                    effects: const [SlideEffect()],
+                    child: SampleCategoryCard(placeList: placeList)));
+              }
+              rows.insert(
+                  0,
+                  Animate(
+                      effects: const [SlideEffect()],
+                      child: const BlankCategoryCard()));
+            }
+
+            return CustomScrollView(
+              controller: mainScrollController,
+              slivers: [
+                SliverAppBar.medium(
+                  leading: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                    child: IconButton(
+                      onPressed: () {},
+                      icon: const Icon(Icons.menu),
+                    ),
+                  ),
+                  title: const SizedBox(
+                      height: 80, child: FittedBox(child: MainLogo())),
+                  expandedHeight: 120,
+                  actions: [
+                    const InboxButton(),
+                    // IconButton(
+                    //     onPressed: () {}, icon: const Icon(Icons.more_vert)),
+                    IconButton(
+                        onPressed: () {
+                          context.read<LoginCubit>().logout();
+                        },
+                        icon: const Icon(Icons.logout_rounded)),
+                  ],
+                ),
+                // Main List View
+                const SliverToBoxAdapter(
+                  child: SizedBox(height: 12.0),
+                ),
+                ReorderableSliverList(
+                    enabled: false,
+                    delegate: ReorderableSliverChildBuilderDelegate(
+                        childCount: state.placeLists!.isNotEmpty
+                            ? 6 - state.placeLists!.length
+                            : 6, (context, index) {
+                      return rows[index];
+                    }),
+                    onReorder: _onReorderSampleItem)
+              ],
+            );
+          } else {
+            return const Center(
+              child: Text('Something Went Wrong...'),
+            );
+          }
+        },
+      ),
+      floatingActionButton: FloatingActionButton(
+        shape: const StadiumBorder(),
+        onPressed: () {
+          showDialog(
+            context: context,
+            builder: (context) {
+              return const CreateListDialog();
+            },
+          );
+        },
+        tooltip: 'Increment',
+        child: const Icon(Icons.add_circle_outline_rounded),
       ),
     );
   }

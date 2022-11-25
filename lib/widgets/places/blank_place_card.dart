@@ -37,73 +37,69 @@ class _PlaceCardState extends State<BlankPlaceCard> {
         child: Card(
           clipBehavior: Clip.antiAlias,
           //color: FlexColor.deepBlueDarkSecondaryContainer.withOpacity(0.10),
-          child: Flex(
-            direction: Axis.horizontal,
+          child: Row(
             children: [
-              Flexible(
-                child: Stack(
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.only(right: 4.0),
-                      child: Stack(
-                        alignment: AlignmentDirectional.topEnd,
-                        children: [
-                          ConstrainedBox(
-                              constraints: const BoxConstraints(
-                                  minHeight: 170,
-                                  maxHeight: 180,
-                                  minWidth: 120,
-                                  maxWidth: 120),
-                              child: Container(
-                                color: FlexColor.deepBlueLightPrimary,
-                              )),
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.end,
-                            children: [
-                              Column(
-                                crossAxisAlignment: CrossAxisAlignment.end,
-                                children: [
-                                  ClipRRect(
-                                    borderRadius: const BorderRadius.only(
-                                        bottomLeft: Radius.circular(12.0)),
-                                    child: Container(
-                                      alignment: AlignmentDirectional.center,
-                                      color: Colors.white.withOpacity(0.9),
-                                      height: 24.0,
-                                      width: 70.0,
-                                      child: const SizedBox(),
-                                    ),
+              Stack(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.only(right: 4.0),
+                    child: Stack(
+                      alignment: AlignmentDirectional.topEnd,
+                      children: [
+                        ConstrainedBox(
+                            constraints: const BoxConstraints(
+                                minHeight: 170,
+                                maxHeight: 180,
+                                minWidth: 120,
+                                maxWidth: 120),
+                            child: Container(
+                              color: FlexColor.deepBlueLightPrimary,
+                            )),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.end,
+                          children: [
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.end,
+                              children: [
+                                ClipRRect(
+                                  borderRadius: const BorderRadius.only(
+                                      bottomLeft: Radius.circular(12.0)),
+                                  child: Container(
+                                    alignment: AlignmentDirectional.center,
+                                    color: Colors.white.withOpacity(0.9),
+                                    height: 24.0,
+                                    width: 70.0,
+                                    child: const SizedBox(),
                                   ),
-                                  ClipRRect(
-                                    borderRadius: const BorderRadius.only(
-                                        bottomLeft: Radius.circular(12.0)),
-                                    child: Container(
-                                        alignment:
-                                            AlignmentDirectional.centerEnd,
-                                        color: Colors.black87,
-                                        height: 20.0,
-                                        width: 50.0,
-                                        child: SizedBox(
-                                          height: 20,
-                                          width: 40,
-                                          child: Padding(
-                                              padding: const EdgeInsets.only(
-                                                  top: 2.0),
-                                              child: ClipRRect(
-                                                  borderRadius:
-                                                      BorderRadius.circular(20),
-                                                  child: const SizedBox())),
-                                        )),
-                                  ),
-                                ],
-                              )
-                            ],
-                          )
-                        ],
-                      ),
+                                ),
+                                ClipRRect(
+                                  borderRadius: const BorderRadius.only(
+                                      bottomLeft: Radius.circular(12.0)),
+                                  child: Container(
+                                      alignment: AlignmentDirectional.centerEnd,
+                                      color: Colors.black87,
+                                      height: 20.0,
+                                      width: 50.0,
+                                      child: SizedBox(
+                                        height: 20,
+                                        width: 40,
+                                        child: Padding(
+                                            padding:
+                                                const EdgeInsets.only(top: 2.0),
+                                            child: ClipRRect(
+                                                borderRadius:
+                                                    BorderRadius.circular(20),
+                                                child: const SizedBox())),
+                                      )),
+                                ),
+                              ],
+                            )
+                          ],
+                        )
+                      ],
                     ),
-                  ],
-                ),
+                  ),
+                ],
               ),
               Flexible(
                 flex: 2,
