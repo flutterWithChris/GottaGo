@@ -39,7 +39,6 @@ class SavedPlacesBloc extends Bloc<SavedPlacesEvent, SavedPlacesState> {
 
     on<SavedPlacesEvent>((event, emit) async {
       if (event is LoadPlaces) {
-        print('Saved Places Loading...');
         emit(SavedPlacesLoading());
         savedPlaces.clear();
         contributors.clear();
@@ -69,7 +68,6 @@ class SavedPlacesBloc extends Bloc<SavedPlacesEvent, SavedPlacesState> {
             places: savedPlaces,
             placeList: event.placeList,
             contributors: contributors));
-        print(state.toString());
       }
       if (event is AddPlace) {
         placeListRepository.addPlaceToList(event.place, event.placeList);
