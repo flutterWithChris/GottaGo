@@ -142,10 +142,12 @@ class _PlaceCardState extends State<AddPlaceCard> {
                             ],
                             child: ElevatedButton.icon(
                                 style: ButtonStyle(
-                                    fixedSize: MaterialStateProperty.all(
-                                        const Size(210, 32)),
-                                    foregroundColor: MaterialStateProperty.all(
-                                        Colors.white.withOpacity(0.9))),
+                                  fixedSize: MaterialStateProperty.all(
+                                      const Size(210, 32)),
+                                  // foregroundColor: MaterialStateProperty.all(
+                                  //   Colors.white.withOpacity(0.9),
+                                  // ),
+                                ),
                                 onPressed: () {
                                   showModalBottomSheet(
                                       backgroundColor: Theme.of(context)

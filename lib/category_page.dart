@@ -38,7 +38,7 @@ class CategoryPage extends StatefulWidget {
 class _CategoryPageState extends State<CategoryPage> {
   List<Widget> rows = [];
   List<PlaceCard> placeCards = [];
-  ScrollController mainScrollController = ScrollController();
+  late final ScrollController mainScrollController;
   final StreamController<int> controller = StreamController.broadcast();
   final DraggableScrollableController draggableScrollableController =
       DraggableScrollableController();
@@ -47,6 +47,7 @@ class _CategoryPageState extends State<CategoryPage> {
   @override
   void initState() {
     // TODO: implement initState
+    mainScrollController = ScrollController();
     confettiController =
         ConfettiController(duration: const Duration(seconds: 10));
   }
@@ -96,6 +97,7 @@ class _CategoryPageState extends State<CategoryPage> {
             ];
 
             return CustomScrollView(
+              controller: mainScrollController,
               slivers: [
                 SliverAppBar.medium(
                   expandedHeight: 125,
@@ -384,7 +386,7 @@ class _CategoryPageAppBarState extends State<CategoryPageAppBar> {
           if (widget.scrollController.offset > 65) {
             if (!mounted) return;
             setState(() {
-              avatarStackPadding = const EdgeInsets.only(right: 28.0);
+              avatarStackPadding = const EdgeInsets.symmetric(horizontal: 28.0);
             });
           } else if (widget.scrollController.hasClients &&
               widget.scrollController.offset < 65) {
@@ -412,91 +414,100 @@ class _CategoryPageAppBarState extends State<CategoryPageAppBar> {
       //     icon: const Icon(Icons.menu),
       //   ),
       // ),
-      title: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Wrap(
-            spacing: 16.0,
-            crossAxisAlignment: WrapCrossAlignment.center,
-            children: [
-              Animate(effects: const [
-                FadeEffect(),
-                SlideEffect(
-                    duration: Duration(milliseconds: 1000),
-                    curve: Curves.easeOutQuart,
-                    begin: Offset(-0.5, 0),
-                    end: Offset(0, 0))
-                // RotateEffect(
-                //     curve: Curves.easeOutBack,
-                //     duration: Duration(milliseconds: 500),
-                //     begin: -0.25,
-                //     end: 0.0,
-                //     alignment: Alignment.centerLeft)
-              ], child: const Icon(FontAwesomeIcons.earthAmericas)),
-              Animate(
-                effects: const [
-                  FadeEffect(),
-                  RotateEffect(
-                      curve: Curves.easeOutBack,
-                      duration: Duration(milliseconds: 500),
-                      begin: -0.25,
-                      end: 0.0,
-                      alignment: Alignment.centerLeft)
-                ],
-                child: Text(
-                  widget.placeList.name,
-                  style: Theme.of(context)
-                      .textTheme
-                      .titleLarge!
-                      .copyWith(fontWeight: FontWeight.bold),
+
+      title: AnimatedPadding(
+        curve: Curves.easeOutSine,
+        duration: Duration(milliseconds: 300),
+        padding: avatarStackPadding,
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Flexible(
+              flex: 4,
+              child: FittedBox(
+                child: Wrap(
+                  spacing: 16.0,
+                  crossAxisAlignment: WrapCrossAlignment.center,
+                  children: [
+                    Animate(effects: const [
+                      FadeEffect(),
+                      SlideEffect(
+                          duration: Duration(milliseconds: 1000),
+                          curve: Curves.easeOutQuart,
+                          begin: Offset(-0.5, 0),
+                          end: Offset(0, 0))
+                      // RotateEffect(
+                      //     curve: Curves.easeOutBack,
+                      //     duration: Duration(milliseconds: 500),
+                      //     begin: -0.25,
+                      //     end: 0.0,
+                      //     alignment: Alignment.centerLeft)
+                    ], child: const Icon(FontAwesomeIcons.earthAmericas)),
+                    Animate(
+                      effects: const [
+                        FadeEffect(),
+                        RotateEffect(
+                            curve: Curves.easeOutBack,
+                            duration: Duration(milliseconds: 500),
+                            begin: -0.25,
+                            end: 0.0,
+                            alignment: Alignment.centerLeft)
+                      ],
+                      child: Text(
+                        widget.placeList.name,
+                        style: Theme.of(context)
+                            .textTheme
+                            .titleLarge!
+                            .copyWith(fontWeight: FontWeight.bold),
+                      ),
+                    ),
+                  ],
                 ),
               ),
-            ],
-          ),
-          AnimatedPadding(
-            duration: const Duration(milliseconds: 250),
-            curve: Curves.easeOutSine,
-            padding: avatarStackPadding,
-            child: Animate(
-              effects: const [
-                FadeEffect(),
-                SlideEffect(
-                    duration: Duration(milliseconds: 700),
-                    curve: Curves.easeOutQuart,
-                    begin: Offset(0.5, 0.0),
-                    end: Offset(0.0, 0.0)),
-              ],
-              child: BlocBuilder<SavedPlacesBloc, SavedPlacesState>(
-                builder: (context, state) {
-                  if (state is SavedPlacesLoading) {
-                    return LoadingAnimationWidget.beat(
-                        color: FlexColor.bahamaBlueDarkSecondary, size: 18.0);
-                  }
-                  if (state is SavedPlacesLoaded) {
-                    return AvatarStack(
-                      settings: RestrictedPositions(
-                          align: StackAlign.right, laying: StackLaying.first),
-                      borderWidth: 2.0,
-                      borderColor: Theme.of(context).chipTheme.backgroundColor,
-                      width: 70,
-                      height: 40,
-                      avatars: [
-                        CachedNetworkImageProvider(
-                            widget.listOwner.profilePicture!),
-                        for (User user in state.contributors)
-                          CachedNetworkImageProvider(user.profilePicture!),
-                      ],
-                    );
-                  } else {
-                    return const Center(
-                      child: Text('Error Loading Avatars!'),
-                    );
-                  }
-                },
+            ),
+            Flexible(
+              child: Animate(
+                effects: const [
+                  FadeEffect(),
+                  SlideEffect(
+                      duration: Duration(milliseconds: 700),
+                      curve: Curves.easeOutQuart,
+                      begin: Offset(0.5, 0.0),
+                      end: Offset(0.0, 0.0)),
+                ],
+                child: BlocBuilder<SavedPlacesBloc, SavedPlacesState>(
+                  builder: (context, state) {
+                    if (state is SavedPlacesLoading) {
+                      return LoadingAnimationWidget.beat(
+                          color: FlexColor.bahamaBlueDarkSecondary, size: 18.0);
+                    }
+                    if (state is SavedPlacesLoaded) {
+                      return AvatarStack(
+                        settings: RestrictedPositions(
+                            align: StackAlign.right, laying: StackLaying.first),
+                        borderWidth: 2.0,
+                        borderColor:
+                            Theme.of(context).chipTheme.backgroundColor,
+                        width: 70,
+                        height: 40,
+                        avatars: [
+                          CachedNetworkImageProvider(
+                              widget.listOwner.profilePicture!),
+                          for (User user in state.contributors)
+                            CachedNetworkImageProvider(user.profilePicture!),
+                        ],
+                      );
+                    } else {
+                      return const Center(
+                        child: Text('Error Loading Avatars!'),
+                      );
+                    }
+                  },
+                ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
       actions: [
         PopupMenuButton(

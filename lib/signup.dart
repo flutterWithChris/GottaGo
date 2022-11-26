@@ -124,7 +124,7 @@ class _IntroPaywallState extends State<IntroPaywall> {
                         text: 'Random wheel ',
                         style: TextStyle(fontWeight: FontWeight.bold),
                       ),
-                      TextSpan(text: 'to help choose a place!'),
+                      TextSpan(text: 'to help choose plans!'),
                     ],
                   ),
                   icon: FontAwesomeIcons.dice,
@@ -726,7 +726,7 @@ class MainLogo extends StatelessWidget {
               top: 12.0,
               child: Icon(
                 FontAwesomeIcons.solidHeart,
-                fill: 1.0,
+                // fill: 1.0,
                 color: Colors.white,
               ),
             ),

@@ -58,7 +58,7 @@ class CategoryCard extends StatelessWidget {
                     context
                         .read<SavedPlacesBloc>()
                         .add(LoadPlaces(placeList: placeList));
-                    context.go('/home/placeList-page');
+                    context.push('/home/placeList-page');
                   },
                   contentPadding: const EdgeInsets.symmetric(
                       vertical: 16.0, horizontal: 24.0),

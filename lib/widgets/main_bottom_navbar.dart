@@ -38,8 +38,9 @@ class _MainBottomNavBarState extends State<MainBottomNavBar> {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: 65,
+      height: 80,
       child: BubbleBottomBar(
+          tilesPadding: EdgeInsets.only(top: 8.0),
           backgroundColor: FlexColor.materialDarkScaffoldBackground,
           hasNotch: true,
           opacity: .2,
