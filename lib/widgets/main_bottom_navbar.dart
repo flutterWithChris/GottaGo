@@ -40,7 +40,7 @@ class _MainBottomNavBarState extends State<MainBottomNavBar> {
     return SizedBox(
       height: 80,
       child: BubbleBottomBar(
-          tilesPadding: EdgeInsets.only(top: 8.0),
+          tilesPadding: const EdgeInsets.only(top: 8.0),
           backgroundColor: FlexColor.materialDarkScaffoldBackground,
           hasNotch: true,
           opacity: .2,

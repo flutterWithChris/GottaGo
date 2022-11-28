@@ -1,4 +1,5 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flex_color_scheme/flex_color_scheme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -33,9 +34,16 @@ class CategoryCard extends StatelessWidget {
                   trailing: Padding(
                     padding: const EdgeInsets.only(bottom: 16.0),
                     child: PopupMenuButton(
+                        position: PopupMenuPosition.under,
                         color: Theme.of(context).scaffoldBackgroundColor,
                         // onSelected: (value) {},
-                        icon: const Icon(Icons.more_vert_rounded),
+                        icon: Icon(
+                          Icons.more_vert_rounded,
+                          color:
+                              Theme.of(context).brightness == Brightness.light
+                                  ? FlexColor.bahamaBlueLightPrimary
+                                  : Colors.white,
+                        ),
                         itemBuilder: (context) => <PopupMenuEntry>[
                               PopupMenuItem(
                                   onTap: () {

@@ -9,13 +9,13 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutterfire_ui/auth.dart' hide AuthState;
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:go_router/go_router.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:leggo/bloc/autocomplete/bloc/autocomplete_bloc.dart';
 import 'package:leggo/bloc/bloc/auth/bloc/auth_bloc.dart';
 import 'package:leggo/bloc/bloc/invite/bloc/invite_bloc.dart';
 
 import 'package:leggo/bloc/bloc/invite_inbox/invite_inbox_bloc.dart';
 import 'package:leggo/bloc/onboarding/bloc/onboarding_bloc.dart';
+import 'package:leggo/bloc/place/edit_places_bloc.dart';
 import 'package:leggo/bloc/profile_bloc.dart';
 
 import 'package:leggo/bloc/saved_categories/bloc/saved_lists_bloc.dart';
@@ -49,6 +49,7 @@ import 'package:reorderables/reorderables.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'bloc/place/place_bloc.dart';
+import 'cubit/lists/list_sort_cubit.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -171,33 +172,45 @@ class _MyAppState extends State<MyApp> {
             bloc = context.read<AuthBloc>();
             return MaterialApp.router(
               scaffoldMessengerKey: snackbarKey,
+// This theme was made for FlexColorScheme version 6.1.1. Make sure
+// you use same or higher version, but still same major version. If
+// you use a lower version, some properties may not be supported. In
+// that case you can also remove them after copying the theme to your app.
               theme: FlexThemeData.light(
-                fontFamily: GoogleFonts.archivo().fontFamily,
                 scheme: FlexScheme.bahamaBlue,
-                surfaceMode: FlexSurfaceMode.highScaffoldLowSurface,
-                blendLevel: 20,
-                appBarOpacity: 0.95,
+                surfaceMode: FlexSurfaceMode.levelSurfacesLowScaffold,
+                blendLevel: 9,
                 subThemesData: const FlexSubThemesData(
-                  defaultRadius: 20.0,
-                  blendOnLevel: 20,
+                  cardElevation: 0.5,
+                  defaultRadius: 24,
+                  blendOnLevel: 10,
                   blendOnColors: false,
                 ),
                 visualDensity: FlexColorScheme.comfortablePlatformDensity,
                 useMaterial3: true,
+                swapLegacyOnMaterial3: true,
+                // To use the playground font, add GoogleFonts package and uncomment
+                // fontFamily: GoogleFonts.notoSans().fontFamily,
               ),
               darkTheme: FlexThemeData.dark(
-                fontFamily: GoogleFonts.archivo().fontFamily,
                 scheme: FlexScheme.bahamaBlue,
-                surfaceMode: FlexSurfaceMode.highScaffoldLowSurface,
+                surfaceMode: FlexSurfaceMode.levelSurfacesLowScaffold,
                 blendLevel: 15,
-                appBarOpacity: 0.90,
                 subThemesData: const FlexSubThemesData(
-                  defaultRadius: 20.0,
-                  blendOnLevel: 30,
+                  cardElevation: 0.5,
+                  defaultRadius: 24,
+                  blendOnLevel: 20,
                 ),
                 visualDensity: FlexColorScheme.comfortablePlatformDensity,
                 useMaterial3: true,
+                swapLegacyOnMaterial3: true,
+                // To use the Playground font, add GoogleFonts package and uncomment
+                // fontFamily: GoogleFonts.notoSans().fontFamily,
               ),
+// If you do not have a themeMode switch, uncomment this line
+// to let the device system mode control the theme mode:
+// themeMode: ThemeMode.system,
+
               themeMode: ThemeMode.system,
               routeInformationParser: router.routeInformationParser,
               routeInformationProvider: router.routeInformationProvider,
@@ -258,8 +271,20 @@ class _MyAppState extends State<MyApp> {
             routes: [
               GoRoute(
                   path: 'home/placeList-page',
-                  pageBuilder: (context, state) =>
-                      const MaterialPage<void>(child: CategoryPage()),
+                  pageBuilder: (context, state) => MaterialPage<void>(
+                          child: MultiBlocProvider(
+                        providers: [
+                          BlocProvider(
+                            create: (context) => EditPlacesBloc(
+                                placeListRepository:
+                                    context.read<PlaceListRepository>()),
+                          ),
+                          BlocProvider(
+                            create: (context) => ListSortCubit(),
+                          ),
+                        ],
+                        child: const CategoryPage(),
+                      )),
                   routes: [
                     GoRoute(
                       name: 'random-wheel',
