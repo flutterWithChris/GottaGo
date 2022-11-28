@@ -232,7 +232,100 @@ class PlaceListRepository {
 
   Future<void> addPlaceToList(Place place, PlaceList placeList) async {
     try {
-      _firebaseFirestore
+      await _firebaseFirestore
+          .collection('place_lists')
+          .doc(placeList.placeListId)
+          .collection('places')
+          .doc(place.placeId)
+          .set(place.toDocument());
+    } on FirebaseException catch (e) {
+      final SnackBar snackBar = SnackBar(
+        content: Text(e.message.toString()),
+        backgroundColor: Colors.redAccent,
+      );
+      snackbarKey.currentState?.showSnackBar(snackBar);
+      (e, stack) =>
+          FirebaseCrashlytics.instance.recordError(e, stack, fatal: true);
+      throw Exception();
+    }
+  }
+
+  Future<void> removePlaceFromList(Place place, PlaceList placeList) async {
+    try {
+      await _firebaseFirestore
+          .collection('place_lists')
+          .doc(placeList.placeListId)
+          .collection('places')
+          .doc(place.placeId)
+          .delete();
+    } on FirebaseException catch (e) {
+      final SnackBar snackBar = SnackBar(
+        content: Text(e.message.toString()),
+        backgroundColor: Colors.redAccent,
+      );
+      snackbarKey.currentState?.showSnackBar(snackBar);
+      (e, stack) =>
+          FirebaseCrashlytics.instance.recordError(e, stack, fatal: true);
+      throw Exception();
+    }
+  }
+
+  Future<void> removePlaceFromVisitedList(
+      Place place, PlaceList placeList) async {
+    try {
+      await _firebaseFirestore
+          .collection('place_lists')
+          .doc(placeList.placeListId)
+          .collection('visited_places')
+          .doc(place.placeId)
+          .delete();
+    } on FirebaseException catch (e) {
+      final SnackBar snackBar = SnackBar(
+        content: Text(e.message.toString()),
+        backgroundColor: Colors.redAccent,
+      );
+      snackbarKey.currentState?.showSnackBar(snackBar);
+      (e, stack) =>
+          FirebaseCrashlytics.instance.recordError(e, stack, fatal: true);
+      throw Exception();
+    }
+  }
+
+  Future<void> markPlaceVisited(Place place, PlaceList placeList) async {
+    try {
+      await _firebaseFirestore
+          .collection('place_lists')
+          .doc(placeList.placeListId)
+          .collection('places')
+          .doc(place.placeId)
+          .delete();
+      await _firebaseFirestore
+          .collection('place_lists')
+          .doc(placeList.placeListId)
+          .collection('visited_places')
+          .doc(place.placeId)
+          .set(place.toDocument());
+    } on FirebaseException catch (e) {
+      final SnackBar snackBar = SnackBar(
+        content: Text(e.message.toString()),
+        backgroundColor: Colors.redAccent,
+      );
+      snackbarKey.currentState?.showSnackBar(snackBar);
+      (e, stack) =>
+          FirebaseCrashlytics.instance.recordError(e, stack, fatal: true);
+      throw Exception();
+    }
+  }
+
+  Future<void> restoreVisitedPlace(Place place, PlaceList placeList) async {
+    try {
+      await _firebaseFirestore
+          .collection('place_lists')
+          .doc(placeList.placeListId)
+          .collection('visited_places')
+          .doc(place.placeId)
+          .delete();
+      await _firebaseFirestore
           .collection('place_lists')
           .doc(placeList.placeListId)
           .collection('places')
@@ -263,6 +356,35 @@ class PlaceListRepository {
             .collection('place_lists')
             .doc(placeList.placeListId)
             .collection('places')
+            .doc(snap.id)
+            .snapshots()
+            .map((snap) => Place.fromSnapshot(snap))));
+      }));
+    } on FirebaseException catch (e) {
+      final SnackBar snackBar = SnackBar(
+        content: Text(e.message.toString()),
+        backgroundColor: Colors.redAccent,
+      );
+      snackbarKey.currentState?.showSnackBar(snackBar);
+      (e, stack) =>
+          FirebaseCrashlytics.instance.recordError(e, stack, fatal: true);
+      throw Exception();
+    }
+  }
+
+  Stream<Place> getVisitedPlaces(PlaceList placeList) {
+    try {
+      return _firebaseFirestore
+          .collection('place_lists')
+          .doc(placeList.placeListId)
+          .collection('visited_places')
+          .snapshots()
+          .switchMap(((snapshot) {
+        final references = snapshot.docs;
+        return MergeStream(references.map((snap) => _firebaseFirestore
+            .collection('place_lists')
+            .doc(placeList.placeListId)
+            .collection('visited_places')
             .doc(snap.id)
             .snapshots()
             .map((snap) => Place.fromSnapshot(snap))));

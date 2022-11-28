@@ -33,7 +33,7 @@ class _PlaceCardState extends State<BlankPlaceCard> {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 4.0, vertical: 4.0),
       child: ConstrainedBox(
-        constraints: const BoxConstraints(minHeight: 170, maxHeight: 180),
+        constraints: const BoxConstraints(minHeight: 180, maxHeight: 190),
         child: Card(
           clipBehavior: Clip.antiAlias,
           //color: FlexColor.deepBlueDarkSecondaryContainer.withOpacity(0.10),
@@ -49,7 +49,7 @@ class _PlaceCardState extends State<BlankPlaceCard> {
                         ConstrainedBox(
                             constraints: const BoxConstraints(
                                 minHeight: 170,
-                                maxHeight: 180,
+                                maxHeight: 205,
                                 minWidth: 120,
                                 maxWidth: 120),
                             child: Container(
@@ -109,7 +109,7 @@ class _PlaceCardState extends State<BlankPlaceCard> {
                     children: [
                       Padding(
                         padding: const EdgeInsets.only(
-                          top: 16.0,
+                          top: 30.0,
                         ),
                         child: ListTile(
                             dense: true,
@@ -130,7 +130,7 @@ class _PlaceCardState extends State<BlankPlaceCard> {
                                     borderRadius: BorderRadius.circular(20),
                                     child: Container(
                                         height: 20,
-                                        width: 140,
+                                        width: 160,
                                         color: Colors.grey.shade300),
                                   )
                                 ],
@@ -147,19 +147,19 @@ class _PlaceCardState extends State<BlankPlaceCard> {
                                       width: 70,
                                       color: Colors.grey.shade300),
                                 ),
-                                ClipRRect(
-                                  borderRadius: BorderRadius.circular(20),
-                                  child: Container(
-                                      height: 16,
-                                      width: 80,
-                                      color: Colors.grey.shade300),
-                                )
+                                // ClipRRect(
+                                //   borderRadius: BorderRadius.circular(20),
+                                //   child: Container(
+                                //       height: 16,
+                                //       width: 80,
+                                //       color: Colors.grey.shade300),
+                                // )
                               ],
                             )),
                       ),
                       Padding(
                         padding: const EdgeInsets.only(
-                            left: 12.0, right: 12.0, bottom: 10.0, top: 24.0),
+                            left: 12.0, right: 12.0, bottom: 10.0, top: 16.0),
                         child: Column(
                           mainAxisSize: MainAxisSize.min,
                           children: [
