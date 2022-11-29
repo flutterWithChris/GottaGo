@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:leggo/repository/invite_repository.dart';
@@ -9,11 +11,15 @@ part 'invite_inbox_state.dart';
 
 class InviteInboxBloc extends Bloc<InviteInboxEvent, InviteInboxState> {
   final InviteRepository _inviteRepository;
+  StreamSubscription? inviteStream;
   List<Invite> invites = [];
   InviteInboxBloc({
     required InviteRepository inviteRepository,
   })  : _inviteRepository = inviteRepository,
         super(InviteInboxState.loading()) {
+    inviteStream = _inviteRepository.getInvites().listen((invite) {
+      LoadInvites();
+    });
     on<LoadInvites>((event, emit) async {
       invites.clear();
       if (state != InviteInboxState.loading()) {

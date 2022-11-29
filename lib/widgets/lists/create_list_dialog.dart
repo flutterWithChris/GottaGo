@@ -1,14 +1,22 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:leggo/bloc/saved_categories/bloc/saved_lists_bloc.dart';
 import 'package:leggo/model/place_list.dart';
 
-class CreateListDialog extends StatelessWidget {
+class CreateListDialog extends StatefulWidget {
   const CreateListDialog({
     Key? key,
   }) : super(key: key);
 
+  @override
+  State<CreateListDialog> createState() => _CreateListDialogState();
+}
+
+class _CreateListDialogState extends State<CreateListDialog> {
+  var maxLength = 15;
+  var textLength = 0;
   @override
   Widget build(BuildContext context) {
     final TextEditingController listNameController = TextEditingController();
@@ -33,9 +41,24 @@ class CreateListDialog extends StatelessWidget {
             Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 20.0),
                 child: TextField(
+                  // onChanged: (value) {
+                  //   setState(() {
+                  //     textLength = value.length;
+                  //   });
+                  // },
+                  // maxLength: 20,
+                  inputFormatters: [
+                    FilteringTextInputFormatter.allow(
+                        RegExp("[A-Za-z0-9#+-. ]*")),
+                  ],
+                  textCapitalization: TextCapitalization.words,
                   controller: listNameController,
                   autofocus: true,
                   decoration: InputDecoration(
+                    // suffixText:
+                    //     '${textLength.toString()}/${maxLength.toString()}',
+                    // suffixStyle: Theme.of(context).textTheme.bodySmall,
+                    //   counterText: "",
                     filled: true,
                     hintText: "ex. Breakfast Ideas",
                     focusedBorder: Theme.of(context)

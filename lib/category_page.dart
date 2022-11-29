@@ -546,35 +546,39 @@ class _PlaceListButtonBarState extends State<PlaceListButtonBar> {
                 isDense: true,
                 underline: const SizedBox(),
                 value: dropdownValue,
-                items: [
+                items: const [
                   DropdownMenuItem(
                     value: 'Not Visited',
-                    child: const Text('Not Visited'),
-                    onTap: () {
-                      context
-                          .read<ListSortCubit>()
-                          .sortByVisitedStatus('Not Visited');
-                      context
-                          .read<SavedPlacesBloc>()
-                          .add(LoadPlaces(placeList: widget.currentPlaceList));
-                    },
+                    child: Text('Not Visited'),
                   ),
                   DropdownMenuItem(
                     value: 'Visited',
-                    child: const Text('Visited'),
-                    onTap: () {
-                      context
-                          .read<ListSortCubit>()
-                          .sortByVisitedStatus('Visited');
-                      context.read<SavedPlacesBloc>().add(LoadVisitedPlaces(
-                          placeList: widget.currentPlaceList));
-                    },
+                    child: Text('Visited'),
                   ),
                 ],
                 onChanged: (value) {
-                  setState(() {
-                    dropdownValue = value!;
-                  });
+                  if (value != dropdownValue) {
+                    setState(() {
+                      dropdownValue = value!;
+                    });
+                    switch (value) {
+                      case 'Visited':
+                        context
+                            .read<ListSortCubit>()
+                            .sortByVisitedStatus('Visited');
+                        context.read<SavedPlacesBloc>().add(LoadVisitedPlaces(
+                            placeList: widget.currentPlaceList));
+                        break;
+
+                      case 'Not Visited':
+                        context
+                            .read<ListSortCubit>()
+                            .sortByVisitedStatus('Not Visited');
+                        context.read<SavedPlacesBloc>().add(
+                            LoadPlaces(placeList: widget.currentPlaceList));
+                        break;
+                    }
+                  }
                 },
               ),
             ),
@@ -769,7 +773,6 @@ class _CategoryPageAppBarState extends State<CategoryPageAppBar> {
       ),
       actions: [
         PopupMenuButton(
-          color: Theme.of(context).scaffoldBackgroundColor,
           position: PopupMenuPosition.under,
           itemBuilder: (context) => [
             PopupMenuItem(

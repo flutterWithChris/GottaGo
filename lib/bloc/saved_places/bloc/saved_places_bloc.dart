@@ -17,6 +17,7 @@ class SavedPlacesBloc extends Bloc<SavedPlacesEvent, SavedPlacesState> {
   final SavedListsBloc _savedListsBloc;
   final UserRepository _userRepository;
   StreamSubscription? _savedListsSubscription;
+  StreamSubscription? _placeListsSubscription;
   PlaceList? _currentPlaceList;
   Stream<User>? contributorStream;
   SavedPlacesBloc({
@@ -37,6 +38,13 @@ class SavedPlacesBloc extends Bloc<SavedPlacesEvent, SavedPlacesState> {
         add(const UpdatePlace());
       }
     });
+
+    if (state.placeList != null) {
+      _placeListsSubscription =
+          _placeListRepository.getPlaces(state.placeList!).listen((place) {
+        add(LoadPlaces(placeList: state.placeList!));
+      });
+    }
 
     on<SavedPlacesEvent>((event, emit) async {
       if (event is LoadPlaces) {
