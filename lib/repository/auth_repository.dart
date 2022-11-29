@@ -1,8 +1,12 @@
+import 'package:firebase_auth/firebase_auth.dart' as auth;
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:leggo/globals.dart';
 import 'package:the_apple_sign_in/the_apple_sign_in.dart';
+
 import 'base_auth_repository.dart';
-import 'package:firebase_auth/firebase_auth.dart' as auth;
 
 class AuthRepository extends BaseAuthRepository {
   final auth.FirebaseAuth _firebaseAuth;
@@ -77,8 +81,15 @@ class AuthRepository extends BaseAuthRepository {
           const User().copyWith(
               id: _firebaseAuth.currentUser!.uid,
               email: _firebaseAuth.currentUser!.email));*/
-    } catch (_) {
-      throw Exception(auth.FirebaseAuthException);
+    } on auth.FirebaseAuthException catch (e) {
+      final SnackBar snackBar = SnackBar(
+        content: Text(e.message.toString()),
+        backgroundColor: Colors.redAccent,
+      );
+      snackbarKey.currentState?.showSnackBar(snackBar);
+      (e, stack) =>
+          FirebaseCrashlytics.instance.recordError(e, stack, fatal: true);
+      throw Exception();
     }
   }
 

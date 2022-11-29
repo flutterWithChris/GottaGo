@@ -1,4 +1,5 @@
 import 'dart:async';
+
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flex_color_scheme/flex_color_scheme.dart';
 import 'package:flutter/material.dart';
@@ -9,15 +10,14 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutterfire_ui/auth.dart' hide AuthState;
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:go_router/go_router.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:leggo/bloc/autocomplete/bloc/autocomplete_bloc.dart';
 import 'package:leggo/bloc/bloc/auth/bloc/auth_bloc.dart';
 import 'package:leggo/bloc/bloc/invite/bloc/invite_bloc.dart';
-
 import 'package:leggo/bloc/bloc/invite_inbox/invite_inbox_bloc.dart';
 import 'package:leggo/bloc/onboarding/bloc/onboarding_bloc.dart';
 import 'package:leggo/bloc/place/edit_places_bloc.dart';
 import 'package:leggo/bloc/profile_bloc.dart';
-
 import 'package:leggo/bloc/saved_categories/bloc/saved_lists_bloc.dart';
 import 'package:leggo/bloc/saved_places/bloc/saved_places_bloc.dart';
 import 'package:leggo/category_page.dart';
@@ -42,8 +42,8 @@ import 'package:leggo/signup.dart';
 import 'package:leggo/widgets/lists/blank_category_card.dart';
 import 'package:leggo/widgets/lists/category_card.dart';
 import 'package:leggo/widgets/lists/create_list_dialog.dart';
-import 'package:leggo/widgets/main_bottom_navbar.dart';
 import 'package:leggo/widgets/lists/sample_category_card.dart';
+import 'package:leggo/widgets/main_bottom_navbar.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:reorderables/reorderables.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -54,8 +54,8 @@ import 'cubit/lists/list_sort_cubit.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   // * Force onboarding pref
-  SharedPreferences prefs = await SharedPreferences.getInstance();
-  prefs.setInt('initScreen', 0);
+  // SharedPreferences prefs = await SharedPreferences.getInstance();
+  // prefs.setInt('initScreen', 0);
 
   await Future.wait([
     dotenv.load(fileName: '.env'),
@@ -190,7 +190,7 @@ class _MyAppState extends State<MyApp> {
                 useMaterial3: true,
                 swapLegacyOnMaterial3: true,
                 // To use the playground font, add GoogleFonts package and uncomment
-                // fontFamily: GoogleFonts.notoSans().fontFamily,
+                fontFamily: GoogleFonts.archivo().fontFamily,
               ),
               darkTheme: FlexThemeData.dark(
                 scheme: FlexScheme.bahamaBlue,
@@ -205,7 +205,7 @@ class _MyAppState extends State<MyApp> {
                 useMaterial3: true,
                 swapLegacyOnMaterial3: true,
                 // To use the Playground font, add GoogleFonts package and uncomment
-                // fontFamily: GoogleFonts.notoSans().fontFamily,
+                fontFamily: GoogleFonts.archivo().fontFamily,
               ),
 // If you do not have a themeMode switch, uncomment this line
 // to let the device system mode control the theme mode:
@@ -599,7 +599,7 @@ class InviteList extends StatelessWidget {
       listener: (context, state) {
         if (state.status == InviteInboxStatus.accepted ||
             state.status == InviteInboxStatus.declined) {
-          //  context.read<SavedListsBloc>().add(UpdateSavedLists());
+          context.read<SavedListsBloc>().add(LoadSavedLists());
         }
       },
       builder: (context, state) {
@@ -817,7 +817,7 @@ class DeclinedGroupInvite extends StatelessWidget {
                   ),
                   Text.rich(TextSpan(children: [
                     TextSpan(
-                      text: '${thisInvite.inviterName.split(' ')[0]} ',
+                      text: '${thisInvite.inviteeName.split(' ')[0]} ',
                       style: Theme.of(context)
                           .textTheme
                           .titleSmall!
@@ -924,7 +924,7 @@ class AcceptedGroupInvite extends StatelessWidget {
                   ),
                   Text.rich(TextSpan(children: [
                     TextSpan(
-                      text: '${thisInvite.inviterName.split(' ')[0]} ',
+                      text: '${thisInvite.inviteeName.split(' ')[0]} ',
                       style: Theme.of(context)
                           .textTheme
                           .titleSmall!

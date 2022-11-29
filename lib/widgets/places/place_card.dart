@@ -349,7 +349,8 @@ class _PlaceCardState extends State<PlaceCard> {
                                         FontAwesomeIcons.locationArrow,
                                         size: 18,
                                       ),
-                                      label: const Text('Let\'s Go')),
+                                      label: const FittedBox(
+                                          child: Text('Let\'s Go'))),
                                   Row(
                                     children: [
                                       context
