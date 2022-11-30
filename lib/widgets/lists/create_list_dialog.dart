@@ -1,7 +1,7 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:leggo/bloc/profile_bloc.dart';
 import 'package:leggo/bloc/saved_categories/bloc/saved_lists_bloc.dart';
 import 'package:leggo/model/place_list.dart';
 
@@ -28,12 +28,24 @@ class _CreateListDialogState extends State<CreateListDialog> {
           mainAxisSize: MainAxisSize.min,
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Text(
-              'Create New List:',
-              style: Theme.of(context)
-                  .textTheme
-                  .titleLarge!
-                  .copyWith(fontWeight: FontWeight.bold),
+            Padding(
+              padding: const EdgeInsets.only(right: 16.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Icon(Icons.add_location_alt_outlined),
+                  const SizedBox(
+                    width: 8.0,
+                  ),
+                  Text(
+                    'Create a List:',
+                    style: Theme.of(context)
+                        .textTheme
+                        .titleLarge!
+                        .copyWith(fontWeight: FontWeight.bold),
+                  ),
+                ],
+              ),
             ),
             const SizedBox(
               height: 24.0,
@@ -60,11 +72,25 @@ class _CreateListDialogState extends State<CreateListDialog> {
                     // suffixStyle: Theme.of(context).textTheme.bodySmall,
                     //   counterText: "",
                     filled: true,
-                    hintText: "ex. Breakfast Ideas",
-                    focusedBorder: Theme.of(context)
-                        .inputDecorationTheme
-                        .focusedBorder!
-                        .copyWith(borderSide: const BorderSide()),
+                    hintText: "ex. Breakfast Ideas...",
+
+                    errorBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(50),
+                        borderSide: const BorderSide(
+                            width: 2.0, color: Colors.redAccent)),
+                    focusedErrorBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(50),
+                        borderSide: const BorderSide(
+                            width: 2.0, color: Colors.redAccent)),
+                    focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(50),
+                        borderSide: BorderSide(
+                            width: 2.0,
+                            color: Theme.of(context)
+                                .inputDecorationTheme
+                                .enabledBorder!
+                                .borderSide
+                                .color)),
                   ),
                 )),
             Padding(
@@ -79,12 +105,13 @@ class _CreateListDialogState extends State<CreateListDialog> {
                             placeList: PlaceList(
                           placeCount: 0,
                           contributorIds: [],
-                          listOwnerId: FirebaseAuth.instance.currentUser!.uid,
+                          listOwnerId:
+                              context.read<ProfileBloc>().state.user.id!,
                           name: listNameController.value.text,
                         )));
                     Navigator.pop(context);
                   },
-                  icon: const Icon(Icons.add_location),
+                  icon: const Icon(Icons.add_location_alt_outlined),
                   label: const Text('Create List')),
             )
           ],

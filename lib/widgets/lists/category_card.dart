@@ -23,26 +23,6 @@ class CategoryCard extends StatelessWidget {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          placeList.listOwnerId != context.read<ProfileBloc>().state.user.id
-              ? Padding(
-                  padding: const EdgeInsets.only(left: 24.0),
-                  child: Row(
-                    children: const [
-                      Icon(
-                        Icons.groups_rounded,
-                        size: 20,
-                      ),
-                      SizedBox(
-                        width: 12.0,
-                      ),
-                      Text(
-                        'Shared List',
-                        style: TextStyle(fontStyle: FontStyle.italic),
-                      ),
-                    ],
-                  ),
-                )
-              : const SizedBox(),
           SizedBox(
             child: Column(
               mainAxisSize: MainAxisSize.min,
@@ -52,76 +32,110 @@ class CategoryCard extends StatelessWidget {
                   padding: const EdgeInsets.all(8.0),
                   child: Card(
                     //color: FlexColor.deepBlueDarkPrimaryContainer.withOpacity(0.15),
-                    child: ListTile(
-                      trailing: Padding(
-                        padding: const EdgeInsets.only(bottom: 16.0),
-                        child: PopupMenuButton(
-                            position: PopupMenuPosition.under,
-                            color: Theme.of(context).scaffoldBackgroundColor,
-                            // onSelected: (value) {},
-                            icon: Icon(
-                              Icons.more_vert_rounded,
-                              color: Theme.of(context).brightness ==
-                                      Brightness.light
-                                  ? FlexColor.bahamaBlueLightPrimary
-                                  : Colors.white,
-                            ),
-                            itemBuilder: (context) => <PopupMenuEntry>[
-                                  PopupMenuItem(
-                                      onTap: () {
-                                        WidgetsBinding.instance
-                                            .addPostFrameCallback((timeStamp) {
-                                          showDialog(
-                                            context: context,
-                                            builder: (context) {
-                                              return DeleteListDialog(
-                                                placeList: placeList,
+                    child: Stack(
+                      children: [
+                        ListTile(
+                          trailing: Padding(
+                            padding: const EdgeInsets.only(bottom: 16.0),
+                            child: PopupMenuButton(
+                                position: PopupMenuPosition.under,
+                                color:
+                                    Theme.of(context).scaffoldBackgroundColor,
+                                // onSelected: (value) {},
+                                icon: Icon(
+                                  Icons.more_vert_rounded,
+                                  color: Theme.of(context).brightness ==
+                                          Brightness.light
+                                      ? FlexColor.bahamaBlueLightPrimary
+                                      : Colors.white,
+                                ),
+                                itemBuilder: (context) => <PopupMenuEntry>[
+                                      PopupMenuItem(
+                                          onTap: () {
+                                            WidgetsBinding.instance
+                                                .addPostFrameCallback(
+                                                    (timeStamp) {
+                                              showDialog(
+                                                context: context,
+                                                builder: (context) {
+                                                  return DeleteListDialog(
+                                                    placeList: placeList,
+                                                  );
+                                                },
                                               );
-                                            },
-                                          );
-                                        });
-                                      },
-                                      child: const Text('Delete List'))
-                                ]),
-                      ),
-                      onTap: () {
-                        context
-                            .read<SavedPlacesBloc>()
-                            .add(LoadPlaces(placeList: placeList));
-                        context.push('/home/placeList-page');
-                      },
-                      contentPadding: const EdgeInsets.symmetric(
-                          vertical: 16.0, horizontal: 24.0),
-                      minLeadingWidth: 20,
-                      title: Padding(
-                        padding: const EdgeInsets.only(bottom: 4.0, left: 8.0),
-                        child: Text(
-                          placeList.name,
-                          style: Theme.of(context)
-                              .textTheme
-                              .titleMedium!
-                              .copyWith(fontWeight: FontWeight.bold),
+                                            });
+                                          },
+                                          child: const Text('Delete List'))
+                                    ]),
+                          ),
+                          onTap: () {
+                            context
+                                .read<SavedPlacesBloc>()
+                                .add(LoadPlaces(placeList: placeList));
+                            context.push('/home/placeList-page');
+                          },
+                          contentPadding: const EdgeInsets.symmetric(
+                              vertical: 20.0, horizontal: 30.0),
+                          minLeadingWidth: 20,
+                          title: Padding(
+                            padding:
+                                const EdgeInsets.only(bottom: 4.0, left: 8.0),
+                            child: Text(
+                              placeList.name,
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .titleMedium!
+                                  .copyWith(fontWeight: FontWeight.bold),
+                            ),
+                          ),
+                          subtitle: Padding(
+                            padding: const EdgeInsets.only(left: 23.0),
+                            child: Wrap(
+                              children: [
+                                Text.rich(TextSpan(children: [
+                                  TextSpan(
+                                      text: '${placeList.placeCount} ',
+                                      style: const TextStyle(
+                                          fontWeight: FontWeight.bold)),
+                                  const TextSpan(text: ' Saved Places'),
+                                ])),
+                              ],
+                            ),
+                          ),
+                          leading: Icon(
+                            Icons.list_rounded,
+                            color: Theme.of(context).primaryIconTheme.color,
+                            size: 36,
+                          ),
                         ),
-                      ),
-                      subtitle: Padding(
-                        padding: const EdgeInsets.only(left: 23.0),
-                        child: Wrap(
-                          children: [
-                            Text.rich(TextSpan(children: [
-                              TextSpan(
-                                  text: '${placeList.placeCount} ',
-                                  style: const TextStyle(
-                                      fontWeight: FontWeight.bold)),
-                              const TextSpan(text: ' Saved Places'),
-                            ])),
-                          ],
-                        ),
-                      ),
-                      leading: Icon(
-                        Icons.list_rounded,
-                        color: Theme.of(context).primaryIconTheme.color,
-                        size: 36,
-                      ),
+                        placeList.listOwnerId !=
+                                context.read<ProfileBloc>().state.user.id
+                            ? Positioned(
+                                left: 24.0,
+                                top: 8.0,
+                                child: Row(
+                                  children: [
+                                    Icon(
+                                      Icons.groups_rounded,
+                                      size: 20,
+                                      color: Theme.of(context)
+                                          .primaryIconTheme
+                                          .color!
+                                          .withOpacity(0.7),
+                                    ),
+                                    const SizedBox(
+                                      width: 12.0,
+                                    ),
+                                    // Text(
+                                    //   'Shared List',
+                                    //   style: TextStyle(
+                                    //       fontStyle: FontStyle.italic),
+                                    // ),
+                                  ],
+                                ),
+                              )
+                            : const SizedBox(),
+                      ],
                     ),
                   ),
                 ),
