@@ -1,11 +1,11 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart' as auth;
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
 import 'package:leggo/globals.dart';
 import 'package:leggo/model/invite.dart';
 import 'package:leggo/model/place.dart';
 import 'package:leggo/model/place_list.dart';
-import 'package:firebase_auth/firebase_auth.dart' as auth;
 import 'package:leggo/model/user.dart';
 import 'package:leggo/repository/database/database_repository.dart';
 import 'package:leggo/repository/invite_repository.dart';
@@ -405,6 +405,7 @@ class PlaceListRepository {
     try {
       for (String placeListId in placeListIds) {
         int placeCount = await getPlaceListItemCount(placeListId);
+
         return _firebaseFirestore
             .collection('place_lists')
             .doc(placeListId)

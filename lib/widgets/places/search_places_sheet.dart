@@ -30,7 +30,7 @@ class SearchPlacesSheet extends StatefulWidget {
 
 class _SearchPlacesSheetState extends State<SearchPlacesSheet> {
   DraggableScrollableController? scrollableController;
-  final FloatingSearchBarController controller = FloatingSearchBarController();
+  // final FloatingSearchBarController controller = FloatingSearchBarController();
 
   @override
   void initState() {
@@ -55,13 +55,10 @@ class _SearchPlacesSheetState extends State<SearchPlacesSheet> {
             controller: scrollController,
             // mainAxisSize: MainAxisSize.min,
             children: [
-              Padding(
-                  padding: const EdgeInsets.symmetric(
-                      horizontal: 4.0, vertical: 8.0),
+              const Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 4.0, vertical: 8.0),
                   child: IntrinsicHeight(
-                    child: PlaceSearchBar(
-                      controller: controller,
-                    ),
+                    child: PlaceSearchBar(),
                   )),
               BlocConsumer<PlaceBloc, PlaceState>(
                 listener: (context, state) {
@@ -554,10 +551,7 @@ class _SearchPlacesSheetState extends State<SearchPlacesSheet> {
 class PlaceSearchBar extends StatefulWidget {
   const PlaceSearchBar({
     super.key,
-    required this.controller,
   });
-
-  final FloatingSearchBarController controller;
 
   @override
   State<PlaceSearchBar> createState() => _PlaceSearchBarState();
@@ -565,6 +559,7 @@ class PlaceSearchBar extends StatefulWidget {
 
 class _PlaceSearchBarState extends State<PlaceSearchBar> {
   bool searchbarFocused = false;
+  final FloatingSearchBarController controller = FloatingSearchBarController();
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<AutocompleteBloc, AutocompleteState>(
@@ -576,7 +571,7 @@ class _PlaceSearchBarState extends State<PlaceSearchBar> {
           return FloatingSearchBar(
             backdropColor: Colors.black54,
             automaticallyImplyDrawerHamburger: false,
-            controller: widget.controller,
+            controller: controller,
             isScrollControlled: true,
             hint: 'Search Places..',
             openAxisAlignment: 0.0,
@@ -596,7 +591,7 @@ class _PlaceSearchBarState extends State<PlaceSearchBar> {
               }
             },
             onSubmitted: (query) {
-              widget.controller.close();
+              controller.close();
             },
             onQueryChanged: (query) {
               if (query != '') {
@@ -643,7 +638,7 @@ class _PlaceSearchBarState extends State<PlaceSearchBar> {
                                         context.read<PlaceBloc>().add(LoadPlace(
                                             placeId: state.autocomplete![index]
                                                 .placeId!)),
-                                        widget.controller.close(),
+                                        controller.close(),
                                       },
                                       title: Text(
                                         state.autocomplete![index].description!,

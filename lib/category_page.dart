@@ -745,6 +745,7 @@ class _CategoryPageAppBarState extends State<CategoryPageAppBar> {
                     }
                     if (state is SavedPlacesLoaded) {
                       return AvatarStack(
+                       
                         settings: RestrictedPositions(
                             align: StackAlign.right, laying: StackLaying.first),
                         borderWidth: 2.0,

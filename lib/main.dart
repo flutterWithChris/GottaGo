@@ -297,23 +297,6 @@ class _MyAppState extends State<MyApp> {
       ]);
 }
 
-class GoRouterRefreshStream extends ChangeNotifier {
-  GoRouterRefreshStream(Stream<dynamic> stream) {
-    notifyListeners();
-    _subscription = stream.asBroadcastStream().listen(
-          (dynamic _) => notifyListeners(),
-        );
-  }
-
-  late final StreamSubscription<dynamic> _subscription;
-
-  @override
-  void dispose() {
-    _subscription.cancel();
-    super.dispose();
-  }
-}
-
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key, required this.title});
 
@@ -324,6 +307,7 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+  final ScrollController mainScrollController = ScrollController();
   List<Widget> rows = [];
   @override
   Widget build(BuildContext context) {
@@ -360,9 +344,39 @@ class _MyHomePageState extends State<MyHomePage> {
       body: BlocBuilder<SavedListsBloc, SavedListsState>(
         builder: (context, state) {
           if (state is SavedListsLoading || state is SavedListsUpdated) {
-            return Center(
-              child: LoadingAnimationWidget.inkDrop(
-                  color: FlexColor.materialDarkPrimaryHc, size: 40.0),
+            return CustomScrollView(
+              controller: mainScrollController,
+              slivers: [
+                SliverAppBar.medium(
+                  leading: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                    child: IconButton(
+                      onPressed: () {},
+                      icon: const Icon(Icons.menu),
+                    ),
+                  ),
+                  title: const SizedBox(
+                      height: 80, child: FittedBox(child: MainLogo())),
+                  expandedHeight: 120,
+                  actions: [
+                    const InboxButton(),
+                    // IconButton(
+                    //     onPressed: () {}, icon: const Icon(Icons.more_vert)),
+                    IconButton(
+                        onPressed: () {
+                          context.read<LoginCubit>().logout();
+                        },
+                        icon: const Icon(Icons.logout_rounded)),
+                  ],
+                ),
+                // Main List View
+                SliverFillRemaining(
+                  child: Center(
+                    child: LoadingAnimationWidget.inkDrop(
+                        color: FlexColor.materialDarkPrimaryHc, size: 40.0),
+                  ),
+                ),
+              ],
             );
           }
           if (state is SavedListsFailed) {
@@ -371,8 +385,6 @@ class _MyHomePageState extends State<MyHomePage> {
             );
           }
           if (state is SavedListsLoaded) {
-            final ScrollController mainScrollController = ScrollController();
-
             // void addCategoriesToList() {
             //   for (PlaceList placeList in state.placeLists!) {
             //     rows.add(CategoryCard(placeList: placeList));
