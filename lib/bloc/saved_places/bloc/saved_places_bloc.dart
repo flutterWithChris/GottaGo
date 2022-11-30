@@ -65,7 +65,7 @@ class SavedPlacesBloc extends Bloc<SavedPlacesEvent, SavedPlacesState> {
                 contributors.add(user);
               });
             }
-          } 
+          }
         });
 
         placeListRepository.getListOwner(event.placeList).listen((user) {

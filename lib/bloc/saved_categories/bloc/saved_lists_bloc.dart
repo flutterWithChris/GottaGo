@@ -37,14 +37,11 @@ class SavedListsBloc extends Bloc<SavedListsEvent, SavedListsState> {
       sharedPlaceLists.clear();
       StreamSubscription placeListSubscription;
       if (event is LoadSavedLists) {
-        //  print('Place Ids: ${_profileBloc.state.user.placeListIds}');
         if (_profileBloc.state.user.placeListIds != null) {
           for (String placeListId in _profileBloc.state.user.placeListIds!) {
             int placeCount =
                 await placeListRepository.getPlaceListItemCount(placeListId);
-            placeListSubscription = placeListRepository
-                .getPlaceList(placeListId)!
-                .listen((placeList) {
+            placeListRepository.getPlaceList(placeListId)!.listen((placeList) {
               myPlaceLists.add(placeList.copyWith(placeCount: placeCount));
             });
           }

@@ -421,10 +421,13 @@ class _MyHomePageState extends State<MyHomePage> {
                       effects: const [SlideEffect()],
                       child: CategoryCard(placeList: placeList))
               ];
-              for (PlaceList placeList in samplePlaceLists) {
-                rows.add(Animate(
-                    effects: const [SlideEffect()],
-                    child: SampleCategoryCard(placeList: placeList)));
+              if (state.placeLists!.length < 5) {
+                for (int i = 0; i < 5 - state.placeLists!.length; i++) {
+                  rows.add(Animate(
+                      effects: const [SlideEffect()],
+                      child:
+                          SampleCategoryCard(placeList: samplePlaceLists[i])));
+                }
               }
             } else {
               rows.clear();
@@ -473,9 +476,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 ReorderableSliverList(
                     enabled: false,
                     delegate: ReorderableSliverChildBuilderDelegate(
-                        childCount: state.placeLists!.isNotEmpty
-                            ? 6 - state.placeLists!.length
-                            : 6, (context, index) {
+                        childCount: rows.length, (context, index) {
                       return rows[index];
                     }),
                     onReorder: _onReorderSampleItem)
