@@ -12,6 +12,7 @@ part 'profile_state.dart';
 class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
   final UserRepository _userRepository;
   final AuthBloc _authBloc;
+
   StreamSubscription? _authSubscription;
   ProfileBloc(
       {required UserRepository userRepository, required AuthBloc authBloc})

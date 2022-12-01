@@ -3,7 +3,7 @@ import 'dart:math';
 import 'package:flex_color_scheme/flex_color_scheme.dart';
 import 'package:flutter/material.dart';
 import 'package:leggo/model/place_list.dart';
-import 'package:leggo/widgets/lists/create_list_dialog.dart';
+import 'package:leggo/view/widgets/lists/create_list_dialog.dart';
 
 class SampleCategoryCard extends StatelessWidget {
   final PlaceList placeList;

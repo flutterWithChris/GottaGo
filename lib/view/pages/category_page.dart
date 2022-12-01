@@ -22,13 +22,13 @@ import 'package:leggo/cubit/lists/list_sort_cubit.dart';
 import 'package:leggo/model/place.dart';
 import 'package:leggo/model/place_list.dart';
 import 'package:leggo/model/user.dart';
-import 'package:leggo/widgets/lists/invite_dialog.dart';
-import 'package:leggo/widgets/main_bottom_navbar.dart';
-import 'package:leggo/widgets/places/add_place_card.dart';
-import 'package:leggo/widgets/places/blank_place_card.dart';
-import 'package:leggo/widgets/places/place_card.dart';
-import 'package:leggo/widgets/places/search_places_sheet.dart';
-import 'package:leggo/widgets/places/view_place_sheet.dart';
+import 'package:leggo/view/widgets/lists/invite_dialog.dart';
+import 'package:leggo/view/widgets/main_bottom_navbar.dart';
+import 'package:leggo/view/widgets/places/add_place_card.dart';
+import 'package:leggo/view/widgets/places/blank_place_card.dart';
+import 'package:leggo/view/widgets/places/place_card.dart';
+import 'package:leggo/view/widgets/places/search_places_sheet.dart';
+import 'package:leggo/view/widgets/places/view_place_sheet.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:reorderables/reorderables.dart';
 
@@ -63,7 +63,7 @@ class _CategoryPageState extends State<CategoryPage> {
 
     return Scaffold(
       floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
-      bottomNavigationBar: const MainBottomNavBar(),
+      bottomNavigationBar: MainBottomNavBar(),
       floatingActionButton: FloatingActionButton(
         shape: const StadiumBorder(),
         // backgroundColor: Theme.of(context).primaryColor.withOpacity(0.5),
@@ -745,7 +745,6 @@ class _CategoryPageAppBarState extends State<CategoryPageAppBar> {
                     }
                     if (state is SavedPlacesLoaded) {
                       return AvatarStack(
-                       
                         settings: RestrictedPositions(
                             align: StackAlign.right, laying: StackLaying.first),
                         borderWidth: 2.0,
@@ -809,12 +808,6 @@ class _CategoryPageAppBarState extends State<CategoryPageAppBar> {
         ),
       ],
     );
-  }
-}
-
-extension StringExtension on String {
-  String capitalizeString() {
-    return "${this[0].toUpperCase()}${substring(1).toLowerCase()}";
   }
 }
 

@@ -1,7 +1,7 @@
 import 'package:flex_color_scheme/flex_color_scheme.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:leggo/widgets/lists/create_list_dialog.dart';
+import 'package:leggo/view/widgets/lists/create_list_dialog.dart';
 
 class BlankCategoryCard extends StatelessWidget {
   const BlankCategoryCard({

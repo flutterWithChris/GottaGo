@@ -477,6 +477,62 @@ class PlaceListRepository {
     }
   }
 
+  Future<int> getSavedPlacesTotalCount(User user) async {
+    try {
+      List<AggregateQuerySnapshot> placeCounts = [];
+      int count = 0;
+      for (String placeListId in user.placeListIds!) {
+        placeCounts.add(await _firebaseFirestore
+            .collection('place_lists')
+            .doc(placeListId)
+            .collection('places')
+            .count()
+            .get());
+      }
+      for (AggregateQuerySnapshot snapshot in placeCounts) {
+        count += snapshot.count;
+      }
+      return count;
+    } on FirebaseException catch (e) {
+      final SnackBar snackBar = SnackBar(
+        content: Text(e.message.toString()),
+        backgroundColor: Colors.redAccent,
+      );
+      snackbarKey.currentState?.showSnackBar(snackBar);
+      (e, stack) =>
+          FirebaseCrashlytics.instance.recordError(e, stack, fatal: true);
+      throw Exception();
+    }
+  }
+
+  Future<int> getVisitedPlacesTotalCount(User user) async {
+    try {
+      List<AggregateQuerySnapshot> placeCounts = [];
+      int count = 0;
+      for (String placeListId in user.placeListIds!) {
+        placeCounts.add(await _firebaseFirestore
+            .collection('place_lists')
+            .doc(placeListId)
+            .collection('visited_places')
+            .count()
+            .get());
+      }
+      for (AggregateQuerySnapshot snapshot in placeCounts) {
+        count += snapshot.count;
+      }
+      return count;
+    } on FirebaseException catch (e) {
+      final SnackBar snackBar = SnackBar(
+        content: Text(e.message.toString()),
+        backgroundColor: Colors.redAccent,
+      );
+      snackbarKey.currentState?.showSnackBar(snackBar);
+      (e, stack) =>
+          FirebaseCrashlytics.instance.recordError(e, stack, fatal: true);
+      throw Exception();
+    }
+  }
+
   Future<void> updatePlaceLists(PlaceList placeList) {
     try {
       final auth.User firebaseUser = auth.FirebaseAuth.instance.currentUser!;

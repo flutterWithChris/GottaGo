@@ -17,17 +17,17 @@ import 'package:leggo/bloc/bloc/invite/bloc/invite_bloc.dart';
 import 'package:leggo/bloc/bloc/invite_inbox/invite_inbox_bloc.dart';
 import 'package:leggo/bloc/onboarding/bloc/onboarding_bloc.dart';
 import 'package:leggo/bloc/place/edit_places_bloc.dart';
+import 'package:leggo/bloc/place/place_bloc.dart';
 import 'package:leggo/bloc/profile_bloc.dart';
 import 'package:leggo/bloc/saved_categories/bloc/saved_lists_bloc.dart';
 import 'package:leggo/bloc/saved_places/bloc/saved_places_bloc.dart';
-import 'package:leggo/category_page.dart';
 import 'package:leggo/cubit/cubit/cubit/view_place_cubit.dart';
 import 'package:leggo/cubit/cubit/login/login_cubit.dart';
 import 'package:leggo/cubit/cubit/random_wheel_cubit.dart';
 import 'package:leggo/cubit/cubit/signup/sign_up_cubit.dart';
+import 'package:leggo/cubit/lists/list_sort_cubit.dart';
 import 'package:leggo/firebase_options.dart';
 import 'package:leggo/globals.dart';
-import 'package:leggo/login.dart';
 import 'package:leggo/model/invite.dart';
 import 'package:leggo/model/place_list.dart';
 import 'package:leggo/random_wheel_page.dart';
@@ -38,18 +38,20 @@ import 'package:leggo/repository/place_list_repository.dart';
 import 'package:leggo/repository/places_repository.dart';
 import 'package:leggo/repository/storage/storage_repository.dart';
 import 'package:leggo/repository/user_repository.dart';
-import 'package:leggo/signup.dart';
-import 'package:leggo/widgets/lists/blank_category_card.dart';
-import 'package:leggo/widgets/lists/category_card.dart';
-import 'package:leggo/widgets/lists/create_list_dialog.dart';
-import 'package:leggo/widgets/lists/sample_category_card.dart';
-import 'package:leggo/widgets/main_bottom_navbar.dart';
+import 'package:leggo/view/pages/category_page.dart';
+import 'package:leggo/view/pages/login.dart';
+import 'package:leggo/view/pages/profile.dart';
+import 'package:leggo/view/pages/settings.dart';
+import 'package:leggo/view/pages/signup.dart';
+import 'package:leggo/view/widgets/lists/blank_category_card.dart';
+import 'package:leggo/view/widgets/lists/category_card.dart';
+import 'package:leggo/view/widgets/lists/create_list_dialog.dart';
+import 'package:leggo/view/widgets/lists/sample_category_card.dart';
+import 'package:leggo/view/widgets/main_bottom_navbar.dart';
+import 'package:leggo/view/widgets/main_top_app_bar.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:reorderables/reorderables.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
-import 'bloc/place/place_bloc.dart';
-import 'cubit/lists/list_sort_cubit.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -262,6 +264,18 @@ class _MyAppState extends State<MyApp> {
               const MaterialPage<void>(child: LoginPage()),
         ),
         GoRoute(
+          path: '/profile',
+          name: 'profile',
+          pageBuilder: (context, state) =>
+              const MaterialPage<void>(child: ProfilePage()),
+        ),
+        GoRoute(
+          path: '/settings',
+          name: 'settings',
+          pageBuilder: (context, state) =>
+              const MaterialPage<void>(child: SettingsPage()),
+        ),
+        GoRoute(
             name: '/',
             path: '/',
             pageBuilder: (context, state) => const MaterialPage<void>(
@@ -340,35 +354,14 @@ class _MyHomePageState extends State<MyHomePage> {
     ];
     return Scaffold(
       floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
-      bottomNavigationBar: const MainBottomNavBar(),
+      bottomNavigationBar: MainBottomNavBar(),
       body: BlocBuilder<SavedListsBloc, SavedListsState>(
         builder: (context, state) {
           if (state is SavedListsLoading || state is SavedListsUpdated) {
             return CustomScrollView(
               controller: mainScrollController,
               slivers: [
-                SliverAppBar.medium(
-                  leading: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                    child: IconButton(
-                      onPressed: () {},
-                      icon: const Icon(Icons.menu),
-                    ),
-                  ),
-                  title: const SizedBox(
-                      height: 80, child: FittedBox(child: MainLogo())),
-                  expandedHeight: 120,
-                  actions: [
-                    const InboxButton(),
-                    // IconButton(
-                    //     onPressed: () {}, icon: const Icon(Icons.more_vert)),
-                    IconButton(
-                        onPressed: () {
-                          context.read<LoginCubit>().logout();
-                        },
-                        icon: const Icon(Icons.logout_rounded)),
-                  ],
-                ),
+                const MainTopAppBar(),
                 // Main List View
                 SliverFillRemaining(
                   child: Center(
@@ -447,28 +440,7 @@ class _MyHomePageState extends State<MyHomePage> {
             return CustomScrollView(
               controller: mainScrollController,
               slivers: [
-                SliverAppBar.medium(
-                  leading: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                    child: IconButton(
-                      onPressed: () {},
-                      icon: const Icon(Icons.menu),
-                    ),
-                  ),
-                  title: const SizedBox(
-                      height: 80, child: FittedBox(child: MainLogo())),
-                  expandedHeight: 120,
-                  actions: [
-                    const InboxButton(),
-                    // IconButton(
-                    //     onPressed: () {}, icon: const Icon(Icons.more_vert)),
-                    IconButton(
-                        onPressed: () {
-                          context.read<LoginCubit>().logout();
-                        },
-                        icon: const Icon(Icons.logout_rounded)),
-                  ],
-                ),
+                const MainTopAppBar(),
                 // Main List View
                 const SliverToBoxAdapter(
                   child: SizedBox(height: 12.0),

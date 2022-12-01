@@ -4,9 +4,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:leggo/bloc/saved_places/bloc/saved_places_bloc.dart';
 import 'package:leggo/model/place_list.dart';
-import 'package:leggo/widgets/lists/delete_list_dialog.dart';
+import 'package:leggo/view/widgets/lists/delete_list_dialog.dart';
 
-import '../../bloc/profile_bloc.dart';
+import '../../../bloc/profile_bloc.dart';
 
 class CategoryCard extends StatelessWidget {
   final PlaceList placeList;
@@ -104,24 +104,29 @@ class CategoryCard extends StatelessWidget {
                           ),
                           leading: Icon(
                             Icons.list_rounded,
-                            color: Theme.of(context).primaryIconTheme.color,
+                            color:
+                                Theme.of(context).brightness == Brightness.light
+                                    ? FlexColor.bahamaBlueLightPrimary
+                                    : Colors.white,
                             size: 36,
                           ),
                         ),
                         placeList.listOwnerId !=
-                                context.read<ProfileBloc>().state.user.id
+                                    context.read<ProfileBloc>().state.user.id ||
+                                placeList.contributorIds.isNotEmpty
                             ? Positioned(
-                                left: 24.0,
-                                top: 8.0,
+                                left: 16.0,
+                                top: 10.0,
                                 child: Row(
                                   children: [
                                     Icon(
                                       Icons.groups_rounded,
                                       size: 20,
-                                      color: Theme.of(context)
-                                          .primaryIconTheme
-                                          .color!
-                                          .withOpacity(0.7),
+                                      color: Theme.of(context).brightness ==
+                                              Brightness.light
+                                          ? FlexColor.bahamaBlueLightPrimary
+                                              .withOpacity(0.6)
+                                          : Colors.white.withOpacity(0.5),
                                     ),
                                     const SizedBox(
                                       width: 12.0,

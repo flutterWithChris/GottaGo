@@ -2,7 +2,7 @@ import 'package:flex_color_scheme/flex_color_scheme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/animate.dart';
 import 'package:flutter_animate/effects/effects.dart';
-import 'package:leggo/widgets/places/search_places_sheet.dart';
+import 'package:leggo/view/widgets/places/search_places_sheet.dart';
 
 class AddPlaceCard extends StatefulWidget {
   const AddPlaceCard({

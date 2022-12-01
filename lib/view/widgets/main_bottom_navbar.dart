@@ -2,41 +2,53 @@ import 'package:bubble_bottom_bar/bubble_bottom_bar.dart';
 import 'package:flex_color_scheme/flex_color_scheme.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:leggo/globals.dart';
 
 class MainBottomNavBar extends StatefulWidget {
-  const MainBottomNavBar({super.key});
+  // const MainBottomNavBar({super.key});
 
+  static const MainBottomNavBar _bottomNavBar = MainBottomNavBar._internal();
+
+  factory MainBottomNavBar() {
+    return _bottomNavBar;
+  }
+
+  const MainBottomNavBar._internal();
   @override
   State<MainBottomNavBar> createState() => _MainBottomNavBarState();
 }
 
-class _MainBottomNavBarState extends State<MainBottomNavBar> {
-  static late int currentIndex;
-  @override
-  void initState() {
-    // TODO: implement initState
-    super.initState();
-    currentIndex = 1;
-  }
-
+class _MainBottomNavBarState extends State<MainBottomNavBar>
+    with AutomaticKeepAliveClientMixin<MainBottomNavBar> {
   void changePage(int? index) {
-    setState(() {
-      currentIndex = index!;
-    });
+    Globals().setCurrentIndex = index!;
+
     switch (index) {
       case 0:
+        context.goNamed('profile');
         break;
       case 1:
         context.go('/');
         break;
       case 2:
+        context.goNamed('settings');
         break;
       default:
     }
   }
 
   @override
+  void initState() {
+    // TODO: implement initState
+
+    super.initState();
+  }
+
+  @override
+  bool get wantKeepAlive => true;
+  @override
   Widget build(BuildContext context) {
+    super.build(context);
     return SizedBox(
       height: 80,
       child: BubbleBottomBar(
@@ -47,28 +59,26 @@ class _MainBottomNavBarState extends State<MainBottomNavBar> {
           fabLocation: BubbleBottomBarFabLocation.end,
           // showUnselectedLabels: false,
           onTap: changePage,
-          currentIndex: currentIndex,
-          items: [
+          currentIndex: Globals.currentIndex,
+          items: const [
             BubbleBottomBarItem(
                 backgroundColor: FlexColor.materialDarkSecondaryHc,
-                icon: const Icon(
-                  Icons.person,
-                  // color: Theme.of(context).p,
-                ),
+                icon: Icon(Icons.person,
+                    color: FlexColor.materialDarkTertiaryContainer),
                 activeIcon: Icon(
                   Icons.person,
-                  color: Theme.of(context).iconTheme.color,
                 ),
-                title: const Text('Profile')),
-            const BubbleBottomBarItem(
+                title: Text('Profile')),
+            BubbleBottomBarItem(
                 backgroundColor: FlexColor.materialDarkSecondaryHc,
                 icon: Icon(Icons.list_alt_rounded,
                     color: FlexColor.materialDarkTertiaryContainer),
                 activeIcon: Icon(Icons.list_alt_rounded),
                 title: Text('Lists')),
-            const BubbleBottomBarItem(
+            BubbleBottomBarItem(
                 backgroundColor: FlexColor.materialDarkSecondaryHc,
-                icon: Icon(Icons.settings),
+                icon: Icon(Icons.settings,
+                    color: FlexColor.materialDarkTertiaryContainer),
                 activeIcon: Icon(Icons.settings),
                 title: Text('Settings')),
           ]),
