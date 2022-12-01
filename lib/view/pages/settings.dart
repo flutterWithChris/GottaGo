@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:leggo/bloc/profile_bloc.dart';
 import 'package:leggo/cubit/cubit/login/login_cubit.dart';
 import 'package:leggo/view/widgets/main_bottom_navbar.dart';
@@ -44,6 +45,23 @@ class SettingsPage extends StatelessWidget {
                                   .state
                                   .user
                                   .name!))),
+                    ),
+                    SettingsTile.navigation(
+                      leading: const Icon(
+                        FontAwesomeIcons.at,
+                        size: 20,
+                      ),
+                      title: const Padding(
+                        padding: EdgeInsets.only(right: 8.0),
+                        child: Text('Username'),
+                      ),
+                      value: ConstrainedBox(
+                          constraints: const BoxConstraints(maxWidth: 180),
+                          child: FittedBox(
+                              alignment: Alignment.centerRight,
+                              fit: BoxFit.scaleDown,
+                              child: Text(
+                                  '@${context.read<ProfileBloc>().state.user.userName!}'))),
                     ),
                     SettingsTile.navigation(
                       leading: const Icon(Icons.logout_rounded),

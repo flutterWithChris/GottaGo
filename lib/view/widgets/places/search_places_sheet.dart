@@ -476,7 +476,7 @@ class _SearchPlacesSheetState extends State<SearchPlacesSheet> {
                                                 'short_name'];
                                             context
                                                 .read<SavedListsBloc>()
-                                                .add(UpdateSavedLists());
+                                                .add(LoadSavedLists());
                                             context.read<SavedPlacesBloc>().add(
                                                   AddPlace(
                                                     placeList: context

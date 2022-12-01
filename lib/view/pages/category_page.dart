@@ -12,6 +12,7 @@ import 'package:flutter_animate/animate.dart';
 import 'package:flutter_animate/effects/effects.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_fortune_wheel/flutter_fortune_wheel.dart';
+import 'package:flutter_iconpicker/flutter_iconpicker.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:leggo/bloc/place/edit_places_bloc.dart';
 import 'package:leggo/bloc/saved_categories/bloc/saved_lists_bloc.dart';
@@ -60,7 +61,7 @@ class _CategoryPageState extends State<CategoryPage> {
   @override
   Widget build(BuildContext context) {
     final TextEditingController textEditingController = TextEditingController();
-
+    List<Place> selectedPlaces = context.watch<EditPlacesBloc>().selectedPlaces;
     return Scaffold(
       floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
       bottomNavigationBar: MainBottomNavBar(),
@@ -258,8 +259,6 @@ class _CategoryPageState extends State<CategoryPage> {
                 }
               },
               builder: (context, state) {
-                List<Place> selectedPlaces =
-                    context.watch<EditPlacesBloc>().selectedPlaces;
                 return Stack(
                   alignment: AlignmentDirectional.bottomCenter,
                   children: [
@@ -691,20 +690,35 @@ class _CategoryPageAppBarState extends State<CategoryPageAppBar> {
                   spacing: 16.0,
                   crossAxisAlignment: WrapCrossAlignment.center,
                   children: [
-                    Animate(effects: const [
-                      FadeEffect(),
-                      SlideEffect(
-                          duration: Duration(milliseconds: 400),
-                          curve: Curves.easeOutSine,
-                          begin: Offset(-1.0, 0),
-                          end: Offset(0, 0))
-                      // RotateEffect(
-                      //     curve: Curves.easeOutBack,
-                      //     duration: Duration(milliseconds: 500),
-                      //     begin: -0.25,
-                      //     end: 0.0,
-                      //     alignment: Alignment.centerLeft)
-                    ], child: const Icon(FontAwesomeIcons.earthAmericas)),
+                    Animate(
+                        effects: const [
+                          FadeEffect(),
+                          SlideEffect(
+                              duration: Duration(milliseconds: 400),
+                              curve: Curves.easeOutSine,
+                              begin: Offset(-1.0, 0),
+                              end: Offset(0, 0))
+                          // RotateEffect(
+                          //     curve: Curves.easeOutBack,
+                          //     duration: Duration(milliseconds: 500),
+                          //     begin: -0.25,
+                          //     end: 0.0,
+                          //     alignment: Alignment.centerLeft)
+                        ],
+                        child: Padding(
+                          padding: const EdgeInsets.only(right: 4.0, left: 4.0),
+                          child: SizedBox(
+                              width: 30,
+                              height: 30,
+                              child: Icon(
+                                deserializeIcon(widget.placeList.icon) ??
+                                    Icons.list_alt_rounded,
+                                size: widget.placeList.icon
+                                        .containsValue('fontAwesomeIcons')
+                                    ? 28
+                                    : 32,
+                              )),
+                        )),
                     Animate(
                       effects: const [
                         FadeEffect(),

@@ -330,27 +330,33 @@ class _MyHomePageState extends State<MyHomePage> {
           name: 'Breakfast Ideas',
           listOwnerId: '12345',
           placeCount: 5,
-          contributorIds: []),
+          contributorIds: [],
+          icon: {}),
       PlaceList(
           name: 'Iceland Trip',
           listOwnerId: '12345',
           placeCount: 12,
-          contributorIds: []),
+          contributorIds: [],
+          icon: {}),
       PlaceList(
           name: 'Lunch Spots',
           listOwnerId: '12345',
           placeCount: 7,
-          contributorIds: []),
+          contributorIds: [],
+          icon: {}),
       PlaceList(
           name: 'Experiences',
           listOwnerId: '12345',
           placeCount: 9,
-          contributorIds: []),
+          contributorIds: [],
+          icon: {}),
       PlaceList(
-          name: 'Local Spots',
-          listOwnerId: '12345',
-          placeCount: 10,
-          contributorIds: []),
+        name: 'Local Spots',
+        listOwnerId: '12345',
+        placeCount: 10,
+        contributorIds: [],
+        icon: {},
+      ),
     ];
     return Scaffold(
       floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
@@ -548,7 +554,7 @@ class InboxButton extends StatelessWidget {
                     // )
                   ],
                   child: Positioned(
-                    top: 4,
+                    top: 10,
                     left: 2,
                     child: CircleAvatar(
                       radius: 10.0,

@@ -537,10 +537,8 @@ class PlaceListRepository {
     try {
       final auth.User firebaseUser = auth.FirebaseAuth.instance.currentUser!;
       return _firebaseFirestore
-          .collection('users')
-          .doc(firebaseUser.uid)
           .collection('place_lists')
-          .doc(placeList.name)
+          .doc(placeList.placeListId)
           .update(placeList.toDocument());
     } on FirebaseException catch (e) {
       final SnackBar snackBar = SnackBar(
@@ -558,10 +556,8 @@ class PlaceListRepository {
     try {
       final auth.User firebaseUser = auth.FirebaseAuth.instance.currentUser!;
       return _firebaseFirestore
-          .collection('users')
-          .doc(firebaseUser.uid)
           .collection('place_lists')
-          .doc(placeList.name)
+          .doc(placeList.placeListId)
           .delete();
     } on FirebaseException catch (e) {
       final SnackBar snackBar = SnackBar(

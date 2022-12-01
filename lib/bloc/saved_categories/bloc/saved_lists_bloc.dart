@@ -65,14 +65,15 @@ class SavedListsBloc extends Bloc<SavedListsEvent, SavedListsState> {
         add(LoadSavedLists());
       }
       if (event is UpdateSavedLists) {
+        emit(SavedListsLoading());
+        await _placeListRepository.updatePlaceLists(event.placeList);
         emit(SavedListsUpdated());
         add(LoadSavedLists());
       }
       if (event is RemoveList) {
-        // myPlaceLists.remove(event.placeList);
+        emit(SavedListsLoading());
         await placeListRepository.removePlaceList(event.placeList);
         emit(SavedListsUpdated());
-        await Future.delayed(const Duration(milliseconds: 500));
         add(LoadSavedLists());
       }
       if (event is RearrangeSavedLists) {}

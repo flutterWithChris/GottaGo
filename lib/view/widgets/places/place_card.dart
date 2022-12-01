@@ -43,7 +43,8 @@ class PlaceCard extends StatefulWidget {
   State<PlaceCard> createState() => _PlaceCardState();
 }
 
-class _PlaceCardState extends State<PlaceCard> {
+class _PlaceCardState extends State<PlaceCard>
+    with AutomaticKeepAliveClientMixin {
   titleCase(String string) {
     var splitStr = string.toLowerCase().split(' ');
     for (var i = 0; i < splitStr.length; i++) {
@@ -61,9 +62,11 @@ class _PlaceCardState extends State<PlaceCard> {
   bool isSelected = false;
   Color openNowContainerColor = Colors.white;
   Color ratingContainerColor = Colors.black87;
-
+  @override
+  bool get wantKeepAlive => true;
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     return ConstrainedBox(
         constraints: const BoxConstraints(minHeight: 170, maxHeight: 225),
         child: BlocBuilder<EditPlacesBloc, EditPlacesState>(

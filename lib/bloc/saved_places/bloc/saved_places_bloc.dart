@@ -133,7 +133,8 @@ class SavedPlacesBloc extends Bloc<SavedPlacesEvent, SavedPlacesState> {
   @override
   Future<void> close() {
     // TODO: implement close
-
+    _placeListsSubscription?.cancel();
+    _savedListsSubscription?.cancel();
     return super.close();
   }
 }
