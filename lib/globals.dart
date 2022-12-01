@@ -6,6 +6,10 @@ import 'package:flutter/services.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class Globals {
+  static int currentIndex = 1;
+
+  //int get currentIndex => currentIndex;
+  set setCurrentIndex(int index) => currentIndex = index;
   Globals._internal();
   static final Globals _globals = Globals._internal();
   factory Globals() {
@@ -46,6 +50,12 @@ String titleCase(str) {
   return splitStr.join(' ');
 }
 
+extension StringExtension on String {
+  String capitalizeString() {
+    return "${this[0].toUpperCase()}${substring(1).toLowerCase()}";
+  }
+}
+
 String capitalizeAllWord(String value) {
   var result = value[0].toUpperCase();
   for (int i = 1; i < value.length; i++) {
@@ -68,14 +78,14 @@ class LowerCaseTextFormatter extends TextInputFormatter {
 }
 
 class GoRouterRefreshStream extends ChangeNotifier {
+  late final StreamSubscription<dynamic> _subscription;
+
   GoRouterRefreshStream(Stream<dynamic> stream) {
     notifyListeners();
     _subscription = stream.asBroadcastStream().listen(
           (dynamic _) => notifyListeners(),
         );
   }
-
-  late final StreamSubscription<dynamic> _subscription;
 
   @override
   void dispose() {

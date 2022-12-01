@@ -16,6 +16,7 @@ import 'package:leggo/cubit/cubit/signup/sign_up_cubit.dart';
 import 'package:leggo/globals.dart';
 import 'package:leggo/model/user.dart';
 import 'package:leggo/repository/database/database_repository.dart';
+import 'package:leggo/view/widgets/main_logo.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
@@ -699,52 +700,6 @@ class _WelcomePageState extends State<WelcomePage> {
           ]),
         );
       },
-    );
-  }
-}
-
-class MainLogo extends StatelessWidget {
-  const MainLogo({
-    super.key,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.center,
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Stack(
-          alignment: Alignment.center,
-          children: const [
-            Icon(
-              FontAwesomeIcons.locationPin,
-              color: FlexColor.bahamaBlueDarkSecondaryContainer,
-              size: 55,
-            ),
-            Positioned(
-              top: 12.0,
-              child: Icon(
-                FontAwesomeIcons.solidHeart,
-                // fill: 1.0,
-                color: Colors.white,
-              ),
-            ),
-          ],
-        ),
-        const SizedBox(
-          width: 4.0,
-        ),
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 8.0),
-          child: Text(
-            'GottaGo',
-            style: GoogleFonts.exo2(
-                    fontWeight: FontWeight.w700, fontStyle: FontStyle.italic)
-                .copyWith(fontSize: 60),
-          ),
-        ),
-      ],
     );
   }
 }

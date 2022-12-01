@@ -5,7 +5,7 @@ import 'package:leggo/bloc/bloc/invite/bloc/invite_bloc.dart';
 import 'package:leggo/model/place_list.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 
-import '../../bloc/bloc/invite_inbox/invite_inbox_bloc.dart';
+import '../../../bloc/bloc/invite_inbox/invite_inbox_bloc.dart';
 
 class InviteDialog extends StatelessWidget {
   final PlaceList placeList;

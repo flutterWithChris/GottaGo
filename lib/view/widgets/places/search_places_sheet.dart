@@ -9,7 +9,7 @@ import 'package:leggo/bloc/autocomplete/bloc/autocomplete_bloc.dart';
 import 'package:leggo/bloc/place/place_bloc.dart';
 import 'package:leggo/bloc/saved_categories/bloc/saved_lists_bloc.dart';
 import 'package:leggo/bloc/saved_places/bloc/saved_places_bloc.dart';
-import 'package:leggo/category_page.dart';
+
 import 'package:leggo/globals.dart';
 import 'package:leggo/model/google_place.dart';
 import 'package:leggo/model/place.dart';

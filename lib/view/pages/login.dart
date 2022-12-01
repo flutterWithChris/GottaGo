@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:leggo/cubit/cubit/login/login_cubit.dart';
-import 'package:leggo/signup.dart';
+import 'package:leggo/view/widgets/main_logo.dart';
 
 class LoginPage extends StatelessWidget {
   const LoginPage({super.key});

@@ -8,7 +8,7 @@ import 'package:flutter_fortune_wheel/flutter_fortune_wheel.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:leggo/cubit/cubit/random_wheel_cubit.dart';
 import 'package:leggo/model/place.dart';
-import 'package:leggo/widgets/main_bottom_navbar.dart';
+import 'package:leggo/view/widgets/main_bottom_navbar.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 
 class RandomWheelPage extends StatefulWidget {
@@ -33,7 +33,7 @@ class _RandomWheelPageState extends State<RandomWheelPage> {
     final StreamController<int> controller = StreamController<int>();
     return Scaffold(
       //  floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
-      bottomNavigationBar: const MainBottomNavBar(),
+      bottomNavigationBar: MainBottomNavBar(),
       // floatingActionButton: FloatingActionButton(
       //   shape: const StadiumBorder(),
       //   // backgroundColor: Theme.of(context).primaryColor.withOpacity(0.5),

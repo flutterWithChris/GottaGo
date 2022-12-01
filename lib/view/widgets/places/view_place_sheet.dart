@@ -5,8 +5,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:intl/intl.dart';
-import 'package:leggo/category_page.dart';
+
 import 'package:leggo/cubit/cubit/cubit/view_place_cubit.dart';
+import 'package:leggo/globals.dart';
 import 'package:leggo/model/place.dart';
 import 'package:url_launcher/url_launcher.dart';
 

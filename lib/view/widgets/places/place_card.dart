@@ -9,12 +9,12 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:leggo/bloc/place/edit_places_bloc.dart';
 import 'package:leggo/cubit/cubit/cubit/view_place_cubit.dart';
 import 'package:leggo/model/place_list.dart';
-import 'package:leggo/widgets/places/view_place_sheet.dart';
+import 'package:leggo/view/widgets/places/view_place_sheet.dart';
 import 'package:roundcheckbox/roundcheckbox.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-import '../../cubit/lists/list_sort_cubit.dart';
-import '../../model/place.dart';
+import '../../../cubit/lists/list_sort_cubit.dart';
+import '../../../model/place.dart';
 
 class PlaceCard extends StatefulWidget {
   final PlaceList placeList;
