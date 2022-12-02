@@ -34,6 +34,7 @@ import 'package:leggo/repository/database/database_repository.dart';
 import 'package:leggo/repository/invite_repository.dart';
 import 'package:leggo/repository/place_list_repository.dart';
 import 'package:leggo/repository/places_repository.dart';
+import 'package:leggo/repository/purchases_repository.dart';
 import 'package:leggo/repository/storage/storage_repository.dart';
 import 'package:leggo/repository/user_repository.dart';
 import 'package:leggo/signup.dart';
@@ -80,6 +81,9 @@ class _MyAppState extends State<MyApp> {
           create: (context) => AuthRepository(),
         ),
         RepositoryProvider(
+          create: (context) => PurchasesRepository(),
+        ),
+        RepositoryProvider(
           create: (context) => UserRepository(),
         ),
         RepositoryProvider(
@@ -102,6 +106,7 @@ class _MyAppState extends State<MyApp> {
         providers: [
           BlocProvider(
             create: (context) => AuthBloc(
+                purchasesRepository: context.read<PurchasesRepository>(),
                 authRepository: context.read<AuthRepository>(),
                 userRepository: context.read<UserRepository>()),
           ),

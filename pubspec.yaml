@@ -74,6 +74,7 @@ dependencies:
   firebase_storage: ^11.0.5
   smooth_page_indicator: ^1.0.0+2
   firebase_crashlytics: ^3.0.6
+  purchases_flutter: ^4.4.1
 
 
 dev_dependencies:
