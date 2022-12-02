@@ -20,6 +20,17 @@ class LoadPlaces extends SavedPlacesEvent {
   List<Object> get props => [placeList];
 }
 
+class LoadVisitedPlaces extends SavedPlacesEvent {
+  @override
+  final PlaceList placeList;
+  const LoadVisitedPlaces({
+    required this.placeList,
+  });
+  @override
+  // TODO: implement props
+  List<Object> get props => [placeList];
+}
+
 class AddPlace extends SavedPlacesEvent {
   @override
   final Place place;

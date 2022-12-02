@@ -1,11 +1,11 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart' as auth;
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
 import 'package:leggo/globals.dart';
 import 'package:leggo/model/invite.dart';
 import 'package:leggo/model/place.dart';
 import 'package:leggo/model/place_list.dart';
-import 'package:firebase_auth/firebase_auth.dart' as auth;
 import 'package:leggo/model/user.dart';
 import 'package:leggo/repository/database/database_repository.dart';
 import 'package:leggo/repository/invite_repository.dart';
@@ -105,16 +105,12 @@ class PlaceListRepository {
     try {
       String? userId = await DatabaseRepository().checkUsernameExists(userName);
       if (userId == null) {
-        print('USER ID IS NULL');
         return false;
       } else {
-        print('GETTING USER INVITE CONTRIBUTOR');
         UserRepository().getUser(userId).listen((user) async {
-          print('Listener Got User: ${user.id}');
-
           Invite invite = Invite(
-              invitedUserId: user.id,
-              inviteeName: user.name,
+              invitedUserId: user.id!,
+              inviteeName: user.name!,
               listOwnerId: firebaseUser.uid,
               inviterName: firebaseUser.displayName!,
               placeListId: placeList.placeListId!,
@@ -236,7 +232,100 @@ class PlaceListRepository {
 
   Future<void> addPlaceToList(Place place, PlaceList placeList) async {
     try {
-      _firebaseFirestore
+      await _firebaseFirestore
+          .collection('place_lists')
+          .doc(placeList.placeListId)
+          .collection('places')
+          .doc(place.placeId)
+          .set(place.toDocument());
+    } on FirebaseException catch (e) {
+      final SnackBar snackBar = SnackBar(
+        content: Text(e.message.toString()),
+        backgroundColor: Colors.redAccent,
+      );
+      snackbarKey.currentState?.showSnackBar(snackBar);
+      (e, stack) =>
+          FirebaseCrashlytics.instance.recordError(e, stack, fatal: true);
+      throw Exception();
+    }
+  }
+
+  Future<void> removePlaceFromList(Place place, PlaceList placeList) async {
+    try {
+      await _firebaseFirestore
+          .collection('place_lists')
+          .doc(placeList.placeListId)
+          .collection('places')
+          .doc(place.placeId)
+          .delete();
+    } on FirebaseException catch (e) {
+      final SnackBar snackBar = SnackBar(
+        content: Text(e.message.toString()),
+        backgroundColor: Colors.redAccent,
+      );
+      snackbarKey.currentState?.showSnackBar(snackBar);
+      (e, stack) =>
+          FirebaseCrashlytics.instance.recordError(e, stack, fatal: true);
+      throw Exception();
+    }
+  }
+
+  Future<void> removePlaceFromVisitedList(
+      Place place, PlaceList placeList) async {
+    try {
+      await _firebaseFirestore
+          .collection('place_lists')
+          .doc(placeList.placeListId)
+          .collection('visited_places')
+          .doc(place.placeId)
+          .delete();
+    } on FirebaseException catch (e) {
+      final SnackBar snackBar = SnackBar(
+        content: Text(e.message.toString()),
+        backgroundColor: Colors.redAccent,
+      );
+      snackbarKey.currentState?.showSnackBar(snackBar);
+      (e, stack) =>
+          FirebaseCrashlytics.instance.recordError(e, stack, fatal: true);
+      throw Exception();
+    }
+  }
+
+  Future<void> markPlaceVisited(Place place, PlaceList placeList) async {
+    try {
+      await _firebaseFirestore
+          .collection('place_lists')
+          .doc(placeList.placeListId)
+          .collection('places')
+          .doc(place.placeId)
+          .delete();
+      await _firebaseFirestore
+          .collection('place_lists')
+          .doc(placeList.placeListId)
+          .collection('visited_places')
+          .doc(place.placeId)
+          .set(place.toDocument());
+    } on FirebaseException catch (e) {
+      final SnackBar snackBar = SnackBar(
+        content: Text(e.message.toString()),
+        backgroundColor: Colors.redAccent,
+      );
+      snackbarKey.currentState?.showSnackBar(snackBar);
+      (e, stack) =>
+          FirebaseCrashlytics.instance.recordError(e, stack, fatal: true);
+      throw Exception();
+    }
+  }
+
+  Future<void> restoreVisitedPlace(Place place, PlaceList placeList) async {
+    try {
+      await _firebaseFirestore
+          .collection('place_lists')
+          .doc(placeList.placeListId)
+          .collection('visited_places')
+          .doc(place.placeId)
+          .delete();
+      await _firebaseFirestore
           .collection('place_lists')
           .doc(placeList.placeListId)
           .collection('places')
@@ -283,16 +372,23 @@ class PlaceListRepository {
     }
   }
 
-  Stream<PlaceList>? getMyPlaceLists(User user) {
+  Stream<Place> getVisitedPlaces(PlaceList placeList) {
     try {
-      for (String placeListId in user.placeListIds) {
-        return _firebaseFirestore
+      return _firebaseFirestore
+          .collection('place_lists')
+          .doc(placeList.placeListId)
+          .collection('visited_places')
+          .snapshots()
+          .switchMap(((snapshot) {
+        final references = snapshot.docs;
+        return MergeStream(references.map((snap) => _firebaseFirestore
             .collection('place_lists')
-            .doc(placeListId)
+            .doc(placeList.placeListId)
+            .collection('visited_places')
+            .doc(snap.id)
             .snapshots()
-            .map((snap) => PlaceList.fromSnapshot(snap));
-      }
-      return null;
+            .map((snap) => Place.fromSnapshot(snap))));
+      }));
     } on FirebaseException catch (e) {
       final SnackBar snackBar = SnackBar(
         content: Text(e.message.toString()),
@@ -301,7 +397,33 @@ class PlaceListRepository {
       snackbarKey.currentState?.showSnackBar(snackBar);
       (e, stack) =>
           FirebaseCrashlytics.instance.recordError(e, stack, fatal: true);
-      return null;
+      throw Exception();
+    }
+  }
+
+  Future<Stream<PlaceList?>> getMyPlaceLists(List<String> placeListIds) async {
+    try {
+      for (String placeListId in placeListIds) {
+        int placeCount = await getPlaceListItemCount(placeListId);
+
+        return _firebaseFirestore
+            .collection('place_lists')
+            .doc(placeListId)
+            .snapshots()
+            .map((snap) =>
+                PlaceList.fromSnapshot(snap).copyWith(placeCount: placeCount));
+      }
+      throw Exception();
+    } on FirebaseException catch (e) {
+      final SnackBar snackBar = SnackBar(
+        content: Text(e.message.toString()),
+        backgroundColor: Colors.redAccent,
+      );
+      snackbarKey.currentState?.showSnackBar(snackBar);
+      (e, stack) =>
+          FirebaseCrashlytics.instance.recordError(e, stack, fatal: true);
+      //return null;
+      throw Exception();
     }
   }
 
@@ -334,14 +456,71 @@ class PlaceListRepository {
     }
   }
 
-  Future<int> getPlaceListItemCount(PlaceList placeList) {
+  Future<int> getPlaceListItemCount(String placeListId) async {
     try {
-      return _firebaseFirestore
+      AggregateQuerySnapshot placeCount = await _firebaseFirestore
           .collection('place_lists')
-          .doc(placeList.placeListId)
+          .doc(placeListId)
           .collection('places')
-          .get()
-          .then((value) => value.size);
+          .count()
+          .get();
+      return placeCount.count;
+    } on FirebaseException catch (e) {
+      final SnackBar snackBar = SnackBar(
+        content: Text(e.message.toString()),
+        backgroundColor: Colors.redAccent,
+      );
+      snackbarKey.currentState?.showSnackBar(snackBar);
+      (e, stack) =>
+          FirebaseCrashlytics.instance.recordError(e, stack, fatal: true);
+      throw Exception();
+    }
+  }
+
+  Future<int> getSavedPlacesTotalCount(User user) async {
+    try {
+      List<AggregateQuerySnapshot> placeCounts = [];
+      int count = 0;
+      for (String placeListId in user.placeListIds!) {
+        placeCounts.add(await _firebaseFirestore
+            .collection('place_lists')
+            .doc(placeListId)
+            .collection('places')
+            .count()
+            .get());
+      }
+      for (AggregateQuerySnapshot snapshot in placeCounts) {
+        count += snapshot.count;
+      }
+      return count;
+    } on FirebaseException catch (e) {
+      final SnackBar snackBar = SnackBar(
+        content: Text(e.message.toString()),
+        backgroundColor: Colors.redAccent,
+      );
+      snackbarKey.currentState?.showSnackBar(snackBar);
+      (e, stack) =>
+          FirebaseCrashlytics.instance.recordError(e, stack, fatal: true);
+      throw Exception();
+    }
+  }
+
+  Future<int> getVisitedPlacesTotalCount(User user) async {
+    try {
+      List<AggregateQuerySnapshot> placeCounts = [];
+      int count = 0;
+      for (String placeListId in user.placeListIds!) {
+        placeCounts.add(await _firebaseFirestore
+            .collection('place_lists')
+            .doc(placeListId)
+            .collection('visited_places')
+            .count()
+            .get());
+      }
+      for (AggregateQuerySnapshot snapshot in placeCounts) {
+        count += snapshot.count;
+      }
+      return count;
     } on FirebaseException catch (e) {
       final SnackBar snackBar = SnackBar(
         content: Text(e.message.toString()),
@@ -358,10 +537,8 @@ class PlaceListRepository {
     try {
       final auth.User firebaseUser = auth.FirebaseAuth.instance.currentUser!;
       return _firebaseFirestore
-          .collection('users')
-          .doc(firebaseUser.uid)
           .collection('place_lists')
-          .doc(placeList.name)
+          .doc(placeList.placeListId)
           .update(placeList.toDocument());
     } on FirebaseException catch (e) {
       final SnackBar snackBar = SnackBar(
@@ -379,10 +556,8 @@ class PlaceListRepository {
     try {
       final auth.User firebaseUser = auth.FirebaseAuth.instance.currentUser!;
       return _firebaseFirestore
-          .collection('users')
-          .doc(firebaseUser.uid)
           .collection('place_lists')
-          .doc(placeList.name)
+          .doc(placeList.placeListId)
           .delete();
     } on FirebaseException catch (e) {
       final SnackBar snackBar = SnackBar(

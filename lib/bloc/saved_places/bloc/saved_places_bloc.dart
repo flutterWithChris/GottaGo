@@ -15,24 +15,36 @@ part 'saved_places_state.dart';
 class SavedPlacesBloc extends Bloc<SavedPlacesEvent, SavedPlacesState> {
   final PlaceListRepository _placeListRepository;
   final SavedListsBloc _savedListsBloc;
+  final UserRepository _userRepository;
   StreamSubscription? _savedListsSubscription;
+  StreamSubscription? _placeListsSubscription;
   PlaceList? _currentPlaceList;
   Stream<User>? contributorStream;
-  SavedPlacesBloc(
-      {required PlaceListRepository placeListRepository,
-      required SavedListsBloc savedListsBloc})
-      : _placeListRepository = placeListRepository,
+  SavedPlacesBloc({
+    required PlaceListRepository placeListRepository,
+    required SavedListsBloc savedListsBloc,
+    required UserRepository userRepository,
+  })  : _placeListRepository = placeListRepository,
         _savedListsBloc = savedListsBloc,
+        _userRepository = userRepository,
         super(SavedPlacesLoading()) {
     final List<Place> savedPlaces = [];
+    final List<Place> visitedPlaces = [];
     List<User> contributors = [];
 
     User? listOwner;
     _savedListsSubscription = _savedListsBloc.stream.listen((state) {
       if (state is SavedListsUpdated) {
-        add(const UpdatePlace());
+        add(LoadPlaces(placeList: _currentPlaceList!));
       }
     });
+
+    if (state.placeList != null) {
+      _placeListsSubscription =
+          _placeListRepository.getPlaces(state.placeList!).listen((place) {
+        add(LoadPlaces(placeList: state.placeList!));
+      });
+    }
 
     on<SavedPlacesEvent>((event, emit) async {
       if (event is LoadPlaces) {
@@ -43,13 +55,45 @@ class SavedPlacesBloc extends Bloc<SavedPlacesEvent, SavedPlacesState> {
         _placeListRepository
             .getPlaceList(event.placeList.placeListId!)!
             .listen((placeList) {
+          _currentPlaceList = placeList;
           placeListRepository.getPlaces(event.placeList).listen((place) {
             savedPlaces.add(place);
           });
 
           if (placeList.contributorIds.isNotEmpty) {
             for (String userId in placeList.contributorIds) {
-              UserRepository().getUser(userId).listen((user) {
+              _userRepository.getUser(userId).listen((user) {
+                contributors.add(user);
+              });
+            }
+          }
+        });
+
+        placeListRepository.getListOwner(event.placeList).listen((user) {
+          listOwner = user;
+        });
+        await Future.delayed(const Duration(milliseconds: 600));
+        emit(SavedPlacesLoaded(
+            listOwner: listOwner!,
+            places: savedPlaces,
+            placeList: event.placeList,
+            contributors: contributors));
+      }
+      if (event is LoadVisitedPlaces) {
+        emit(SavedPlacesLoading());
+        savedPlaces.clear();
+        contributors.clear();
+
+        _placeListRepository
+            .getPlaceList(event.placeList.placeListId!)!
+            .listen((placeList) {
+          placeListRepository.getVisitedPlaces(event.placeList).listen((place) {
+            savedPlaces.add(place);
+          });
+
+          if (placeList.contributorIds.isNotEmpty) {
+            for (String userId in placeList.contributorIds) {
+              _userRepository.getUser(userId).listen((user) {
                 contributors.add(user);
               });
             }
@@ -90,7 +134,8 @@ class SavedPlacesBloc extends Bloc<SavedPlacesEvent, SavedPlacesState> {
   @override
   Future<void> close() {
     // TODO: implement close
-
+    _placeListsSubscription?.cancel();
+    _savedListsSubscription?.cancel();
     return super.close();
   }
 }

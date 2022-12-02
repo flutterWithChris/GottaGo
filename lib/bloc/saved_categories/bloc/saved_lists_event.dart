@@ -37,7 +37,15 @@ class EditList extends SavedListsEvent {
 
 class LoadSavedLists extends SavedListsEvent {}
 
-class UpdateSavedLists extends SavedListsEvent {}
+class UpdateSavedLists extends SavedListsEvent {
+  final PlaceList placeList;
+  const UpdateSavedLists({
+    required this.placeList,
+  });
+  @override
+  // TODO: implement props
+  List<Object> get props => [placeList];
+}
 
 class RearrangeSavedLists extends SavedListsEvent {
   final PlaceList placeList;

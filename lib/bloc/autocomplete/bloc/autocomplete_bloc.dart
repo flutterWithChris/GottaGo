@@ -22,8 +22,7 @@ class AutocompleteBloc extends Bloc<AutocompleteEvent, AutocompleteState> {
 
       List<PlaceSearch> autoComplete =
           await _placesRepository.getAutoComplete(event.searchInput);
-      print(
-          'Searching: "${event.searchInput}" & Got ${autoComplete.length} results');
+
       emit(AutocompleteLoaded(autocomplete: autoComplete));
     });
   }

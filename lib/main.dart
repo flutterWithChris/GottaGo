@@ -1,4 +1,5 @@
 import 'dart:async';
+
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flex_color_scheme/flex_color_scheme.dart';
 import 'package:flutter/material.dart';
@@ -6,26 +7,28 @@ import 'package:flutter_animate/animate.dart';
 import 'package:flutter_animate/effects/effects.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:flutterfire_ui/auth.dart' hide AuthState;
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:leggo/bloc/autocomplete/bloc/autocomplete_bloc.dart';
 import 'package:leggo/bloc/bloc/auth/bloc/auth_bloc.dart';
 import 'package:leggo/bloc/bloc/invite/bloc/invite_bloc.dart';
-
 import 'package:leggo/bloc/bloc/invite_inbox/invite_inbox_bloc.dart';
 import 'package:leggo/bloc/onboarding/bloc/onboarding_bloc.dart';
-
+import 'package:leggo/bloc/place/edit_places_bloc.dart';
+import 'package:leggo/bloc/place/place_bloc.dart';
+import 'package:leggo/bloc/profile_bloc.dart';
 import 'package:leggo/bloc/saved_categories/bloc/saved_lists_bloc.dart';
 import 'package:leggo/bloc/saved_places/bloc/saved_places_bloc.dart';
-import 'package:leggo/category_page.dart';
+import 'package:leggo/bloc/settings/settings_bloc.dart';
 import 'package:leggo/cubit/cubit/cubit/view_place_cubit.dart';
 import 'package:leggo/cubit/cubit/login/login_cubit.dart';
 import 'package:leggo/cubit/cubit/random_wheel_cubit.dart';
 import 'package:leggo/cubit/cubit/signup/sign_up_cubit.dart';
+import 'package:leggo/cubit/lists/list_sort_cubit.dart';
 import 'package:leggo/firebase_options.dart';
 import 'package:leggo/globals.dart';
-import 'package:leggo/login.dart';
 import 'package:leggo/model/invite.dart';
 import 'package:leggo/model/place_list.dart';
 import 'package:leggo/random_wheel_page.dart';
@@ -37,27 +40,33 @@ import 'package:leggo/repository/places_repository.dart';
 import 'package:leggo/repository/purchases_repository.dart';
 import 'package:leggo/repository/storage/storage_repository.dart';
 import 'package:leggo/repository/user_repository.dart';
-import 'package:leggo/signup.dart';
-import 'package:leggo/widgets/lists/blank_category_card.dart';
-import 'package:leggo/widgets/lists/category_card.dart';
-import 'package:leggo/widgets/lists/create_list_dialog.dart';
-import 'package:leggo/widgets/main_bottom_navbar.dart';
-import 'package:leggo/widgets/lists/sample_category_card.dart';
+import 'package:leggo/view/pages/category_page.dart';
+import 'package:leggo/view/pages/login.dart';
+import 'package:leggo/view/pages/profile.dart';
+import 'package:leggo/view/pages/settings.dart';
+import 'package:leggo/view/pages/signup.dart';
+import 'package:leggo/view/widgets/lists/blank_category_card.dart';
+import 'package:leggo/view/widgets/lists/category_card.dart';
+import 'package:leggo/view/widgets/lists/create_list_dialog.dart';
+import 'package:leggo/view/widgets/lists/sample_category_card.dart';
+import 'package:leggo/view/widgets/main_bottom_navbar.dart';
+import 'package:leggo/view/widgets/main_top_app_bar.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:reorderables/reorderables.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import 'bloc/place/place_bloc.dart';
-
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   // * Force onboarding pref
-  SharedPreferences prefs = await SharedPreferences.getInstance();
-  prefs.setInt('initScreen', 0);
+  // SharedPreferences prefs = await SharedPreferences.getInstance();
+  // prefs.setInt('initScreen', 0);
+
   await Future.wait([
     dotenv.load(fileName: '.env'),
     Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform),
   ]);
+  FlutterFireUIAuth.configureProviders(
+      [GoogleProviderConfiguration(clientId: dotenv.get('GOOGLE_CLIENT_ID'))]);
 
   runApp(const MyApp());
 }
@@ -124,21 +133,29 @@ class _MyAppState extends State<MyApp> {
                 LoginCubit(authRepository: context.read<AuthRepository>()),
           ),
           BlocProvider(
+            create: (context) => ProfileBloc(
+                userRepository: context.read<UserRepository>(),
+                authBloc: context.read<AuthBloc>())
+              ..add(LoadProfile(
+                  userId: context.read<AuthBloc>().state.authUser!.uid)),
+          ),
+          BlocProvider(
             create: (context) => InviteInboxBloc(
                 inviteRepository: context.read<InviteRepository>())
               ..add(LoadInvites()),
           ),
           BlocProvider(
-            create: (context) => SavedListsBloc(
-                placeListRepository: context.read<PlaceListRepository>())
-              ..add(LoadSavedLists()),
-          ),
+              create: (context) => SavedListsBloc(
+                  profileBloc: context.read<ProfileBloc>(),
+                  userRepository: context.read<UserRepository>(),
+                  placeListRepository: context.read<PlaceListRepository>())),
           BlocProvider(
             create: (context) => InviteBloc(
                 placeListRepository: context.read<PlaceListRepository>()),
           ),
           BlocProvider(
             create: (context) => SavedPlacesBloc(
+                userRepository: context.read<UserRepository>(),
                 savedListsBloc: context.read<SavedListsBloc>(),
                 placeListRepository: context.read<PlaceListRepository>()),
           ),
@@ -157,42 +174,60 @@ class _MyAppState extends State<MyApp> {
             create: (context) =>
                 PlaceBloc(placesRepository: context.read<PlacesRepository>()),
           ),
+          BlocProvider(
+            create: (context) => SettingsBloc(
+                authRepository: context.read<AuthRepository>(),
+                databaseRepository: context.read<DatabaseRepository>()),
+          ),
         ],
         child: BlocBuilder<AuthBloc, AuthState>(
           builder: (context, state) {
             bloc = context.read<AuthBloc>();
             return MaterialApp.router(
               scaffoldMessengerKey: snackbarKey,
+// This theme was made for FlexColorScheme version 6.1.1. Make sure
+// you use same or higher version, but still same major version. If
+// you use a lower version, some properties may not be supported. In
+// that case you can also remove them after copying the theme to your app.
               theme: FlexThemeData.light(
-                fontFamily: GoogleFonts.archivo().fontFamily,
                 scheme: FlexScheme.bahamaBlue,
-                surfaceMode: FlexSurfaceMode.highScaffoldLowSurface,
-                blendLevel: 20,
-                appBarOpacity: 0.95,
+                surfaceMode: FlexSurfaceMode.levelSurfacesLowScaffold,
+                blendLevel: 9,
                 subThemesData: const FlexSubThemesData(
-                  blendOnLevel: 20,
+                  cardElevation: 0.5,
+                  defaultRadius: 24,
+                  blendOnLevel: 10,
                   blendOnColors: false,
                 ),
                 visualDensity: FlexColorScheme.comfortablePlatformDensity,
                 useMaterial3: true,
+                swapLegacyOnMaterial3: true,
+                // To use the playground font, add GoogleFonts package and uncomment
+                fontFamily: GoogleFonts.archivo().fontFamily,
               ),
               darkTheme: FlexThemeData.dark(
-                fontFamily: GoogleFonts.archivo().fontFamily,
                 scheme: FlexScheme.bahamaBlue,
-                surfaceMode: FlexSurfaceMode.highScaffoldLowSurface,
+                surfaceMode: FlexSurfaceMode.levelSurfacesLowScaffold,
                 blendLevel: 15,
-                appBarOpacity: 0.90,
                 subThemesData: const FlexSubThemesData(
-                  blendOnLevel: 30,
+                  cardElevation: 0.5,
+                  defaultRadius: 24,
+                  blendOnLevel: 20,
                 ),
                 visualDensity: FlexColorScheme.comfortablePlatformDensity,
                 useMaterial3: true,
+                swapLegacyOnMaterial3: true,
+                // To use the Playground font, add GoogleFonts package and uncomment
+                fontFamily: GoogleFonts.archivo().fontFamily,
               ),
+// If you do not have a themeMode switch, uncomment this line
+// to let the device system mode control the theme mode:
+// themeMode: ThemeMode.system,
+
               themeMode: ThemeMode.system,
               routeInformationParser: router.routeInformationParser,
               routeInformationProvider: router.routeInformationProvider,
               routerDelegate: router.routerDelegate,
-              title: 'Flutter Demo',
             );
           },
         ),
@@ -240,6 +275,18 @@ class _MyAppState extends State<MyApp> {
               const MaterialPage<void>(child: LoginPage()),
         ),
         GoRoute(
+          path: '/profile',
+          name: 'profile',
+          pageBuilder: (context, state) =>
+              const MaterialPage<void>(child: ProfilePage()),
+        ),
+        GoRoute(
+          path: '/settings',
+          name: 'settings',
+          pageBuilder: (context, state) =>
+              const MaterialPage<void>(child: SettingsPage()),
+        ),
+        GoRoute(
             name: '/',
             path: '/',
             pageBuilder: (context, state) => const MaterialPage<void>(
@@ -249,8 +296,20 @@ class _MyAppState extends State<MyApp> {
             routes: [
               GoRoute(
                   path: 'home/placeList-page',
-                  pageBuilder: (context, state) =>
-                      const MaterialPage<void>(child: CategoryPage()),
+                  pageBuilder: (context, state) => MaterialPage<void>(
+                          child: MultiBlocProvider(
+                        providers: [
+                          BlocProvider(
+                            create: (context) => EditPlacesBloc(
+                                placeListRepository:
+                                    context.read<PlaceListRepository>()),
+                          ),
+                          BlocProvider(
+                            create: (context) => ListSortCubit(),
+                          ),
+                        ],
+                        child: const CategoryPage(),
+                      )),
                   routes: [
                     GoRoute(
                       name: 'random-wheel',
@@ -263,23 +322,6 @@ class _MyAppState extends State<MyApp> {
       ]);
 }
 
-class GoRouterRefreshStream extends ChangeNotifier {
-  GoRouterRefreshStream(Stream<dynamic> stream) {
-    notifyListeners();
-    _subscription = stream.asBroadcastStream().listen(
-          (dynamic _) => notifyListeners(),
-        );
-  }
-
-  late final StreamSubscription<dynamic> _subscription;
-
-  @override
-  void dispose() {
-    _subscription.cancel();
-    super.dispose();
-  }
-}
-
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key, required this.title});
 
@@ -290,6 +332,7 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+  final ScrollController mainScrollController = ScrollController();
   List<Widget> rows = [];
   @override
   Widget build(BuildContext context) {
@@ -298,172 +341,155 @@ class _MyHomePageState extends State<MyHomePage> {
           name: 'Breakfast Ideas',
           listOwnerId: '12345',
           placeCount: 5,
-          contributorIds: []),
+          contributorIds: [],
+          icon: {}),
       PlaceList(
           name: 'Iceland Trip',
           listOwnerId: '12345',
           placeCount: 12,
-          contributorIds: []),
+          contributorIds: [],
+          icon: {}),
       PlaceList(
           name: 'Lunch Spots',
           listOwnerId: '12345',
           placeCount: 7,
-          contributorIds: []),
+          contributorIds: [],
+          icon: {}),
       PlaceList(
           name: 'Experiences',
           listOwnerId: '12345',
           placeCount: 9,
-          contributorIds: []),
+          contributorIds: [],
+          icon: {}),
       PlaceList(
-          name: 'Local Spots',
-          listOwnerId: '12345',
-          placeCount: 10,
-          contributorIds: []),
+        name: 'Local Spots',
+        listOwnerId: '12345',
+        placeCount: 10,
+        contributorIds: [],
+        icon: {},
+      ),
     ];
-    return SafeArea(
-      child: Scaffold(
-        floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
-        bottomNavigationBar: const MainBottomNavBar(),
-        body: BlocBuilder<SavedListsBloc, SavedListsState>(
-          builder: (context, state) {
-            if (state is SavedListsLoading || state is SavedListsUpdated) {
-              return Center(
-                child: LoadingAnimationWidget.inkDrop(
-                    color: FlexColor.materialDarkPrimaryHc, size: 40.0),
-              );
-            }
-            if (state is SavedListsFailed) {
-              return const Center(
-                child: Text('Error Loading Lists!'),
-              );
-            }
-            if (state is SavedListsLoaded) {
-              final ScrollController mainScrollController = ScrollController();
-
-              // void addCategoriesToList() {
-              //   for (PlaceList placeList in state.placeLists!) {
-              //     rows.add(CategoryCard(placeList: placeList));
-              //   }
-              // }
-
-              void _onReorder(int oldIndex, int newIndex) {
-                PlaceList placeList = state.placeLists!.removeAt(oldIndex);
-                state.placeLists!.insert(newIndex, placeList);
-                setState(() {
-                  Widget row = rows.removeAt(oldIndex);
-                  rows.insert(newIndex, row);
-                });
-              }
-
-              void _onReorderSampleItem(int oldIndex, int newIndex) {
-                PlaceList placeList = samplePlaceLists.removeAt(oldIndex);
-                samplePlaceLists.insert(newIndex, placeList);
-                setState(() {
-                  Widget row = rows.removeAt(oldIndex);
-                  rows.insert(newIndex, row);
-                });
-              }
-
-              // if (state.placeLists!.isNotEmpty) {
-              //   addCategoriesToList();
-              // }
-
-              if (state.placeLists!.isNotEmpty) {
-                rows.clear();
-                rows = [
-                  for (PlaceList placeList in state.placeLists!)
-                    Animate(
-                        effects: const [SlideEffect()],
-                        child: CategoryCard(placeList: placeList))
-                ];
-                for (PlaceList placeList in samplePlaceLists) {
-                  rows.add(Animate(
-                      effects: const [SlideEffect()],
-                      child: SampleCategoryCard(placeList: placeList)));
-                }
-              } else {
-                rows.clear();
-                // List<SampleCategoryCard> sampleCategoryCards = [];
-                for (PlaceList placeList in samplePlaceLists) {
-                  rows.add(Animate(
-                      effects: const [SlideEffect()],
-                      child: SampleCategoryCard(placeList: placeList)));
-                }
-                rows.insert(
-                    0,
-                    Animate(
-                        effects: const [SlideEffect()],
-                        child: const BlankCategoryCard()));
-              }
-
-              return CustomScrollView(
-                controller: mainScrollController,
-                slivers: [
-                  SliverAppBar.medium(
-                    leading: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                      child: IconButton(
-                        onPressed: () {},
-                        icon: const Icon(Icons.menu),
-                      ),
-                    ),
-                    title: Wrap(
-                      spacing: 18.0,
-                      children: const [
-                        Icon(FontAwesomeIcons.buildingCircleCheck),
-                        Text(
-                          'GottaGo',
-                          style: TextStyle(fontWeight: FontWeight.bold),
-                        ),
-                      ],
-                    ),
-                    expandedHeight: 120,
-                    actions: [
-                      const InboxButton(),
-                      // IconButton(
-                      //     onPressed: () {}, icon: const Icon(Icons.more_vert)),
-                      IconButton(
-                          onPressed: () {
-                            context.read<LoginCubit>().logout();
-                          },
-                          icon: const Icon(Icons.logout_rounded)),
-                    ],
+    return Scaffold(
+      floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
+      bottomNavigationBar: MainBottomNavBar(),
+      body: BlocBuilder<SavedListsBloc, SavedListsState>(
+        builder: (context, state) {
+          if (state is SavedListsLoading || state is SavedListsUpdated) {
+            return CustomScrollView(
+              controller: mainScrollController,
+              slivers: [
+                const MainTopAppBar(),
+                // Main List View
+                SliverFillRemaining(
+                  child: Center(
+                    child: LoadingAnimationWidget.inkDrop(
+                        color: FlexColor.materialDarkPrimaryHc, size: 40.0),
                   ),
-                  // Main List View
-                  const SliverToBoxAdapter(
-                    child: SizedBox(height: 12.0),
-                  ),
-                  ReorderableSliverList(
-                      enabled: false,
-                      delegate: ReorderableSliverChildBuilderDelegate(
-                          childCount: state.placeLists!.isNotEmpty
-                              ? 6 - state.placeLists!.length
-                              : 6, (context, index) {
-                        return rows[index];
-                      }),
-                      onReorder: _onReorderSampleItem)
-                ],
-              );
-            } else {
-              return const Center(
-                child: Text('Something Went Wrong...'),
-              );
-            }
-          },
-        ),
-        floatingActionButton: FloatingActionButton(
-          shape: const StadiumBorder(),
-          onPressed: () {
-            showDialog(
-              context: context,
-              builder: (context) {
-                return const CreateListDialog();
-              },
+                ),
+              ],
             );
-          },
-          tooltip: 'Increment',
-          child: const Icon(Icons.add_circle_outline_rounded),
-        ),
+          }
+          if (state is SavedListsFailed) {
+            return const Center(
+              child: Text('Error Loading Lists!'),
+            );
+          }
+          if (state is SavedListsLoaded) {
+            // void addCategoriesToList() {
+            //   for (PlaceList placeList in state.placeLists!) {
+            //     rows.add(CategoryCard(placeList: placeList));
+            //   }
+            // }
+
+            void _onReorder(int oldIndex, int newIndex) {
+              PlaceList placeList = state.placeLists!.removeAt(oldIndex);
+              state.placeLists!.insert(newIndex, placeList);
+              setState(() {
+                Widget row = rows.removeAt(oldIndex);
+                rows.insert(newIndex, row);
+              });
+            }
+
+            void _onReorderSampleItem(int oldIndex, int newIndex) {
+              PlaceList placeList = samplePlaceLists.removeAt(oldIndex);
+              samplePlaceLists.insert(newIndex, placeList);
+              setState(() {
+                Widget row = rows.removeAt(oldIndex);
+                rows.insert(newIndex, row);
+              });
+            }
+
+            // if (state.placeLists!.isNotEmpty) {
+            //   addCategoriesToList();
+            // }
+
+            if (state.placeLists!.isNotEmpty) {
+              rows.clear();
+              rows = [
+                for (PlaceList placeList in state.placeLists!)
+                  Animate(
+                      effects: const [SlideEffect()],
+                      child: CategoryCard(placeList: placeList))
+              ];
+              if (state.placeLists!.length < 5) {
+                for (int i = 0; i < 5 - state.placeLists!.length; i++) {
+                  rows.add(Animate(
+                      effects: const [SlideEffect()],
+                      child:
+                          SampleCategoryCard(placeList: samplePlaceLists[i])));
+                }
+              }
+            } else {
+              rows.clear();
+              // List<SampleCategoryCard> sampleCategoryCards = [];
+              for (PlaceList placeList in samplePlaceLists) {
+                rows.add(Animate(
+                    effects: const [SlideEffect()],
+                    child: SampleCategoryCard(placeList: placeList)));
+              }
+              rows.insert(
+                  0,
+                  Animate(
+                      effects: const [SlideEffect()],
+                      child: const BlankCategoryCard()));
+            }
+
+            return CustomScrollView(
+              controller: mainScrollController,
+              slivers: [
+                const MainTopAppBar(),
+                // Main List View
+                const SliverToBoxAdapter(
+                  child: SizedBox(height: 12.0),
+                ),
+                ReorderableSliverList(
+                    enabled: false,
+                    delegate: ReorderableSliverChildBuilderDelegate(
+                        childCount: rows.length, (context, index) {
+                      return rows[index];
+                    }),
+                    onReorder: _onReorderSampleItem)
+              ],
+            );
+          } else {
+            return const Center(
+              child: Text('Something Went Wrong...'),
+            );
+          }
+        },
+      ),
+      floatingActionButton: FloatingActionButton(
+        shape: const StadiumBorder(),
+        onPressed: () {
+          showDialog(
+            context: context,
+            builder: (context) {
+              return const CreateListDialog();
+            },
+          );
+        },
+        tooltip: 'Increment',
+        child: const Icon(Icons.add_circle_outline_rounded),
       ),
     );
   }
@@ -539,7 +565,7 @@ class InboxButton extends StatelessWidget {
                     // )
                   ],
                   child: Positioned(
-                    top: 4,
+                    top: 10,
                     left: 2,
                     child: CircleAvatar(
                       radius: 10.0,
@@ -575,7 +601,7 @@ class InviteList extends StatelessWidget {
       listener: (context, state) {
         if (state.status == InviteInboxStatus.accepted ||
             state.status == InviteInboxStatus.declined) {
-          //  context.read<SavedListsBloc>().add(UpdateSavedLists());
+          context.read<SavedListsBloc>().add(LoadSavedLists());
         }
       },
       builder: (context, state) {
@@ -793,7 +819,7 @@ class DeclinedGroupInvite extends StatelessWidget {
                   ),
                   Text.rich(TextSpan(children: [
                     TextSpan(
-                      text: '${thisInvite.inviterName.split(' ')[0]} ',
+                      text: '${thisInvite.inviteeName.split(' ')[0]} ',
                       style: Theme.of(context)
                           .textTheme
                           .titleSmall!
@@ -900,7 +926,7 @@ class AcceptedGroupInvite extends StatelessWidget {
                   ),
                   Text.rich(TextSpan(children: [
                     TextSpan(
-                      text: '${thisInvite.inviterName.split(' ')[0]} ',
+                      text: '${thisInvite.inviteeName.split(' ')[0]} ',
                       style: Theme.of(context)
                           .textTheme
                           .titleSmall!

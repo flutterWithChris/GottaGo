@@ -14,6 +14,7 @@ class SavedPlacesLoading extends SavedPlacesState {}
 class SavedPlacesLoaded extends SavedPlacesState {
   final User listOwner;
   final List<Place> places;
+
   @override
   final List<User> contributors;
   @override

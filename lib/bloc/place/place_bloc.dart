@@ -16,10 +16,10 @@ class PlaceBloc extends Bloc<PlaceEvent, PlaceState> {
         super(PlaceLoading()) {
     on<LoadPlace>((event, emit) async {
       _placesSubscription?.cancel();
-      print('Passed: ${event.placeId} to PLACE BLOC');
+
       final GooglePlace googlePlace =
           await _placesRepository.getPlace(event.placeId);
-      print('Got Google Place: ${googlePlace.name}');
+
       emit(PlaceLoaded(googlePlace: googlePlace));
     });
   }

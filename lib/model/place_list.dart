@@ -1,11 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/material.dart';
 
 class PlaceList {
   final String? placeListId;
   final String name;
   final String listOwnerId;
-  final IconData? icon;
+  final Map<String, dynamic> icon;
   // final List<Place>? places;
   final List<String> contributorIds;
   final int placeCount;
@@ -13,7 +12,7 @@ class PlaceList {
     this.placeListId,
     required this.name,
     required this.listOwnerId,
-    this.icon,
+    required this.icon,
     required this.placeCount,
     //  this.places,
     required this.contributorIds,
@@ -23,6 +22,7 @@ class PlaceList {
     return PlaceList(
         placeCount: snap['placeCount'],
         name: snap['name'],
+        icon: snap['icon'],
         listOwnerId: snap['listOwnerId'],
         placeListId: snap.id,
         contributorIds: List.from(snap['contributorIds']));
@@ -33,7 +33,7 @@ class PlaceList {
       'name': name,
       'placeCount': placeCount,
       'listOwnerId': listOwnerId,
-      //'iconData': icon,
+      'icon': icon,
       // 'places': places ?? places!,
       'contributorIds': contributorIds,
     };
@@ -42,7 +42,7 @@ class PlaceList {
   PlaceList copyWith({
     String? placeListId,
     String? name,
-    IconData? icon,
+    Map<String, dynamic>? icon,
     int? placeCount,
     String? listOwnerId,
     //  List<Place>? places,

@@ -32,6 +32,26 @@ class LoginCubit extends Cubit<LoginState> {
     }
   }
 
+  Future<void> logInWithGoogle() async {
+    if (state.status == LoginStatus.submitting) return;
+    emit(state.copyWith(status: LoginStatus.submitting));
+
+    auth.User? user = await _authRepository.signInWithGoogle();
+    user is auth.User
+        ? emit(state.copyWith(status: LoginStatus.success))
+        : emit(state.copyWith(status: LoginStatus.error));
+  }
+
+  Future<void> logInWithApple() async {
+    if (state.status == LoginStatus.submitting) return;
+    emit(state.copyWith(status: LoginStatus.submitting));
+
+    auth.User? user = await _authRepository.signInWithApple();
+    user is auth.User
+        ? emit(state.copyWith(status: LoginStatus.success))
+        : emit(state.copyWith(status: LoginStatus.error));
+  }
+
   void logout() async {
     await _authRepository.signOut();
     emit(state.copyWith(status: LoginStatus.initial));

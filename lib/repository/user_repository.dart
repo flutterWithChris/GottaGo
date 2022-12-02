@@ -19,7 +19,6 @@ class UserRepository extends BaseUserRepository {
 
   @override
   Stream<User> getUser(String userId) {
-    print('Fetching user data from firestore...');
     return _firebaseFirestore
         .collection('users')
         .doc(userId)

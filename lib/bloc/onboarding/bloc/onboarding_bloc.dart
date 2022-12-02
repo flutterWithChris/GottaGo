@@ -26,7 +26,7 @@ class OnboardingBloc extends Bloc<OnboardingEvent, OnboardingState> {
       emit(OnboardingLoading());
       await _storageRepository.uploadImage(user, event.image);
 
-      _databaseRepository.getUser(user.id).listen((user) {
+      _databaseRepository.getUser(user.id!).listen((user) {
         add(UpdateUser(user: user));
       });
     });
@@ -37,7 +37,8 @@ class OnboardingBloc extends Bloc<OnboardingEvent, OnboardingState> {
 
       // * Set Username if passed check & not null.
       if (event.user.userName != '') {
-        await _databaseRepository.registerUsername(event.user);
+        await _databaseRepository.registerUsername(
+            event.user.name!, event.user.id!);
       }
       await _databaseRepository.updateUser(event.user);
       emit(OnboardingLoaded(user: event.user));
