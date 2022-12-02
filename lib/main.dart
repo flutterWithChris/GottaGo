@@ -21,6 +21,7 @@ import 'package:leggo/bloc/place/place_bloc.dart';
 import 'package:leggo/bloc/profile_bloc.dart';
 import 'package:leggo/bloc/saved_categories/bloc/saved_lists_bloc.dart';
 import 'package:leggo/bloc/saved_places/bloc/saved_places_bloc.dart';
+import 'package:leggo/bloc/settings/settings_bloc.dart';
 import 'package:leggo/cubit/cubit/cubit/view_place_cubit.dart';
 import 'package:leggo/cubit/cubit/login/login_cubit.dart';
 import 'package:leggo/cubit/cubit/random_wheel_cubit.dart';
@@ -167,6 +168,11 @@ class _MyAppState extends State<MyApp> {
           BlocProvider(
             create: (context) =>
                 PlaceBloc(placesRepository: context.read<PlacesRepository>()),
+          ),
+          BlocProvider(
+            create: (context) => SettingsBloc(
+                authRepository: context.read<AuthRepository>(),
+                databaseRepository: context.read<DatabaseRepository>()),
           ),
         ],
         child: BlocBuilder<AuthBloc, AuthState>(

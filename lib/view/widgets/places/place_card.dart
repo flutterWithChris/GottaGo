@@ -8,6 +8,7 @@ import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:leggo/bloc/place/edit_places_bloc.dart';
 import 'package:leggo/cubit/cubit/cubit/view_place_cubit.dart';
+import 'package:leggo/globals.dart';
 import 'package:leggo/model/place_list.dart';
 import 'package:leggo/view/widgets/places/view_place_sheet.dart';
 import 'package:roundcheckbox/roundcheckbox.dart';
@@ -67,6 +68,7 @@ class _PlaceCardState extends State<PlaceCard>
   @override
   Widget build(BuildContext context) {
     super.build(context);
+    String? todaysHours = getTodaysHours(widget.place);
     return ConstrainedBox(
         constraints: const BoxConstraints(minHeight: 170, maxHeight: 225),
         child: BlocBuilder<EditPlacesBloc, EditPlacesState>(
@@ -135,31 +137,32 @@ class _PlaceCardState extends State<PlaceCard>
                           children: [
                             Container(
                               decoration: BoxDecoration(
-                                  color: Colors.white.withOpacity(0.9),
-                                  borderRadius: const BorderRadius.only(
-                                      bottomLeft: Radius.circular(12.0))),
+                                color: Colors.white.withOpacity(0.9),
+                              ),
                               alignment: AlignmentDirectional.center,
                               height: 24.0,
-                              width: 70.0,
-                              child: Wrap(
-                                alignment: WrapAlignment.center,
-                                crossAxisAlignment: WrapCrossAlignment.center,
-                                spacing: 7.0,
-                                children: [
-                                  const CircleAvatar(
-                                    radius: 3,
-                                    backgroundColor: Colors.lightGreen,
-                                  ),
-                                  Text(
-                                    'Open',
-                                    style: Theme.of(context)
-                                        .textTheme
-                                        .bodySmall!
-                                        .copyWith(
-                                            fontWeight: FontWeight.bold,
-                                            color: Colors.black54),
-                                  ),
-                                ],
+                              width: 120.0,
+                              child: Padding(
+                                padding: const EdgeInsets.only(left: 4.0),
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    todaysHours != null
+                                        ? todaysHours != 'Closed'
+                                            ? Text(
+                                                'Open \'til: ${todaysHours.split('–')[1].trim()}',
+                                                style: Theme.of(context)
+                                                    .textTheme
+                                                    .bodySmall!
+                                                    .copyWith(
+                                                        fontWeight:
+                                                            FontWeight.bold,
+                                                        color: Colors.black54),
+                                              )
+                                            : const Text('Closed Today!')
+                                        : const SizedBox(),
+                                  ],
+                                ),
                               ),
                             ),
                             Container(
@@ -356,10 +359,7 @@ class _PlaceCardState extends State<PlaceCard>
                                           child: Text('Let\'s Go'))),
                                   Row(
                                     children: [
-                                      context
-                                                  .watch<ListSortCubit>()
-                                                  .state
-                                                  .status ==
+                                      context.watch<ListSortCubit>().state.status ==
                                               'Visited'
                                           ? IconButton(
                                               style: IconButton.styleFrom(
@@ -381,9 +381,15 @@ class _PlaceCardState extends State<PlaceCard>
                                                   Icons.undo_rounded))
                                           : IconButton(
                                               style: IconButton.styleFrom(
-                                                  backgroundColor: FlexColor
-                                                      .bahamaBlueDarkSecondaryVariant
-                                                      .withOpacity(0.06)),
+                                                  backgroundColor: Theme.of(context)
+                                                              .brightness ==
+                                                          Brightness.light
+                                                      ? FlexColor
+                                                          .bahamaBlueLightSecondaryVariant
+                                                          .withOpacity(0.6)
+                                                      : FlexColor
+                                                          .bahamaBlueDarkSecondaryVariant
+                                                          .withOpacity(0.06)),
                                               splashRadius: 60,
                                               splashColor: FlexColor
                                                   .bahamaBlueDarkPrimaryContainer,
@@ -395,13 +401,18 @@ class _PlaceCardState extends State<PlaceCard>
                                                         placeList:
                                                             widget.placeList));
                                               },
-                                              icon: const Icon(Icons
-                                                  .check_circle_outline_rounded)),
+                                              icon: const Icon(Icons.check_circle_outline_rounded)),
                                       IconButton(
                                           style: IconButton.styleFrom(
-                                              backgroundColor: FlexColor
-                                                  .bahamaBlueDarkSecondaryContainer
-                                                  .withOpacity(0.12)),
+                                              backgroundColor: Theme.of(context)
+                                                          .brightness ==
+                                                      Brightness.light
+                                                  ? FlexColor
+                                                      .bahamaBlueLightSecondary
+                                                      .withOpacity(0.12)
+                                                  : FlexColor
+                                                      .bahamaBlueDarkSecondaryContainer
+                                                      .withOpacity(0.12)),
                                           splashRadius: 60,
                                           splashColor: FlexColor
                                               .bahamaBlueDarkPrimaryContainer,

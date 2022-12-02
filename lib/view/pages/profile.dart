@@ -156,13 +156,12 @@ class ProfilePage extends StatelessWidget {
                                     children: [
                                       Text(
                                         context
-                                                .read<SavedListsBloc>()
-                                                .myPlaceLists
-                                                .where((element) => element
-                                                    .contributorIds.isNotEmpty)
-                                                .length
-                                                .toString() ??
-                                            '0',
+                                            .read<SavedListsBloc>()
+                                            .myPlaceLists
+                                            .where((element) => element
+                                                .contributorIds.isNotEmpty)
+                                            .length
+                                            .toString(),
                                         style: Theme.of(context)
                                             .textTheme
                                             .titleLarge,
@@ -210,7 +209,7 @@ class ProfilePage extends StatelessWidget {
                                             var data = snapshot.data;
                                             if (data is int) {
                                               return Text(
-                                                data.toString() ?? '0',
+                                                data.toString(),
                                                 style: Theme.of(context)
                                                     .textTheme
                                                     .titleLarge,
@@ -246,7 +245,7 @@ class ProfilePage extends StatelessWidget {
                                             var data = snapshot.data;
                                             if (data is int) {
                                               return Text(
-                                                data.toString() ?? '0',
+                                                data.toString(),
                                                 style: Theme.of(context)
                                                     .textTheme
                                                     .titleLarge,

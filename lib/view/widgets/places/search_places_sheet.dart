@@ -44,7 +44,7 @@ class _SearchPlacesSheetState extends State<SearchPlacesSheet> {
     return DraggableScrollableSheet(
       controller: scrollableController,
       initialChildSize:
-          context.watch<PlaceBloc>().state is PlaceLoaded ? 0.89 : 0.6,
+          context.watch<PlaceBloc>().state is PlaceLoaded ? 0.89 : 0.8,
       maxChildSize: 0.89,
       expand: false,
       builder: (context, scrollController) {
@@ -194,7 +194,8 @@ class _SearchPlacesSheetState extends State<SearchPlacesSheet> {
                                           width: 350,
                                           bottom: 20.0,
                                           child: Padding(
-                                            padding: const EdgeInsets.all(4.0),
+                                            padding: const EdgeInsets.symmetric(
+                                                horizontal: 8.0, vertical: 4.0),
                                             child: Row(
                                               mainAxisAlignment:
                                                   MainAxisAlignment

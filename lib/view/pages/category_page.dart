@@ -8,6 +8,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:confetti/confetti.dart';
 import 'package:flex_color_scheme/flex_color_scheme.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_animate/animate.dart';
 import 'package:flutter_animate/effects/effects.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -20,9 +21,11 @@ import 'package:leggo/bloc/saved_places/bloc/saved_places_bloc.dart';
 import 'package:leggo/cubit/cubit/cubit/view_place_cubit.dart';
 import 'package:leggo/cubit/cubit/random_wheel_cubit.dart';
 import 'package:leggo/cubit/lists/list_sort_cubit.dart';
+import 'package:leggo/globals.dart';
 import 'package:leggo/model/place.dart';
 import 'package:leggo/model/place_list.dart';
 import 'package:leggo/model/user.dart';
+import 'package:leggo/view/widgets/lists/delete_list_dialog.dart';
 import 'package:leggo/view/widgets/lists/invite_dialog.dart';
 import 'package:leggo/view/widgets/main_bottom_navbar.dart';
 import 'package:leggo/view/widgets/places/add_place_card.dart';
@@ -787,40 +790,239 @@ class _CategoryPageAppBarState extends State<CategoryPageAppBar> {
       ),
       actions: [
         PopupMenuButton(
-          position: PopupMenuPosition.under,
-          itemBuilder: (context) => [
-            PopupMenuItem(
-              onTap: () {
-                WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-                  showDialog(
-                    useRootNavigator: false,
-                    context: context,
-                    builder: (dialogContext) {
-                      return InviteDialog(
+            position: PopupMenuPosition.under,
+            icon: Icon(
+              Icons.more_vert_rounded,
+              color: Theme.of(context).brightness == Brightness.light
+                  ? FlexColor.bahamaBlueLightPrimary
+                  : Colors.white,
+            ),
+            itemBuilder: (context) => <PopupMenuEntry>[
+                  PopupMenuItem(
+                    onTap: () => WidgetsBinding.instance
+                        .addPostFrameCallback((timeStamp) {
+                      showDialog(
+                        context: context,
+                        builder: (context) => EditListDialog(
                           placeList: widget.placeList,
-                          dialogContext: dialogContext);
-                    },
-                  );
-                });
-              },
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: const [
-                  Icon(
-                    Icons.person_add_alt_1_rounded,
-                    size: 18,
+                        ),
+                      );
+                    }),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: const [
+                        Icon(Icons.edit_note_rounded),
+                        SizedBox(
+                          width: 4.0,
+                        ),
+                        Text('Edit List'),
+                      ],
+                    ),
                   ),
-                  Padding(
-                    padding: EdgeInsets.only(left: 8.0),
-                    child: Text('Invite Contributor'),
+                  PopupMenuItem(
+                    onTap: () {
+                      WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+                        showDialog(
+                          context: context,
+                          builder: (context) {
+                            return DeleteListDialog(
+                              placeList: widget.placeList,
+                            );
+                          },
+                        );
+                      });
+                    },
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: const [
+                        Icon(Icons.delete_forever_rounded),
+                        SizedBox(
+                          width: 4.0,
+                        ),
+                        Text('Delete List'),
+                      ],
+                    ),
                   )
+                ]),
+      ],
+    );
+  }
+}
+
+class EditListDialog extends StatefulWidget {
+  final PlaceList placeList;
+  const EditListDialog({
+    required this.placeList,
+    Key? key,
+  }) : super(key: key);
+
+  @override
+  State<EditListDialog> createState() => _EditListDialogState();
+}
+
+class _EditListDialogState extends State<EditListDialog> {
+  final TextEditingController listNameController = TextEditingController();
+  @override
+  void initState() {
+    // TODO: implement initState
+    listNameController.text = widget.placeList.name;
+    super.initState();
+  }
+
+  IconData? selectedIcon;
+  @override
+  Widget build(BuildContext context) {
+    return Dialog(
+      child: SizedBox(
+        width: 160,
+        height: 210,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 8.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              Text(
+                'Edit List',
+                style: Theme.of(context).textTheme.titleLarge,
+              ),
+              Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Flexible(
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                          fixedSize: const Size.fromHeight(50),
+                          side: BorderSide(
+                              width: 2.0,
+                              color: Theme.of(context)
+                                  .inputDecorationTheme
+                                  .enabledBorder!
+                                  .borderSide
+                                  .color)),
+                      onPressed: () async {
+                        IconData? icon = await pickIcon(context);
+
+                        if (icon == null) {
+                          ScaffoldMessenger.of(context)
+                              .showSnackBar(const SnackBar(
+                            content: Text(
+                              'No Icon Selected!',
+                              style: TextStyle(color: Colors.white),
+                            ),
+                            backgroundColor: Colors.red,
+                          ));
+                        } else {
+                          setState(() {
+                            selectedIcon = icon;
+                          });
+                        }
+                      },
+                      child: selectedIcon == null
+                          ? Icon(deserializeIcon(widget.placeList.icon) ??
+                              Icons.list_alt_rounded)
+                          : Icon(selectedIcon),
+                    ),
+                  ),
+                  const SizedBox(
+                    width: 8.0,
+                  ),
+                  Flexible(
+                    flex: 2,
+                    child: SizedBox(
+                      height: 50,
+                      child: TextField(
+                        // onChanged: (value) {
+                        //   setState(() {
+                        //     textLength = value.length;
+                        //   });
+                        // },
+                        // maxLength: 20,
+                        inputFormatters: [
+                          FilteringTextInputFormatter.allow(
+                              RegExp("[A-Za-z0-9#+-. ]*")),
+                        ],
+                        textCapitalization: TextCapitalization.words,
+                        controller: listNameController,
+                        autofocus: true,
+                        decoration: InputDecoration(
+                          // suffixText:
+                          //     '${textLength.toString()}/${maxLength.toString()}',
+                          // suffixStyle: Theme.of(context).textTheme.bodySmall,
+                          //   counterText: "",
+                          isDense: true,
+                          filled: true,
+                          hintText: "ex. Breakfast Ideas...",
+                          contentPadding: const EdgeInsets.symmetric(
+                              horizontal: 16.0, vertical: 12.0),
+                          errorBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(50),
+                              borderSide: const BorderSide(
+                                  width: 2.0, color: Colors.redAccent)),
+                          focusedErrorBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(50),
+                              borderSide: const BorderSide(
+                                  width: 2.0, color: Colors.redAccent)),
+                          focusedBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(50),
+                              borderSide: BorderSide(
+                                  width: 2.0,
+                                  color: Theme.of(context)
+                                      .inputDecorationTheme
+                                      .enabledBorder!
+                                      .borderSide
+                                      .color)),
+                        ),
+                      ),
+                    ),
+                  ),
                 ],
               ),
-            ),
-          ],
-          icon: const Icon(Icons.more_vert),
+              BlocConsumer<SavedListsBloc, SavedListsState>(
+                listener: (context, state) async {
+                  if (state is SavedListsUpdated) {
+                    await Future.delayed(const Duration(seconds: 1),
+                        () => Navigator.pop(context));
+                  }
+                },
+                builder: (context, state) {
+                  if (state is SavedListsLoading) {
+                    return ElevatedButton(
+                        onPressed: () {},
+                        child: LoadingAnimationWidget.staggeredDotsWave(
+                            color: FlexColor.bahamaBlueDarkSecondary,
+                            size: 18.0));
+                  }
+                  if (state is SavedListsUpdated) {
+                    return ElevatedButton(
+                        onPressed: () {},
+                        child: Icon(
+                          Icons.check,
+                          color: Colors.green.shade400,
+                        ));
+                  }
+                  return ElevatedButton(
+                      onPressed: () {
+                        if (selectedIcon != null) {
+                          context.read<SavedListsBloc>().add(UpdateSavedLists(
+                              placeList: widget.placeList.copyWith(
+                                  name: listNameController.value.text,
+                                  icon: serializeIcon(selectedIcon!))));
+                          // context
+                          //     .read<SavedPlacesBloc>()
+                          //     .add(LoadPlaces(placeList: widget.placeList));
+                        } else {
+                          context.read<SavedListsBloc>().add(UpdateSavedLists(
+                              placeList: widget.placeList.copyWith(
+                                  name: listNameController.value.text)));
+                        }
+                      },
+                      child: const Text('Update List'));
+                },
+              ),
+            ],
+          ),
         ),
-      ],
+      ),
     );
   }
 }

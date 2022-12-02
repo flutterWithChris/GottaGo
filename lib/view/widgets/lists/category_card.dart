@@ -5,7 +5,9 @@ import 'package:flutter_iconpicker/flutter_iconpicker.dart';
 import 'package:go_router/go_router.dart';
 import 'package:leggo/bloc/saved_categories/bloc/saved_lists_bloc.dart';
 import 'package:leggo/bloc/saved_places/bloc/saved_places_bloc.dart';
+import 'package:leggo/globals.dart';
 import 'package:leggo/model/place_list.dart';
+import 'package:leggo/view/pages/category_page.dart';
 import 'package:leggo/view/widgets/lists/delete_list_dialog.dart';
 
 import '../../../bloc/profile_bloc.dart';
@@ -27,15 +29,6 @@ class _CategoryCardState extends State<CategoryCard> {
   Widget build(BuildContext context) {
     Icon? icon;
 
-    Future<IconData?> _pickIcon() async {
-      IconData? icon = await FlutterIconPicker.showIconPicker(context,
-          iconPackModes: [IconPack.fontAwesomeIcons, IconPack.material]);
-
-      //icon = Icon(icon);
-
-      return icon;
-    }
-
     return Padding(
       padding: const EdgeInsets.fromLTRB(8.0, 8.0, 8.0, 8.0),
       child: SizedBox(
@@ -50,8 +43,6 @@ class _CategoryCardState extends State<CategoryCard> {
                   padding: const EdgeInsets.only(bottom: 16.0),
                   child: PopupMenuButton(
                       position: PopupMenuPosition.under,
-                      color: Theme.of(context).scaffoldBackgroundColor,
-                      // onSelected: (value) {},
                       icon: Icon(
                         Icons.more_vert_rounded,
                         color: Theme.of(context).brightness == Brightness.light
@@ -60,20 +51,51 @@ class _CategoryCardState extends State<CategoryCard> {
                       ),
                       itemBuilder: (context) => <PopupMenuEntry>[
                             PopupMenuItem(
-                                onTap: () {
-                                  WidgetsBinding.instance
-                                      .addPostFrameCallback((timeStamp) {
-                                    showDialog(
-                                      context: context,
-                                      builder: (context) {
-                                        return DeleteListDialog(
-                                          placeList: widget.placeList,
-                                        );
-                                      },
-                                    );
-                                  });
-                                },
-                                child: const Text('Delete List'))
+                              onTap: () => WidgetsBinding.instance
+                                  .addPostFrameCallback((timeStamp) {
+                                showDialog(
+                                  context: context,
+                                  builder: (context) => EditListDialog(
+                                    placeList: widget.placeList,
+                                  ),
+                                );
+                              }),
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: const [
+                                  Icon(Icons.edit_note_rounded),
+                                  SizedBox(
+                                    width: 4.0,
+                                  ),
+                                  Text('Edit List'),
+                                ],
+                              ),
+                            ),
+                            PopupMenuItem(
+                              onTap: () {
+                                WidgetsBinding.instance
+                                    .addPostFrameCallback((timeStamp) {
+                                  showDialog(
+                                    context: context,
+                                    builder: (context) {
+                                      return DeleteListDialog(
+                                        placeList: widget.placeList,
+                                      );
+                                    },
+                                  );
+                                });
+                              },
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: const [
+                                  Icon(Icons.delete_forever_rounded),
+                                  SizedBox(
+                                    width: 4.0,
+                                  ),
+                                  Text('Delete List'),
+                                ],
+                              ),
+                            )
                           ]),
                 ),
                 onTap: () {
@@ -112,7 +134,7 @@ class _CategoryCardState extends State<CategoryCard> {
                 leading: InkWell(
                   onTap: () async {
                     // TODO: Create Paywall Restriction
-                    IconData? icon = await _pickIcon();
+                    IconData? icon = await pickIcon(context);
 
                     if (icon != null) {
                       Map<String, dynamic>? serializedIcon =
