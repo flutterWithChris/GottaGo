@@ -21,6 +21,7 @@ import 'package:leggo/bloc/place/place_bloc.dart';
 import 'package:leggo/bloc/profile_bloc.dart';
 import 'package:leggo/bloc/saved_categories/bloc/saved_lists_bloc.dart';
 import 'package:leggo/bloc/saved_places/bloc/saved_places_bloc.dart';
+import 'package:leggo/bloc/settings/settings_bloc.dart';
 import 'package:leggo/cubit/cubit/cubit/view_place_cubit.dart';
 import 'package:leggo/cubit/cubit/login/login_cubit.dart';
 import 'package:leggo/cubit/cubit/random_wheel_cubit.dart';
@@ -167,6 +168,11 @@ class _MyAppState extends State<MyApp> {
           BlocProvider(
             create: (context) =>
                 PlaceBloc(placesRepository: context.read<PlacesRepository>()),
+          ),
+          BlocProvider(
+            create: (context) => SettingsBloc(
+                authRepository: context.read<AuthRepository>(),
+                databaseRepository: context.read<DatabaseRepository>()),
           ),
         ],
         child: BlocBuilder<AuthBloc, AuthState>(
@@ -330,27 +336,33 @@ class _MyHomePageState extends State<MyHomePage> {
           name: 'Breakfast Ideas',
           listOwnerId: '12345',
           placeCount: 5,
-          contributorIds: []),
+          contributorIds: [],
+          icon: {}),
       PlaceList(
           name: 'Iceland Trip',
           listOwnerId: '12345',
           placeCount: 12,
-          contributorIds: []),
+          contributorIds: [],
+          icon: {}),
       PlaceList(
           name: 'Lunch Spots',
           listOwnerId: '12345',
           placeCount: 7,
-          contributorIds: []),
+          contributorIds: [],
+          icon: {}),
       PlaceList(
           name: 'Experiences',
           listOwnerId: '12345',
           placeCount: 9,
-          contributorIds: []),
+          contributorIds: [],
+          icon: {}),
       PlaceList(
-          name: 'Local Spots',
-          listOwnerId: '12345',
-          placeCount: 10,
-          contributorIds: []),
+        name: 'Local Spots',
+        listOwnerId: '12345',
+        placeCount: 10,
+        contributorIds: [],
+        icon: {},
+      ),
     ];
     return Scaffold(
       floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
@@ -548,7 +560,7 @@ class InboxButton extends StatelessWidget {
                     // )
                   ],
                   child: Positioned(
-                    top: 4,
+                    top: 10,
                     left: 2,
                     child: CircleAvatar(
                       radius: 10.0,

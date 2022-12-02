@@ -104,6 +104,7 @@ class _CreateListDialogState extends State<CreateListDialog> {
                     context.read<SavedListsBloc>().add(AddList(
                             placeList: PlaceList(
                           placeCount: 0,
+                          icon: {},
                           contributorIds: [],
                           listOwnerId:
                               context.read<ProfileBloc>().state.user.id!,

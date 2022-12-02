@@ -14,7 +14,7 @@ class EditPlacesBloc extends Bloc<EditPlacesEvent, EditPlacesState> {
       : _placeListRepository = placeListRepository,
         super(EditPlacesInitial()) {
     on<EditPlacesEvent>((event, emit) {
-      print('Bloc Placlist Length: ${selectedPlaces.length}');
+      print('Bloc Placelist Length: ${selectedPlaces.length}');
     });
     on<StartEditing>((event, emit) {
       selectedPlaces.clear();

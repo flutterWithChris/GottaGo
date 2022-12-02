@@ -3,6 +3,9 @@ import 'dart:core';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_iconpicker/flutter_iconpicker.dart';
+import 'package:intl/intl.dart';
+import 'package:leggo/model/place.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class Globals {
@@ -15,6 +18,34 @@ class Globals {
   factory Globals() {
     return _globals;
   }
+}
+
+String getTodaysDay() {
+  DateTime date = DateTime.now();
+  String dayOfTheWeek = DateFormat('EEEE').format(date);
+  return dayOfTheWeek;
+}
+
+String? getTodaysHours(Place place) {
+  if (place.hours == null) {
+    return null;
+  } else {
+    String todaysDay = getTodaysDay();
+    String todaysHours = place.hours!
+        .firstWhere((element) => element.toString().contains(todaysDay));
+    if (todaysHours.contains('Closed')) {
+      return 'Closed';
+    }
+    String hoursIsolated = todaysHours.replaceFirst(RegExp('$todaysDay: '), '');
+    return hoursIsolated;
+  }
+}
+
+Future<IconData?> pickIcon(BuildContext context) async {
+  IconData? icon = await FlutterIconPicker.showIconPicker(context,
+      iconPackModes: [IconPack.fontAwesomeIcons, IconPack.material]);
+
+  return icon;
 }
 
 Future<void> launchWebView(Uri url) async {

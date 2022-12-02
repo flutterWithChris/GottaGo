@@ -49,12 +49,12 @@ class SampleCategoryCard extends StatelessWidget {
                       crossAxisAlignment: WrapCrossAlignment.center,
                       spacing: 10.0,
                       children: [
-                        placeList.icon != null
-                            ? Icon(
-                                placeList.icon,
-                                size: 16,
-                              )
-                            : const SizedBox(),
+                        // placeList.icon != null
+                        //     ? Icon(
+                        //         placeList.icon,
+                        //         size: 16,
+                        //       )
+                        //     : const SizedBox(),
                         Text(
                           placeList.name,
                           style: Theme.of(context)

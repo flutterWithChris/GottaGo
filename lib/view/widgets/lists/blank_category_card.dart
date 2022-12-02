@@ -1,6 +1,5 @@
 import 'package:flex_color_scheme/flex_color_scheme.dart';
 import 'package:flutter/material.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:leggo/view/widgets/lists/create_list_dialog.dart';
 
 class BlankCategoryCard extends StatelessWidget {
@@ -44,8 +43,8 @@ class BlankCategoryCard extends StatelessWidget {
                     spacing: 10.0,
                     children: [
                       const Icon(
-                        FontAwesomeIcons.list,
-                        size: 18,
+                        Icons.post_add_rounded,
+                        size: 24,
                       ),
                       Text(
                         'Create a List',

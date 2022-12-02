@@ -4,7 +4,6 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
-import 'package:intl/intl.dart';
 
 import 'package:leggo/cubit/cubit/cubit/view_place_cubit.dart';
 import 'package:leggo/globals.dart';
@@ -25,29 +24,6 @@ class ViewPlaceSheet extends StatelessWidget {
     Future<void> _launchUrl(Uri url) async {
       if (!await launchUrl(url)) {
         throw 'Could not launch $url';
-      }
-    }
-
-    String getTodaysDay() {
-      DateTime date = DateTime.now();
-      String dayOfTheWeek = DateFormat('EEEE').format(date);
-      return dayOfTheWeek;
-    }
-
-    String? getTodaysHours(Place place) {
-      if (place.hours == null) {
-        return null;
-      } else {
-        String todaysDay = getTodaysDay();
-        String todaysHours = place.hours!
-            .firstWhere((element) => element.toString().contains(todaysDay));
-        if (todaysHours.contains('Closed')) {
-          return 'Closed';
-        }
-        String hoursIsolated =
-            todaysHours.replaceFirst(RegExp('$todaysDay: '), '');
-        return hoursIsolated;
-        print(hoursIsolated);
       }
     }
 
@@ -146,7 +122,9 @@ class ViewPlaceSheet extends StatelessWidget {
                       fit: FlexFit.tight,
                       flex: 4,
                       child: Padding(
-                        padding: const EdgeInsets.only(top: 8.0),
+                        padding: const EdgeInsets.only(
+                          top: 8.0,
+                        ),
                         child: Text(
                           selectedPlace.name!,
                           style: Theme.of(context)
@@ -170,8 +148,11 @@ class ViewPlaceSheet extends StatelessWidget {
                                     onPressed: () async {
                                       await launchUrl(placeWebsite);
                                     },
-                                    icon:
-                                        const Icon(Icons.web_rounded, size: 16),
+                                    icon: const Icon(
+                                      Icons.web_rounded,
+                                      size: 16,
+                                      color: Colors.white,
+                                    ),
                                   ),
                                 )
                               : const SizedBox(),
@@ -182,7 +163,11 @@ class ViewPlaceSheet extends StatelessWidget {
                                     onPressed: () async {
                                       await launchUrl(placePhoneNumber);
                                     },
-                                    icon: const Icon(Icons.phone, size: 16),
+                                    icon: const Icon(
+                                      Icons.phone,
+                                      size: 16,
+                                      color: Colors.white,
+                                    ),
                                   ),
                                 )
                               : const SizedBox(),
@@ -197,16 +182,23 @@ class ViewPlaceSheet extends StatelessWidget {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Wrap(
-                        crossAxisAlignment: WrapCrossAlignment.center,
-                        spacing: 5.0,
-                        children: [
+                    Flexible(
+                      child: FittedBox(
+                        child: Row(children: [
                           const Icon(
                             Icons.location_pin,
                             size: 14,
                           ),
+                          const SizedBox(
+                            width: 4.0,
+                          ),
                           Text('${place.city!}, ${place.state!}')
                         ]),
+                      ),
+                    ),
+                    const SizedBox(
+                      width: 16.0,
+                    ),
                     todaysHours != null && todaysHours != 'Closed'
                         ? Flexible(
                             flex: 1,

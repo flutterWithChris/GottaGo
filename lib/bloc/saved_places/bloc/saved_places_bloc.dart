@@ -35,7 +35,7 @@ class SavedPlacesBloc extends Bloc<SavedPlacesEvent, SavedPlacesState> {
     User? listOwner;
     _savedListsSubscription = _savedListsBloc.stream.listen((state) {
       if (state is SavedListsUpdated) {
-        add(const UpdatePlace());
+        add(LoadPlaces(placeList: _currentPlaceList!));
       }
     });
 
@@ -55,6 +55,7 @@ class SavedPlacesBloc extends Bloc<SavedPlacesEvent, SavedPlacesState> {
         _placeListRepository
             .getPlaceList(event.placeList.placeListId!)!
             .listen((placeList) {
+          _currentPlaceList = placeList;
           placeListRepository.getPlaces(event.placeList).listen((place) {
             savedPlaces.add(place);
           });
@@ -133,7 +134,8 @@ class SavedPlacesBloc extends Bloc<SavedPlacesEvent, SavedPlacesState> {
   @override
   Future<void> close() {
     // TODO: implement close
-
+    _placeListsSubscription?.cancel();
+    _savedListsSubscription?.cancel();
     return super.close();
   }
 }

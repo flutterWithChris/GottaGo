@@ -48,33 +48,31 @@ class LoginPage extends StatelessWidget {
                           ),
                           label: const Text('Login with Apple'))
                       : const SizedBox(),
-                  Platform.isAndroid
-                      ? Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Wrap(
-                            direction: Axis.vertical,
-                            spacing: 4.0,
-                            children: [
-                              ElevatedButton.icon(
-                                  style: ElevatedButton.styleFrom(
-                                      fixedSize: const Size(180, 30)),
-                                  onPressed: () async {
-                                    await context
-                                        .read<LoginCubit>()
-                                        .logInWithGoogle();
-                                  },
-                                  icon: SizedBox(
-                                    height: 16,
-                                    width: 24,
-                                    child: CachedNetworkImage(
-                                        imageUrl:
-                                            'https://upload.wikimedia.org/wikipedia/commons/thumb/5/53/Google_%22G%22_Logo.svg/1200px-Google_%22G%22_Logo.svg.png'),
-                                  ),
-                                  label: const Text('Login with Google')),
-                            ],
-                          ),
-                        )
-                      : const SizedBox(),
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Wrap(
+                      direction: Axis.vertical,
+                      spacing: 4.0,
+                      children: [
+                        ElevatedButton.icon(
+                            style: ElevatedButton.styleFrom(
+                                fixedSize: const Size(180, 30)),
+                            onPressed: () async {
+                              await context
+                                  .read<LoginCubit>()
+                                  .logInWithGoogle();
+                            },
+                            icon: SizedBox(
+                              height: 16,
+                              width: 24,
+                              child: CachedNetworkImage(
+                                  imageUrl:
+                                      'https://upload.wikimedia.org/wikipedia/commons/thumb/5/53/Google_%22G%22_Logo.svg/1200px-Google_%22G%22_Logo.svg.png'),
+                            ),
+                            label: const Text('Login with Google')),
+                      ],
+                    ),
+                  ),
                   BlocBuilder<LoginCubit, LoginState>(
                     buildWhen: (previous, current) =>
                         previous.email != current.email,

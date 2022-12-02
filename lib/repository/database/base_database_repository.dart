@@ -6,5 +6,6 @@ abstract class BaseDatabaseRepository {
   Future<void> updateUser(User user);
   Future<void> updateUserPictures(User user, String imageName);
   Future<bool> checkUsernameAvailability(String userName);
-  Future<void> registerUsername(User user);
+  Future<void> registerUsername(String username, String userId);
+  Future<void> deregisterUsername(String username);
 }
