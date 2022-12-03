@@ -28,7 +28,6 @@ class SettingsPage extends StatelessWidget {
     return Scaffold(
       bottomNavigationBar: MainBottomNavBar(),
       body: CustomScrollView(
-        physics: const NeverScrollableScrollPhysics(),
         slivers: [
           const MainTopAppBar(),
           SliverFillRemaining(
@@ -41,7 +40,6 @@ class SettingsPage extends StatelessWidget {
                     lightTheme: SettingsThemeData(
                         settingsListBackground:
                             Theme.of(context).scaffoldBackgroundColor),
-                    physics: const NeverScrollableScrollPhysics(),
                     sections: [
                       SettingsSection(title: const Text('Account'), tiles: [
                         SettingsTile.navigation(

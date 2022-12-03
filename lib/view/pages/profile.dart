@@ -93,12 +93,12 @@ class ProfilePage extends StatelessWidget {
                 ),
                 SliverFillRemaining(
                   child: FractionallySizedBox(
-                    heightFactor: 0.76,
+                    heightFactor: 0.9,
                     widthFactor: 0.9,
                     child: Card(
                       child: Padding(
                         padding: const EdgeInsets.symmetric(
-                            horizontal: 24.0, vertical: 24.0),
+                            horizontal: 24.0, vertical: 20.0),
                         child: Column(
                           children: [
                             Row(
