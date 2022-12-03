@@ -52,7 +52,7 @@ String? getTodaysHours(Place place) {
 Future<IconData?> pickIcon(BuildContext context) async {
   IconData? icon =
       await FlutterIconPicker.showIconPicker(context, iconPackModes: [
-    Platform.isIOS ? IconPack.material : IconPack.cupertino,
+    Platform.isIOS ? IconPack.cupertino : IconPack.material,
     IconPack.fontAwesomeIcons
   ]);
 
