@@ -1,11 +1,13 @@
 import 'dart:async';
 import 'dart:core';
+import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_iconpicker/flutter_iconpicker.dart';
 import 'package:intl/intl.dart';
 import 'package:leggo/model/place.dart';
+
 import 'package:url_launcher/url_launcher.dart';
 
 class Globals {
@@ -48,8 +50,11 @@ String? getTodaysHours(Place place) {
 }
 
 Future<IconData?> pickIcon(BuildContext context) async {
-  IconData? icon = await FlutterIconPicker.showIconPicker(context,
-      iconPackModes: [IconPack.fontAwesomeIcons, IconPack.material]);
+  IconData? icon =
+      await FlutterIconPicker.showIconPicker(context, iconPackModes: [
+    Platform.isIOS ? IconPack.material : IconPack.cupertino,
+    IconPack.fontAwesomeIcons
+  ]);
 
   return icon;
 }
