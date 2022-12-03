@@ -15,6 +15,7 @@ import 'package:leggo/bloc/autocomplete/bloc/autocomplete_bloc.dart';
 import 'package:leggo/bloc/bloc/auth/bloc/auth_bloc.dart';
 import 'package:leggo/bloc/bloc/invite/bloc/invite_bloc.dart';
 import 'package:leggo/bloc/bloc/invite_inbox/invite_inbox_bloc.dart';
+import 'package:leggo/bloc/bloc/purchases/purchases_bloc.dart';
 import 'package:leggo/bloc/onboarding/bloc/onboarding_bloc.dart';
 import 'package:leggo/bloc/place/edit_places_bloc.dart';
 import 'package:leggo/bloc/place/place_bloc.dart';
@@ -90,7 +91,7 @@ class _MyAppState extends State<MyApp> {
           create: (context) => AuthRepository(),
         ),
         RepositoryProvider(
-          create: (context) => PurchasesRepository(),
+          create: (context) => PurchasesRepository()..initPlatformState(),
         ),
         RepositoryProvider(
           create: (context) => UserRepository(),
@@ -127,6 +128,13 @@ class _MyAppState extends State<MyApp> {
             create: (context) => OnboardingBloc(
                 databaseRepository: context.read<DatabaseRepository>(),
                 storageRepository: context.read<StorageRepository>()),
+          ),
+          BlocProvider(
+            create: (context) => PurchasesBloc(
+                purchasesRepository: context.read<PurchasesRepository>(),
+                authBloc: context.read<AuthBloc>(),
+                databaseRepository: context.read<DatabaseRepository>())
+              ..add(LoadPurchases()),
           ),
           BlocProvider(
             create: (context) =>

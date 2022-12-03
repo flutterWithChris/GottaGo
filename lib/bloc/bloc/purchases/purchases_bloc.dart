@@ -22,12 +22,12 @@ class PurchasesBloc extends Bloc<PurchasesEvent, PurchasesState> {
   PurchasesBloc(
       {required PurchasesRepository purchasesRepository,
       required AuthBloc authBloc,
-      required DatabaseRepository databaseRepository,
-      this.selectedPackage})
+      required DatabaseRepository databaseRepository})
       : _authBloc = authBloc,
         _databaseRepository = databaseRepository,
         _purchasesRepository = purchasesRepository,
         super(PurchasesLoading()) {
+    print(state.toString());
     authStateStream = _authBloc.stream.listen((state) async {
       if (state.status == AuthStatus.authenticated) {
         add(LoadPurchases());
@@ -36,6 +36,7 @@ class PurchasesBloc extends Bloc<PurchasesEvent, PurchasesState> {
     on<PurchasesEvent>((event, emit) async {
       // TODO: implement event handler
       if (event is LoadPurchases) {
+        print('LOADING PURCHASES***');
         if (state is PurchasesLoading == false) {
           emit(PurchasesLoading());
         }
@@ -52,7 +53,7 @@ class PurchasesBloc extends Bloc<PurchasesEvent, PurchasesState> {
 
         products = await _purchasesRepository
             .getProducts(customerInfo.allPurchasedProductIdentifiers);
-
+        print('Products: ${products!.first.toString()}');
         emit(PurchasesLoaded(
             offerings: offerings,
             isSubscribed: isSubscribed,

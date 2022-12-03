@@ -10,6 +10,7 @@ class MainLogo extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    print(Theme.of(context).cardColor.hexCode);
     return Row(
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.center,

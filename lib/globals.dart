@@ -20,10 +20,11 @@ class Globals {
   }
 }
 
-
-extension StringExtension on String {
-  String capitalize() {
-    return "${this[0].toUpperCase()}${substring(1).toLowerCase()}";
+// extension StringExtension on String {
+//   String capitalize() {
+//     return "${this[0].toUpperCase()}${substring(1).toLowerCase()}";
+//   }
+// }
 
 String getTodaysDay() {
   DateTime date = DateTime.now();
@@ -68,7 +69,6 @@ Future<void> launchCall(Uri phoneNumber) async {
       content: Text('Error Starting a Call!'),
       backgroundColor: Colors.red,
     ));
-
   }
 }
 

@@ -15,17 +15,18 @@ class PurchasesRepository {
         return '${p0[0]} ';
       },
     ).replaceFirst(
-        message.characters.first, message.characters.first.capitalize());
+        message.characters.first, message.characters.first.capitalizeString());
   }
 
   Future<void> initPlatformState() async {
+    //  Purchases.setDebugLogsEnabled(true);
     PurchasesConfiguration? configuration;
     if (Platform.isAndroid) {
       configuration =
-          PurchasesConfiguration("goog_vNVZjWFgEqVtULzDAKrmLaSryIc");
+          PurchasesConfiguration("goog_ylevcbUeKltCKsQKIWlSWEPJFeM");
     } else if (Platform.isIOS) {
       configuration =
-          PurchasesConfiguration("appl_lhPFnQjvipbdcvvGNKqqNlfiFle");
+          PurchasesConfiguration("appl_nzfvnjWRhwMUrRTDowJsXuVJYeY");
     }
     try {
       await Purchases.configure(configuration!);

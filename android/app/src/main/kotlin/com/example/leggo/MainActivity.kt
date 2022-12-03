@@ -1,4 +1,4 @@
-package com.example.leggo
+package com.gottago.app
 
 import io.flutter.embedding.android.FlutterActivity
 
