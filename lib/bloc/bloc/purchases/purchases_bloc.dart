@@ -42,10 +42,10 @@ class PurchasesBloc extends Bloc<PurchasesEvent, PurchasesState> {
         // * Check Revenue Cat for Subscription Status
         CustomerInfo? customerInfo =
             await _purchasesRepository.getCustomerInfo();
-        // TODO: Uncomment Force Subscription true
+
         bool? isSubscribed =
             await _purchasesRepository.getSubscriptionStatus(customerInfo!);
-        //  isSubscribed = true;
+
         // * Fetch offerings & products
         Offerings? offerings = await _purchasesRepository.getOfferings();
         List<StoreProduct>? products;
