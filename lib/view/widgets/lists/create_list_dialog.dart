@@ -33,7 +33,7 @@ class _CreateListDialogState extends State<CreateListDialog> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const Icon(Icons.add_location_alt_outlined),
+                  const Icon(Icons.post_add_outlined),
                   const SizedBox(
                     width: 8.0,
                   ),
@@ -100,7 +100,6 @@ class _CreateListDialogState extends State<CreateListDialog> {
                       // backgroundColor: FlexColor.espressoDarkTertiary,
                       ),
                   onPressed: () {
-                    print('PlaceList Added: ${listNameController.value.text}');
                     context.read<SavedListsBloc>().add(AddList(
                             placeList: PlaceList(
                           placeCount: 0,
@@ -112,7 +111,7 @@ class _CreateListDialogState extends State<CreateListDialog> {
                         )));
                     Navigator.pop(context);
                   },
-                  icon: const Icon(Icons.add_location_alt_outlined),
+                  icon: const Icon(Icons.post_add_outlined),
                   label: const Text('Create List')),
             )
           ],

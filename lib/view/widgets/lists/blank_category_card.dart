@@ -1,4 +1,3 @@
-import 'package:flex_color_scheme/flex_color_scheme.dart';
 import 'package:flutter/material.dart';
 import 'package:leggo/view/widgets/lists/create_list_dialog.dart';
 
@@ -38,57 +37,32 @@ class BlankCategoryCard extends StatelessWidget {
                   minLeadingWidth: 20,
 
                   //tileColor: categoryColor,
-                  title: Wrap(
-                    crossAxisAlignment: WrapCrossAlignment.center,
-                    spacing: 10.0,
-                    children: [
-                      const Icon(
-                        Icons.post_add_rounded,
-                        size: 24,
+                  title: Center(
+                    child: Padding(
+                      padding: const EdgeInsets.only(right: 8.0),
+                      child: Wrap(
+                        crossAxisAlignment: WrapCrossAlignment.center,
+                        spacing: 10.0,
+                        children: [
+                          const Icon(
+                            Icons.post_add_rounded,
+                            size: 24,
+                          ),
+                          Text(
+                            'Create a List',
+                            style: Theme.of(context)
+                                .textTheme
+                                .titleMedium!
+                                .copyWith(fontWeight: FontWeight.bold),
+                          ),
+                        ],
                       ),
-                      Text(
-                        'Create a List',
-                        style: Theme.of(context)
-                            .textTheme
-                            .titleMedium!
-                            .copyWith(fontWeight: FontWeight.bold),
-                      ),
-                    ],
+                    ),
                   ),
                   // subtitle: const Padding(
                   //   padding: EdgeInsets.only(left: 24.0),
                   //   child: Text('0 Saved Places'),
                   // ),
-                  leading: Padding(
-                    padding: const EdgeInsets.only(left: 16.0, top: 8.0),
-                    child: SizedBox(
-                      child: Stack(clipBehavior: Clip.none, children: [
-                        Positioned(
-                          right: 20,
-                          bottom: 10,
-                          child: ClipRRect(
-                            borderRadius: BorderRadius.circular(10.0),
-                            child: SizedBox(
-                              height: 50,
-                              width: 50,
-                              child: Container(
-                                  color: FlexColor
-                                      .materialDarkTertiaryContainerHc),
-                            ),
-                          ),
-                        ),
-                        ClipRRect(
-                          borderRadius: BorderRadius.circular(10.0),
-                          child: SizedBox(
-                            height: 50,
-                            width: 50,
-                            child: Container(
-                                color: FlexColor.materialDarkSecondaryHc),
-                          ),
-                        ),
-                      ]),
-                    ),
-                  ),
                 ),
               ),
             ),

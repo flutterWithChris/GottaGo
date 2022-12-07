@@ -33,8 +33,7 @@ class UserRepository extends BaseUserRepository {
           .doc(userId)
           .snapshots()
           .map((event) => User.fromSnapshot(event));
-    } on FirebaseException catch (e) {
-      print(e.message);
+    } on FirebaseException {
       return null;
     }
   }
