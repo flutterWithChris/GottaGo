@@ -10,7 +10,7 @@ class MainTopAppBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SliverAppBar.medium(
-      automaticallyImplyLeading: false,
+      //automaticallyImplyLeading: false,
       // leadingWidth: 0,
       centerTitle: true,
       // titleSpacing: 16.0,

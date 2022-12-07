@@ -79,6 +79,7 @@ dependencies:
   flutter_iconpicker: ^3.2.2
   blobs: ^2.0.0
   settings_ui: ^2.0.2
+  showcaseview: ^2.0.0+1
 
 
 dev_dependencies:

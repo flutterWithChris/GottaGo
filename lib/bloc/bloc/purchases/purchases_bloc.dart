@@ -27,7 +27,6 @@ class PurchasesBloc extends Bloc<PurchasesEvent, PurchasesState> {
         _databaseRepository = databaseRepository,
         _purchasesRepository = purchasesRepository,
         super(PurchasesLoading()) {
-    print(state.toString());
     authStateStream = _authBloc.stream.listen((state) async {
       if (state.status == AuthStatus.authenticated) {
         add(LoadPurchases());
@@ -36,7 +35,6 @@ class PurchasesBloc extends Bloc<PurchasesEvent, PurchasesState> {
     on<PurchasesEvent>((event, emit) async {
       // TODO: implement event handler
       if (event is LoadPurchases) {
-        print('LOADING PURCHASES***');
         if (state is PurchasesLoading == false) {
           emit(PurchasesLoading());
         }
@@ -44,6 +42,7 @@ class PurchasesBloc extends Bloc<PurchasesEvent, PurchasesState> {
         // * Check Revenue Cat for Subscription Status
         CustomerInfo? customerInfo =
             await _purchasesRepository.getCustomerInfo();
+
         bool? isSubscribed =
             await _purchasesRepository.getSubscriptionStatus(customerInfo!);
 
@@ -53,7 +52,6 @@ class PurchasesBloc extends Bloc<PurchasesEvent, PurchasesState> {
 
         products = await _purchasesRepository
             .getProducts(customerInfo.allPurchasedProductIdentifiers);
-        print('Products: ${products!.first.toString()}');
         emit(PurchasesLoaded(
             offerings: offerings,
             isSubscribed: isSubscribed,
@@ -62,10 +60,14 @@ class PurchasesBloc extends Bloc<PurchasesEvent, PurchasesState> {
       }
       if (event is AddPurchase) {
         emit(PurchasesLoading());
-        await _purchasesRepository.makePurchase(event.package);
-        emit(PurchasesUpdated());
 
-        add(LoadPurchases());
+        CustomerInfo? customerInfo =
+            await _purchasesRepository.makePurchase(event.package);
+        customerInfo is CustomerInfo
+            ? emit(PurchasesUpdated())
+            : emit(PurchasesFailed());
+        await Future.delayed(
+            const Duration(seconds: 2), () => add(LoadPurchases()));
       }
       if (event is EditPurchase) {}
       if (event is RemovePurchase) {}

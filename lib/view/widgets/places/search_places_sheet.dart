@@ -138,6 +138,7 @@ class _SearchPlacesSheetState extends State<SearchPlacesSheet> {
                                                         },
                                                         icon: const Icon(
                                                             Icons.web_rounded,
+                                                            color: Colors.white,
                                                             size: 16),
                                                       ),
                                                     )
@@ -155,6 +156,7 @@ class _SearchPlacesSheetState extends State<SearchPlacesSheet> {
                                                         },
                                                         icon: const Icon(
                                                             Icons.phone,
+                                                            color: Colors.white,
                                                             size: 16),
                                                       ),
                                                     )
@@ -181,10 +183,16 @@ class _SearchPlacesSheetState extends State<SearchPlacesSheet> {
                                                     children: [
                                                       const Icon(
                                                         Icons.place_rounded,
+                                                        color: Colors.white,
                                                         size: 16,
                                                       ),
-                                                      Text(state.googlePlace
-                                                          .formattedAddress!),
+                                                      Text(
+                                                        state.googlePlace
+                                                            .formattedAddress!,
+                                                        style: const TextStyle(
+                                                            color:
+                                                                Colors.white),
+                                                      ),
                                                     ],
                                                   ),
                                                 ),

@@ -13,9 +13,7 @@ class EditPlacesBloc extends Bloc<EditPlacesEvent, EditPlacesState> {
   EditPlacesBloc({required PlaceListRepository placeListRepository})
       : _placeListRepository = placeListRepository,
         super(EditPlacesInitial()) {
-    on<EditPlacesEvent>((event, emit) {
-      print('Bloc Placelist Length: ${selectedPlaces.length}');
-    });
+    on<EditPlacesEvent>((event, emit) {});
     on<StartEditing>((event, emit) {
       selectedPlaces.clear();
       emit(EditPlacesStarted());
@@ -101,13 +99,11 @@ class EditPlacesBloc extends Bloc<EditPlacesEvent, EditPlacesState> {
       emit(EditPlacesInitial());
     });
     on<SelectPlace>((event, emit) {
-      print('Place Selected (BLOC)');
       selectedPlaces.add(event.place);
       emit(PlaceAdded(place: event.place));
       emit(EditPlacesStarted());
     });
     on<UnselectPlace>((event, emit) {
-      print('Place Unselected (BLOC)');
       selectedPlaces.remove(event.place);
       emit(PlaceRemoved(place: event.place));
       emit(EditPlacesStarted());

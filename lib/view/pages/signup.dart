@@ -9,8 +9,8 @@ import 'package:flutter_animate/effects/effects.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:go_router/go_router.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:leggo/bloc/bloc/purchases/purchases_bloc.dart';
 import 'package:leggo/bloc/onboarding/bloc/onboarding_bloc.dart';
 import 'package:leggo/cubit/cubit/signup/sign_up_cubit.dart';
 import 'package:leggo/globals.dart';
@@ -18,6 +18,7 @@ import 'package:leggo/model/user.dart';
 import 'package:leggo/repository/database/database_repository.dart';
 import 'package:leggo/view/widgets/main_logo.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
+import 'package:purchases_flutter/models/package_wrapper.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
@@ -88,7 +89,11 @@ class _IntroPaywallState extends State<IntroPaywall> {
             EdgeInsets.only(left: 24.0, right: 24.0, bottom: 12.0, top: 8.0),
         child: Text.rich(
           TextSpan(style: TextStyle(height: 1.618), children: [
-            TextSpan(text: 'Get a 7-day free trial of all premium features.'),
+            TextSpan(text: 'Get a '),
+            TextSpan(
+                text: '7-day free trial ',
+                style: TextStyle(fontWeight: FontWeight.bold)),
+            TextSpan(text: 'of all premium features.\nThen \$4.99/mo.')
           ]),
           textAlign: TextAlign.center,
         ),
@@ -99,7 +104,7 @@ class _IntroPaywallState extends State<IntroPaywall> {
           elevation: 1.25,
           child: Padding(
             padding:
-                const EdgeInsets.symmetric(vertical: 12.0, horizontal: 24.0),
+                const EdgeInsets.symmetric(vertical: 16.0, horizontal: 24.0),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -147,31 +152,31 @@ class _IntroPaywallState extends State<IntroPaywall> {
                   iconSize: 20,
                   wrapSpacing: 12.0,
                 ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Wrap(
-                      spacing: 8.0,
-                      crossAxisAlignment: WrapCrossAlignment.center,
-                      children: [
-                        const Text(
-                          'Monthly (\$4.99)',
-                          style: TextStyle(fontWeight: FontWeight.bold),
-                        ),
-                        Switch.adaptive(
-                          value: yearlySelected,
-                          onChanged: (value) => setState(() {
-                            yearlySelected = value;
-                          }),
-                        ),
-                        const Text(
-                          'Yearly (\$29.99)',
-                          style: TextStyle(fontWeight: FontWeight.bold),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
+                // Row(
+                //   mainAxisAlignment: MainAxisAlignment.center,
+                //   children: [
+                //     Wrap(
+                //       spacing: 8.0,
+                //       crossAxisAlignment: WrapCrossAlignment.center,
+                //       children: [
+                //         const Text(
+                //           'Monthly (\$4.99)',
+                //           style: TextStyle(fontWeight: FontWeight.bold),
+                //         ),
+                //         Switch.adaptive(
+                //           value: yearlySelected,
+                //           onChanged: (value) => setState(() {
+                //             yearlySelected = value;
+                //           }),
+                //         ),
+                //         const Text(
+                //           'Yearly (\$29.99)',
+                //           style: TextStyle(fontWeight: FontWeight.bold),
+                //         ),
+                //       ],
+                //     ),
+                //   ],
+                // ),
               ],
             ),
           ),
@@ -181,27 +186,70 @@ class _IntroPaywallState extends State<IntroPaywall> {
         padding: const EdgeInsets.all(8.0),
         child: Column(
           children: [
-            ElevatedButton.icon(
-                style: ElevatedButton.styleFrom(fixedSize: const Size(200, 30)),
-                onPressed: () async {
+            BlocConsumer<PurchasesBloc, PurchasesState>(
+              listener: (context, state) async {
+                if (state is PurchasesUpdated) {
                   // * Set Onboarding Complete Pref
                   SharedPreferences prefs =
                       await SharedPreferences.getInstance();
                   prefs.setInt('initScreen', 1);
                   if (!mounted) return;
                   context.go('/');
-                },
-                icon: Container(
-                  decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(50)),
-                  child: Icon(
-                    Icons.check_circle_rounded,
-                    size: 16,
-                    color: Colors.blue.shade300,
-                  ),
-                ),
-                label: const Text('Count Me In!')),
+                }
+                if (state is PurchasesFailed) {}
+              },
+              builder: (context, state) {
+                if (state is PurchasesLoading) {
+                  return ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                          fixedSize: const Size(200, 30)),
+                      onPressed: () async {},
+                      child: LoadingAnimationWidget.staggeredDotsWave(
+                          color: FlexColor.bahamaBlueDarkSecondary,
+                          size: 20.0));
+                }
+                if (state is PurchasesLoaded) {
+                  return ElevatedButton.icon(
+                      style: ElevatedButton.styleFrom(
+                          fixedSize: const Size(200, 30)),
+                      onPressed: () async {
+                        Package? monthlyPackage = state.offerings!
+                            .getOffering('premium_individual_monthly')!
+                            .getPackage('\$rc_monthly');
+                        context
+                            .read<PurchasesBloc>()
+                            .add(AddPurchase(package: monthlyPackage!));
+                      },
+                      icon: Container(
+                        decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(50)),
+                        child: Icon(
+                          Icons.check_circle_rounded,
+                          size: 16,
+                          color: Colors.blue.shade300,
+                        ),
+                      ),
+                      label: const Text('Count Me In!'));
+                } else {
+                  return ElevatedButton.icon(
+                      style: ElevatedButton.styleFrom(
+                          fixedSize: const Size(200, 30)),
+                      onPressed: () async {},
+                      icon: Container(
+                        decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(50)),
+                        child: const Icon(
+                          Icons.error,
+                          size: 16,
+                          color: Colors.red,
+                        ),
+                      ),
+                      label: const Text('Error!'));
+                }
+              },
+            ),
             TextButton(
                 onPressed: () async {
                   // * Set Onboarding Complete Pref

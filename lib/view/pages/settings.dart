@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:go_router/go_router.dart';
 import 'package:leggo/bloc/profile_bloc.dart';
 import 'package:leggo/bloc/settings/settings_bloc.dart';
 import 'package:leggo/cubit/cubit/login/login_cubit.dart';
@@ -34,6 +35,9 @@ class SettingsPage extends StatelessWidget {
             child: BlocBuilder<SettingsBloc, SettingsState>(
               builder: (context, state) {
                 return SettingsList(
+                    physics: Platform.isIOS
+                        ? const NeverScrollableScrollPhysics()
+                        : const BouncingScrollPhysics(),
                     darkTheme: SettingsThemeData(
                         settingsListBackground:
                             Theme.of(context).scaffoldBackgroundColor),
@@ -110,6 +114,8 @@ class SettingsPage extends StatelessWidget {
                           title: const Text('Subscription'),
                           tiles: [
                             SettingsTile.navigation(
+                                onPressed: (context) =>
+                                    context.push('/my-subscription'),
                                 leading: const Icon(Icons.receipt_rounded),
                                 title: const Text('My Subscription'))
                           ]),

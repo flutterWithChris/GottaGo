@@ -1,12 +1,12 @@
 import 'dart:async';
 import 'dart:core';
-import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_iconpicker/flutter_iconpicker.dart';
 import 'package:intl/intl.dart';
 import 'package:leggo/model/place.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:url_launcher/url_launcher.dart';
 
@@ -50,13 +50,16 @@ String? getTodaysHours(Place place) {
 }
 
 Future<IconData?> pickIcon(BuildContext context) async {
-  IconData? icon =
-      await FlutterIconPicker.showIconPicker(context, iconPackModes: [
-    Platform.isIOS ? IconPack.cupertino : IconPack.material,
-    IconPack.fontAwesomeIcons
-  ]);
-
+  IconData? icon = await FlutterIconPicker.showIconPicker(context,
+      iconPackModes: [IconPack.material, IconPack.fontAwesomeIcons]);
+  var serialized = serializeIcon(icon!);
   return icon;
+}
+
+Future<bool?> getShowcaseStatus(String showcaseKey) async {
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+  bool? showcaseComplete = prefs.getBool(showcaseKey);
+  return showcaseComplete;
 }
 
 Future<void> launchWebView(Uri url) async {
