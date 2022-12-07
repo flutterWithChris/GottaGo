@@ -29,8 +29,7 @@ class _PremiumOfferState extends State<PremiumOffer> {
             return LoadingAnimationWidget.staggeredDotsWave(
                 color: FlexColor.bahamaBlueDarkSecondary, size: 30.0);
           }
-          if (state is PurchasesLoaded &&
-              state.customerInfo!.allPurchaseDates.isEmpty) {
+          if (state is PurchasesLoaded) {
             Offerings? offerings = state.offerings;
             Offering? monthlyOffer =
                 state.offerings?.getOffering('premium_individual_monthly');
