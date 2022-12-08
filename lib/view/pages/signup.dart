@@ -538,11 +538,13 @@ class _ProfileInfoState extends State<ProfileInfo> {
                             state.user?.userName != '' &&
                             state.user?.userName != null) {
                           await Future.delayed(
-                            const Duration(milliseconds: 800),
-                            () async => await widget.pageController.nextPage(
-                                duration: const Duration(milliseconds: 400),
-                                curve: Curves.easeOutSine),
-                          );
+                              const Duration(milliseconds: 800), () async {
+                            if (widget.pageController.hasClients) {
+                              await widget.pageController.nextPage(
+                                  duration: const Duration(milliseconds: 400),
+                                  curve: Curves.easeOutSine);
+                            }
+                          });
                         }
                       },
                       builder: (context, state) {
@@ -597,11 +599,13 @@ class _WelcomePageState extends State<WelcomePage> {
     return BlocConsumer<SignUpCubit, SignUpState>(
       listener: (context, state) async {
         if (state.status == SignupStatus.success) {
-          await Future.delayed(
-              const Duration(milliseconds: 800),
-              () => widget.pageController.nextPage(
+          await Future.delayed(const Duration(milliseconds: 800), () {
+            if (widget.pageController.hasClients) {
+              return widget.pageController.nextPage(
                   duration: const Duration(milliseconds: 400),
-                  curve: Curves.easeOutSine));
+                  curve: Curves.easeOutSine);
+            }
+          });
         }
       },
       builder: (context, state) {
