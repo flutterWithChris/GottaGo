@@ -16,3 +16,6 @@ Save places you want to visit, share them with friends, & let fate choose your p
 - Firebase backend 🔥
 - GoRouter Routing ➡️
 - BLoC State Management 💾
+
+## Contact Info
+Email: gottago.support@gmail.com
