@@ -121,7 +121,6 @@ class _RandomWheelPageState extends State<RandomWheelPage> {
                               );
                             },
                           );
-                          confettiController.play();
                         },
                         animateFirst: false,
                         items: [

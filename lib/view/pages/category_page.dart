@@ -883,7 +883,12 @@ class _CategoryPageAppBarState extends State<CategoryPageAppBar> {
                       begin: Offset(0.5, 0.0),
                       end: Offset(0.0, 0.0)),
                 ],
-                child: BlocBuilder<SavedPlacesBloc, SavedPlacesState>(
+                child: BlocConsumer<SavedPlacesBloc, SavedPlacesState>(
+                  listener: (context, state) {
+                    if (state is PurchasesUpdated) {
+                      Navigator.pop(context);
+                    }
+                  },
                   builder: (context, state) {
                     if (state is SavedPlacesLoading) {
                       return LoadingAnimationWidget.beat(

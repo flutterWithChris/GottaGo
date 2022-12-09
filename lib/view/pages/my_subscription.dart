@@ -7,8 +7,8 @@ import 'package:leggo/bloc/bloc/purchases/purchases_bloc.dart';
 import 'package:leggo/globals.dart';
 import 'package:leggo/view/widgets/main_bottom_navbar.dart';
 import 'package:leggo/view/widgets/main_top_app_bar.dart';
+import 'package:leggo/view/widgets/premium_offer.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
-import 'package:purchases_flutter/models/package_wrapper.dart';
 import 'package:purchases_flutter/models/store_product_wrapper.dart';
 
 class MySubscription extends StatelessWidget {
@@ -22,7 +22,12 @@ class MySubscription extends StatelessWidget {
         physics: const NeverScrollableScrollPhysics(),
         slivers: [
           const MainTopAppBar(),
-          BlocBuilder<PurchasesBloc, PurchasesState>(
+          BlocConsumer<PurchasesBloc, PurchasesState>(
+            listener: (context, state) {
+              if (state is PurchasesUpdated) {
+                Navigator.pop(context);
+              }
+            },
             builder: (context, state) {
               if (state is PurchasesLoading || state is PurchasesUpdated) {
                 return SliverFillRemaining(
@@ -182,12 +187,11 @@ class MySubscription extends StatelessWidget {
                                     const Text('No Active Subscription!'),
                                     ElevatedButton(
                                         onPressed: () {
-                                          Package? package = state.offerings!
-                                              .getOffering(
-                                                  'premium_individual_monthly')!
-                                              .getPackage('\$rc_monthly');
-                                          context.read<PurchasesBloc>().add(
-                                              AddPurchase(package: package!));
+                                          showModalBottomSheet(
+                                              context: context,
+                                              isScrollControlled: true,
+                                              builder: (context) =>
+                                                  const PremiumOffer());
                                         },
                                         child: const Text('Subscribe Now'))
                                   ],

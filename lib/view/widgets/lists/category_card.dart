@@ -176,7 +176,13 @@ class _CategoryCardState extends State<CategoryCard> {
                                 ],
                               ),
                             ),
-                            leading: BlocBuilder<PurchasesBloc, PurchasesState>(
+                            leading:
+                                BlocConsumer<PurchasesBloc, PurchasesState>(
+                              listener: (context, state) {
+                                if (state is PurchasesUpdated) {
+                                  Navigator.pop(context);
+                                }
+                              },
                               builder: (context, state) {
                                 if (state is PurchasesLoading) {
                                   return LoadingAnimationWidget
