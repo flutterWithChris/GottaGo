@@ -27,52 +27,56 @@ class LoginPage extends StatelessWidget {
                 children: [
                   const MainLogo(),
                   Platform.isIOS
-                      ? ElevatedButton.icon(
-                          style: ElevatedButton.styleFrom(
-                              fixedSize: const Size(180, 30)),
-                          onPressed: () async {
-                            await context.read<LoginCubit>().logInWithApple();
-                          },
-                          icon: SizedBox(
-                            height: 18,
-                            width: 24,
-                            //  width: 24,
-                            child: CachedNetworkImage(
-                              imageUrl:
-                                  'https://www.freepnglogos.com/uploads/apple-logo-png/apple-logo-png-dallas-shootings-don-add-are-speech-zones-used-4.png',
-                              color: Theme.of(context).brightness ==
-                                      Brightness.light
-                                  ? Colors.black
-                                  : Colors.white,
-                            ),
-                          ),
-                          label: const Text('Login with Apple'))
-                      : const SizedBox(),
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Wrap(
-                      direction: Axis.vertical,
-                      spacing: 4.0,
-                      children: [
-                        ElevatedButton.icon(
-                            style: ElevatedButton.styleFrom(
-                                fixedSize: const Size(180, 30)),
-                            onPressed: () async {
-                              await context
-                                  .read<LoginCubit>()
-                                  .logInWithGoogle();
-                            },
-                            icon: SizedBox(
-                              height: 16,
-                              width: 24,
-                              child: CachedNetworkImage(
+                      ? Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: ElevatedButton.icon(
+                              style: ElevatedButton.styleFrom(
+                                  fixedSize: const Size(200, 30)),
+                              onPressed: () async {
+                                await context
+                                    .read<LoginCubit>()
+                                    .logInWithApple();
+                              },
+                              icon: SizedBox(
+                                height: 18,
+                                width: 24,
+                                //  width: 24,
+                                child: CachedNetworkImage(
                                   imageUrl:
-                                      'https://upload.wikimedia.org/wikipedia/commons/thumb/5/53/Google_%22G%22_Logo.svg/1200px-Google_%22G%22_Logo.svg.png'),
-                            ),
-                            label: const Text('Login with Google')),
-                      ],
-                    ),
-                  ),
+                                      'https://www.freepnglogos.com/uploads/apple-logo-png/apple-logo-png-dallas-shootings-don-add-are-speech-zones-used-4.png',
+                                  color: Theme.of(context).brightness ==
+                                          Brightness.light
+                                      ? Colors.black
+                                      : Colors.white,
+                                ),
+                              ),
+                              label: const Text('Sign in with Apple')),
+                        )
+                      : Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Wrap(
+                            direction: Axis.vertical,
+                            spacing: 4.0,
+                            children: [
+                              ElevatedButton.icon(
+                                  style: ElevatedButton.styleFrom(
+                                      fixedSize: const Size(200, 30)),
+                                  onPressed: () async {
+                                    await context
+                                        .read<LoginCubit>()
+                                        .logInWithGoogle();
+                                  },
+                                  icon: SizedBox(
+                                    height: 16,
+                                    width: 24,
+                                    child: CachedNetworkImage(
+                                        imageUrl:
+                                            'https://upload.wikimedia.org/wikipedia/commons/thumb/5/53/Google_%22G%22_Logo.svg/1200px-Google_%22G%22_Logo.svg.png'),
+                                  ),
+                                  label: const Text('Sign in with Google')),
+                            ],
+                          ),
+                        ),
                   BlocBuilder<LoginCubit, LoginState>(
                     buildWhen: (previous, current) =>
                         previous.email != current.email,

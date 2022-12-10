@@ -687,49 +687,48 @@ class _WelcomePageState extends State<WelcomePage> {
                                   ),
                                 ),
                                 label: const Text('Sign Up With Apple'))
-                            : const SizedBox(),
-                        ElevatedButton.icon(
-                            style: ElevatedButton.styleFrom(
-                                fixedSize: const Size(240, 30)),
-                            onPressed: () async {
-                              await context
-                                  .read<SignUpCubit>()
-                                  .signUpWithGoogle();
-                              if (!mounted) return;
-                              User user = User(
-                                  id: context
+                            : ElevatedButton.icon(
+                                style: ElevatedButton.styleFrom(
+                                    fixedSize: const Size(240, 30)),
+                                onPressed: () async {
+                                  await context
                                       .read<SignUpCubit>()
-                                      .state
-                                      .user!
-                                      .uid,
-                                  userName: '',
-                                  name: context
+                                      .signUpWithGoogle();
+                                  if (!mounted) return;
+                                  User user = User(
+                                      id: context
                                           .read<SignUpCubit>()
                                           .state
-                                          .user
-                                          ?.displayName ??
-                                      '',
-                                  email: context
-                                          .read<SignUpCubit>()
-                                          .state
-                                          .user
-                                          ?.email ??
-                                      '',
-                                  profilePicture: '',
-                                  placeListIds: []);
+                                          .user!
+                                          .uid,
+                                      userName: '',
+                                      name: context
+                                              .read<SignUpCubit>()
+                                              .state
+                                              .user
+                                              ?.displayName ??
+                                          '',
+                                      email: context
+                                              .read<SignUpCubit>()
+                                              .state
+                                              .user
+                                              ?.email ??
+                                          '',
+                                      profilePicture: '',
+                                      placeListIds: []);
 
-                              context
-                                  .read<OnboardingBloc>()
-                                  .add(StartOnboarding(user: user));
-                            },
-                            icon: SizedBox(
-                              height: 16,
-                              width: 24,
-                              child: CachedNetworkImage(
-                                  imageUrl:
-                                      'https://upload.wikimedia.org/wikipedia/commons/thumb/5/53/Google_%22G%22_Logo.svg/1200px-Google_%22G%22_Logo.svg.png'),
-                            ),
-                            label: const Text('Sign Up With Google')),
+                                  context
+                                      .read<OnboardingBloc>()
+                                      .add(StartOnboarding(user: user));
+                                },
+                                icon: SizedBox(
+                                  height: 16,
+                                  width: 24,
+                                  child: CachedNetworkImage(
+                                      imageUrl:
+                                          'https://upload.wikimedia.org/wikipedia/commons/thumb/5/53/Google_%22G%22_Logo.svg/1200px-Google_%22G%22_Logo.svg.png'),
+                                ),
+                                label: const Text('Sign Up With Google')),
                         TextButton(
                             onPressed: () async {
                               SharedPreferences prefs =
