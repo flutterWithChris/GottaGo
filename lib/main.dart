@@ -61,8 +61,8 @@ import 'package:showcaseview/showcaseview.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   // * Force onboarding pref
-  // SharedPreferences prefs = await SharedPreferences.getInstance();
-  // prefs.setInt('initScreen', 0);
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+  prefs.setInt('initScreen', 0);
 
   await Future.wait([
     dotenv.load(fileName: '.env'),
@@ -204,6 +204,7 @@ class _MyAppState extends State<MyApp> {
                 surfaceMode: FlexSurfaceMode.levelSurfacesLowScaffold,
                 blendLevel: 9,
                 subThemesData: const FlexSubThemesData(
+                  bottomSheetModalElevation: 0,
                   cardElevation: 0.6,
                   defaultRadius: 24,
                   blendOnLevel: 10,
@@ -220,6 +221,7 @@ class _MyAppState extends State<MyApp> {
                 surfaceMode: FlexSurfaceMode.levelSurfacesLowScaffold,
                 blendLevel: 15,
                 subThemesData: const FlexSubThemesData(
+                  bottomSheetModalElevation: 0,
                   cardElevation: 0.6,
                   defaultRadius: 24,
                   blendOnLevel: 20,

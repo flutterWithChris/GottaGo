@@ -79,7 +79,7 @@ class _IntroPaywallState extends State<IntroPaywall> {
   @override
   Widget build(BuildContext context) {
     FocusManager.instance.primaryFocus?.unfocus();
-    return Column(mainAxisAlignment: MainAxisAlignment.center, children: [
+    return Column(mainAxisAlignment: MainAxisAlignment.end, children: [
       Text(
         'Try Premium For Free!',
         style: Theme.of(context).textTheme.headlineLarge,
@@ -93,7 +93,7 @@ class _IntroPaywallState extends State<IntroPaywall> {
             TextSpan(
                 text: '7-day free trial ',
                 style: TextStyle(fontWeight: FontWeight.bold)),
-            TextSpan(text: 'of all premium features.\nThen \$4.99/mo.')
+            TextSpan(text: 'of all premium features.')
           ]),
           textAlign: TextAlign.center,
         ),
@@ -202,16 +202,16 @@ class _IntroPaywallState extends State<IntroPaywall> {
                 if (state is PurchasesLoading) {
                   return ElevatedButton(
                       style: ElevatedButton.styleFrom(
-                          fixedSize: const Size(200, 30)),
+                          fixedSize: const Size(300, 30)),
                       onPressed: () async {},
                       child: LoadingAnimationWidget.staggeredDotsWave(
                           color: FlexColor.bahamaBlueDarkSecondary,
                           size: 20.0));
                 }
                 if (state is PurchasesLoaded) {
-                  return ElevatedButton.icon(
+                  return ElevatedButton(
                       style: ElevatedButton.styleFrom(
-                          fixedSize: const Size(200, 30)),
+                          fixedSize: const Size(300, 30)),
                       onPressed: () async {
                         Package? monthlyPackage = state.offerings!
                             .getOffering('premium_individual_monthly')!
@@ -220,21 +220,11 @@ class _IntroPaywallState extends State<IntroPaywall> {
                             .read<PurchasesBloc>()
                             .add(AddPurchase(package: monthlyPackage!));
                       },
-                      icon: Container(
-                        decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(50)),
-                        child: Icon(
-                          Icons.check_circle_rounded,
-                          size: 16,
-                          color: Colors.blue.shade300,
-                        ),
-                      ),
-                      label: const Text('Count Me In!'));
+                      child: const Text('Subscribe & Start Trial'));
                 } else {
                   return ElevatedButton.icon(
                       style: ElevatedButton.styleFrom(
-                          fixedSize: const Size(200, 30)),
+                          fixedSize: const Size(300, 30)),
                       onPressed: () async {},
                       icon: Container(
                         decoration: BoxDecoration(
@@ -250,6 +240,18 @@ class _IntroPaywallState extends State<IntroPaywall> {
                 }
               },
             ),
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 4.0),
+              child: Text.rich(
+                const TextSpan(children: [
+                  TextSpan(text: 'After the free trial, you\'ll pay'),
+                  TextSpan(
+                      text: ' \$4.99/mo',
+                      style: TextStyle(fontWeight: FontWeight.bold)),
+                ]),
+                style: TextStyle(color: Colors.grey.shade600),
+              ),
+            ),
             TextButton(
                 onPressed: () async {
                   // * Set Onboarding Complete Pref
@@ -259,7 +261,21 @@ class _IntroPaywallState extends State<IntroPaywall> {
                   if (!mounted) return;
                   context.go('/');
                 },
-                child: const Text('I don\'t like free stuff.')),
+                child: const Text('No thanks.')),
+            Padding(
+                padding:
+                    const EdgeInsets.symmetric(vertical: 12.0, horizontal: 8.0),
+                child: Platform.isIOS
+                    ? Text(
+                        'Payment will be charged to your Apple ID account after 7 days. Subscription automatically renews unless it is canceled at least 24 hours before the end of the current period. Your account will be charged for renewal within 24 hours prior to the end of the current period.\n\nYou can manage and cancel your subscriptions by going to your account settings on the App Store after purchase. Any unused portion of a free trial period, if offered, will be forfeited when the user purchases a subscription to that publication, where applicable',
+                        textAlign: TextAlign.center,
+                        style: Theme.of(context).textTheme.bodySmall,
+                      )
+                    : Text(
+                        'Payment will be charged to your Google Play account after 7 days. Subscription automatically renews unless it is canceled at least 24 hours before the end of the current period. Your account will be charged for renewal within 24 hours prior to the end of the current period.\n\nYou can manage and cancel your subscriptions by going to your account settings in the Google Play Store after purchase. Any unused portion of a free trial period, if offered, will be forfeited when the user purchases a subscription to that publication, where applicable',
+                        textAlign: TextAlign.center,
+                        style: Theme.of(context).textTheme.bodySmall,
+                      )),
           ],
         ),
       ),

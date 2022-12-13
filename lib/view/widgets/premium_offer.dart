@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flex_color_scheme/flex_color_scheme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -21,7 +23,7 @@ class _PremiumOfferState extends State<PremiumOffer> {
   Widget build(BuildContext context) {
     return DraggableScrollableSheet(
       expand: false,
-      initialChildSize: 0.55,
+      initialChildSize: 0.82,
       builder: (context, controller) =>
           BlocBuilder<PurchasesBloc, PurchasesState>(
         builder: (context, state) {
@@ -50,8 +52,7 @@ class _PremiumOfferState extends State<PremiumOffer> {
                         TextSpan(
                             text: '7-day free trial ',
                             style: TextStyle(fontWeight: FontWeight.bold)),
-                        TextSpan(
-                            text: 'of all premium features.\nThen \$4.99/mo.')
+                        TextSpan(text: 'of all premium features.')
                       ]),
                       textAlign: TextAlign.center,
                     ),
@@ -149,9 +150,9 @@ class _PremiumOfferState extends State<PremiumOffer> {
                     padding: const EdgeInsets.all(8.0),
                     child: Column(
                       children: [
-                        ElevatedButton.icon(
+                        ElevatedButton(
                             style: ElevatedButton.styleFrom(
-                                fixedSize: const Size(200, 30)),
+                                fixedSize: const Size(325, 30)),
                             onPressed: () async {
                               Package package =
                                   monthlyOffer!.getPackage('\$rc_monthly')!;
@@ -159,25 +160,43 @@ class _PremiumOfferState extends State<PremiumOffer> {
                                   .read<PurchasesBloc>()
                                   .add(AddPurchase(package: package));
                             },
-                            icon: Container(
-                              decoration: BoxDecoration(
-                                  color: Colors.white,
-                                  borderRadius: BorderRadius.circular(50)),
-                              child: Icon(
-                                Icons.check_circle_rounded,
-                                size: 16,
-                                color: Colors.blue.shade300,
-                              ),
-                            ),
-                            label: const Text('Count Me In!')),
+                            child: const Text('Subscribe & Start Trial')),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 4.0),
+                          child: Text.rich(
+                            const TextSpan(children: [
+                              TextSpan(
+                                  text: 'After the free trial, you\'ll pay'),
+                              TextSpan(
+                                  text: ' \$4.99/mo',
+                                  style:
+                                      TextStyle(fontWeight: FontWeight.bold)),
+                            ]),
+                            style: TextStyle(color: Colors.grey.shade600),
+                          ),
+                        ),
                         TextButton(
                             onPressed: () async {
                               Navigator.pop(context);
                             },
-                            child: const Text('I don\'t like free stuff.')),
+                            child: const Text('No thanks.')),
                       ],
                     ),
                   ),
+                  Padding(
+                      padding: const EdgeInsets.symmetric(
+                          vertical: 8.0, horizontal: 12.0),
+                      child: Platform.isIOS
+                          ? Text(
+                              'Payment will be charged to your Apple ID account after 7 days. Subscription automatically renews unless it is canceled at least 24 hours before the end of the current period. Your account will be charged for renewal within 24 hours prior to the end of the current period.\n\nYou can manage and cancel your subscriptions by going to your account settings on the App Store after purchase. Any unused portion of a free trial period, if offered, will be forfeited when the user purchases a subscription to that publication, where applicable',
+                              textAlign: TextAlign.center,
+                              style: Theme.of(context).textTheme.bodySmall,
+                            )
+                          : Text(
+                              'Payment will be charged to your Google Play account after 7 days. Subscription automatically renews unless it is canceled at least 24 hours before the end of the current period. Your account will be charged for renewal within 24 hours prior to the end of the current period.\n\nYou can manage and cancel your subscriptions by going to your account settings in the Google Play Store after purchase. Any unused portion of a free trial period, if offered, will be forfeited when the user purchases a subscription to that publication, where applicable',
+                              textAlign: TextAlign.center,
+                              style: Theme.of(context).textTheme.bodySmall,
+                            )),
                 ],
               ),
             );
