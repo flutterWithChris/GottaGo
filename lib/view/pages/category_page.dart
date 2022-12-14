@@ -1414,7 +1414,7 @@ class EditButton extends StatelessWidget {
                   side: const BorderSide(
                       width: 2.0,
                       color: FlexColor.bahamaBlueDarkPrimaryContainer),
-                  fixedSize: const Size(80, 30),
+                  fixedSize: const Size(60, 35),
                   minimumSize: const Size(30, 20),
                 ),
                 child: const Padding(
