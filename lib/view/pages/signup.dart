@@ -30,7 +30,7 @@ class SignUp extends StatelessWidget {
     final PageController pageController = PageController();
     return Scaffold(
       body: PageView(
-        // physics: const NeverScrollableScrollPhysics(),
+        physics: const NeverScrollableScrollPhysics(),
         controller: pageController,
         children: [
           WelcomePage(pageController: pageController),
@@ -699,7 +699,10 @@ class _WelcomePageState extends State<WelcomePage> {
                                   child: CachedNetworkImage(
                                     imageUrl:
                                         'https://www.freepnglogos.com/uploads/apple-logo-png/apple-logo-png-dallas-shootings-don-add-are-speech-zones-used-4.png',
-                                    color: Colors.white,
+                                    color: Theme.of(context).brightness ==
+                                            Brightness.light
+                                        ? Colors.black
+                                        : Colors.white,
                                   ),
                                 ),
                                 label: const Text('Sign Up With Apple'))
