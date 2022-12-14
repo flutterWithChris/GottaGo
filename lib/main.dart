@@ -83,8 +83,6 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   late AuthBloc bloc;
-
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MultiRepositoryProvider(
@@ -201,7 +199,7 @@ class _MyAppState extends State<MyApp> {
 // that case you can also remove them after copying the theme to your app.
               theme: FlexThemeData.light(
                 scheme: FlexScheme.bahamaBlue,
-                surfaceMode: FlexSurfaceMode.levelSurfacesLowScaffold,
+                surfaceMode: FlexSurfaceMode.highScaffoldLowSurface,
                 blendLevel: 9,
                 subThemesData: const FlexSubThemesData(
                   bottomSheetModalElevation: 0,
@@ -218,7 +216,7 @@ class _MyAppState extends State<MyApp> {
               ),
               darkTheme: FlexThemeData.dark(
                 scheme: FlexScheme.bahamaBlue,
-                surfaceMode: FlexSurfaceMode.levelSurfacesLowScaffold,
+                surfaceMode: FlexSurfaceMode.highScaffoldLowSurface,
                 blendLevel: 15,
                 subThemesData: const FlexSubThemesData(
                   bottomSheetModalElevation: 0,
