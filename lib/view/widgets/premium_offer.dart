@@ -28,8 +28,10 @@ class _PremiumOfferState extends State<PremiumOffer> {
           BlocBuilder<PurchasesBloc, PurchasesState>(
         builder: (context, state) {
           if (state is PurchasesLoading) {
-            return LoadingAnimationWidget.staggeredDotsWave(
-                color: FlexColor.bahamaBlueDarkSecondary, size: 30.0);
+            return Center(
+              child: LoadingAnimationWidget.staggeredDotsWave(
+                  color: FlexColor.bahamaBlueDarkSecondary, size: 30.0),
+            );
           }
           if (state is PurchasesLoaded) {
             Offerings? offerings = state.offerings;
