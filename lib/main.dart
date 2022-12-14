@@ -60,9 +60,9 @@ import 'package:showcaseview/showcaseview.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  // * Force onboarding pref
-  SharedPreferences prefs = await SharedPreferences.getInstance();
-  prefs.setInt('initScreen', 0);
+  // // * Force onboarding pref
+  // SharedPreferences prefs = await SharedPreferences.getInstance();
+  // prefs.setInt('initScreen', 0);
 
   await Future.wait([
     dotenv.load(fileName: '.env'),
