@@ -55,7 +55,7 @@ class _CategoryPageState extends State<CategoryPage> {
   final DraggableScrollableController draggableScrollableController =
       DraggableScrollableController();
   late ConfettiController confettiController;
-  int selectionType = 0;
+  int selectionType = 1;
   final GlobalKey _addPlaceShowcase = GlobalKey();
   final GlobalKey _checklistShowcase = GlobalKey();
   final GlobalKey _randomWheelShowcase = GlobalKey();
@@ -634,6 +634,7 @@ class _PlaceListButtonBarState extends State<PlaceListButtonBar> {
                     'Filter between places you have or haven\'t visited!',
                 key: widget.keys[0],
                 child: DropdownButton<String>(
+                  borderRadius: BorderRadius.circular(24),
                   isDense: true,
                   underline: const SizedBox(),
                   value: dropdownValue,
@@ -1414,7 +1415,7 @@ class EditButton extends StatelessWidget {
                   side: const BorderSide(
                       width: 2.0,
                       color: FlexColor.bahamaBlueDarkPrimaryContainer),
-                  fixedSize: const Size(80, 30),
+                  fixedSize: const Size(60, 35),
                   minimumSize: const Size(30, 20),
                 ),
                 child: const Padding(
