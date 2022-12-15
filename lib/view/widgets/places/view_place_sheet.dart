@@ -59,9 +59,17 @@ class _ViewPlaceSheetState extends State<ViewPlaceSheet> {
                   if (state is ViewPlaceLoaded) {
                     String? todaysHours = getTodaysHours(widget.place);
                     Place selectedPlace = state.place;
-                    final Uri placeWebsite = Uri.parse(selectedPlace.website!);
-                    final Uri placePhoneNumber =
-                        Uri(scheme: 'tel', path: selectedPlace.phoneNumber);
+                    Uri? placeWebsite;
+                    Uri? placePhoneNumber;
+                    if (selectedPlace.website != null) {
+                      placeWebsite = Uri.parse(selectedPlace.website!);
+                    }
+
+                    if (selectedPlace.phoneNumber != null) {
+                      placePhoneNumber =
+                          Uri(scheme: 'tel', path: selectedPlace.phoneNumber);
+                    }
+
                     return ListView(
                       controller: widget.scrollController,
                       shrinkWrap: true,
@@ -130,17 +138,19 @@ class _ViewPlaceSheetState extends State<ViewPlaceSheet> {
                                               Text(widget.place.rating
                                                   .toString())
                                             ])),
-                                    Chip(
-                                        shape: RoundedRectangleBorder(
-                                            borderRadius:
-                                                BorderRadius.circular(14)),
-                                        avatar: CachedNetworkImage(
-                                          imageUrl: widget.place.icon!,
-                                          height: 16,
-                                        ),
-                                        label: Text(capitalizeAllWord(widget
-                                            .place.type!
-                                            .replaceAll('_', ' '))))
+                                    widget.place.icon != null
+                                        ? Chip(
+                                            shape: RoundedRectangleBorder(
+                                                borderRadius:
+                                                    BorderRadius.circular(14)),
+                                            avatar: CachedNetworkImage(
+                                              imageUrl: widget.place.icon!,
+                                              height: 16,
+                                            ),
+                                            label: Text(capitalizeAllWord(widget
+                                                .place.type!
+                                                .replaceAll('_', ' '))))
+                                        : const SizedBox(),
                                   ],
                                 ),
                               ),
@@ -185,12 +195,13 @@ class _ViewPlaceSheetState extends State<ViewPlaceSheet> {
                                         WrapCrossAlignment.center,
                                     spacing: 14.0,
                                     children: [
-                                      selectedPlace.phoneNumber != null
+                                      placeWebsite != null
                                           ? CircleAvatar(
                                               radius: 18,
                                               child: IconButton(
                                                 onPressed: () async {
-                                                  await launchUrl(placeWebsite);
+                                                  await launchUrl(
+                                                      placeWebsite!);
                                                 },
                                                 icon: const Icon(
                                                   Icons.web_rounded,
@@ -200,13 +211,13 @@ class _ViewPlaceSheetState extends State<ViewPlaceSheet> {
                                               ),
                                             )
                                           : const SizedBox(),
-                                      selectedPlace.website != null
+                                      placePhoneNumber != null
                                           ? CircleAvatar(
                                               radius: 18,
                                               child: IconButton(
                                                 onPressed: () async {
                                                   await launchUrl(
-                                                      placePhoneNumber);
+                                                      placePhoneNumber!);
                                                 },
                                                 icon: const Icon(
                                                   Icons.phone,
