@@ -101,6 +101,8 @@ class _PlaceCardState extends State<PlaceCard>
                   child: BlocBuilder<EditPlacesBloc, EditPlacesState>(
                     builder: (context, state) {
                       return InkWell(
+                        splashColor: FlexColor.bahamaBlueDarkSecondary,
+                        borderRadius: BorderRadius.circular(24),
                         onTap: () {
                           if (state is EditPlacesStarted) {
                             setState(() {
