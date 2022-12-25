@@ -94,7 +94,6 @@ class _PlaceCardState extends State<PlaceCard>
             prefs.setBool('placeCardShowcaseComplete', true);
           }, builder: Builder(
             builder: (context) {
-              print('Todays hours: $todaysHours');
               buildContext = context;
               return ConstrainedBox(
                   constraints:
