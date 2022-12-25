@@ -61,7 +61,6 @@ class _CategoryPageState extends State<CategoryPage> {
   final GlobalKey _randomWheelShowcase = GlobalKey();
   final GlobalKey _inviteCollaboratorShowcase = GlobalKey();
   final GlobalKey _visitedFilterShowcase = GlobalKey();
-  final GlobalKey _avatarStackShowcase = GlobalKey();
 
   @override
   void initState() {
@@ -87,7 +86,6 @@ class _CategoryPageState extends State<CategoryPage> {
                 _addPlaceShowcase,
                 _visitedFilterShowcase,
                 _inviteCollaboratorShowcase,
-                _avatarStackShowcase,
                 _randomWheelShowcase,
                 _checklistShowcase
               ]);
@@ -315,7 +313,6 @@ class _CategoryPageState extends State<CategoryPage> {
                                 controller: mainScrollController,
                                 slivers: [
                                   CategoryPageAppBar(
-                                      avatarStackKey: _avatarStackShowcase,
                                       listOwner: listOwner,
                                       contributors: contributors,
                                       placeList: currentPlaceList,
@@ -748,13 +745,12 @@ class CategoryPageAppBar extends StatefulWidget {
     Key? key,
     required this.contributors,
     required this.placeList,
-    required this.avatarStackKey,
     required this.scrollController,
     required this.listOwner,
   }) : super(key: key);
 
   final List<User>? contributors;
-  final GlobalKey avatarStackKey;
+
   final PlaceList placeList;
   final User listOwner;
   final ScrollController scrollController;
@@ -896,28 +892,20 @@ class _CategoryPageAppBarState extends State<CategoryPageAppBar> {
                           color: FlexColor.bahamaBlueDarkSecondary, size: 18.0);
                     }
                     if (state is SavedPlacesLoaded) {
-                      return Showcase(
-                        key: widget.avatarStackKey,
-                        targetBorderRadius: BorderRadius.circular(50),
-                        targetPadding: const EdgeInsets.all(8.0),
-                        descriptionAlignment: TextAlign.center,
-                        description: 'Contributor avatars will show up here!',
-                        child: AvatarStack(
-                          settings: RestrictedPositions(
-                              align: StackAlign.right,
-                              laying: StackLaying.first),
-                          borderWidth: 2.0,
-                          borderColor:
-                              Theme.of(context).chipTheme.backgroundColor,
-                          width: 70,
-                          height: 40,
-                          avatars: [
-                            CachedNetworkImageProvider(
-                                widget.listOwner.profilePicture!),
-                            for (User user in state.contributors)
-                              CachedNetworkImageProvider(user.profilePicture!),
-                          ],
-                        ),
+                      return AvatarStack(
+                        settings: RestrictedPositions(
+                            align: StackAlign.right, laying: StackLaying.first),
+                        borderWidth: 2.0,
+                        borderColor:
+                            Theme.of(context).chipTheme.backgroundColor,
+                        width: 70,
+                        height: 40,
+                        avatars: [
+                          CachedNetworkImageProvider(
+                              widget.listOwner.profilePicture!),
+                          for (User user in state.contributors)
+                            CachedNetworkImageProvider(user.profilePicture!),
+                        ],
                       );
                     } else {
                       return const Center(
