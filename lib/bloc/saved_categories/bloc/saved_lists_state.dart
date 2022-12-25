@@ -13,11 +13,10 @@ class SavedListsLoading extends SavedListsState {}
 class SavedListsLoaded extends SavedListsState {
   @override
   final List<PlaceList>? placeLists;
-  final List<PlaceList>? sharedPlaceLists;
-  SavedListsLoaded({required this.placeLists, required this.sharedPlaceLists});
+  SavedListsLoaded({required this.placeLists});
   @override
   // TODO: implement props
-  List<Object?> get props => [placeLists, sharedPlaceLists];
+  List<Object?> get props => [placeLists];
 }
 
 class SavedListsFailed extends SavedListsState {}
