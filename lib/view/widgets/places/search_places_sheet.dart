@@ -279,10 +279,12 @@ class _SearchPlacesSheetState extends State<SearchPlacesSheet> {
                                                                           .circular(
                                                                               16)),
                                                               label: Text(
-                                                                state
+                                                                capitalizeAllWord(state
                                                                     .googlePlace
                                                                     .type!
-                                                                    .capitalizeString(),
+                                                                    .replaceAll(
+                                                                        '_',
+                                                                        ' ')),
                                                                 style: Theme.of(
                                                                         context)
                                                                     .textTheme
@@ -293,6 +295,13 @@ class _SearchPlacesSheetState extends State<SearchPlacesSheet> {
                                                                 state
                                                                     .googlePlace
                                                                     .icon!,
+                                                                color: Theme.of(context)
+                                                                            .brightness ==
+                                                                        Brightness
+                                                                            .light
+                                                                    ? null
+                                                                    : Colors
+                                                                        .white,
                                                                 height: 18,
                                                               ),
                                                             ),
@@ -600,6 +609,11 @@ class _PlaceSearchBarState extends State<PlaceSearchBar> {
               }
             },
             onSubmitted: (query) {
+              if (query != '') {
+                context
+                    .read<PlaceBloc>()
+                    .add(LoadPlace(placeId: state.autocomplete![0].placeId!));
+              }
               controller.close();
             },
             onQueryChanged: (query) {

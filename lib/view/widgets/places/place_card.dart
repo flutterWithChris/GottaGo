@@ -94,6 +94,7 @@ class _PlaceCardState extends State<PlaceCard>
             prefs.setBool('placeCardShowcaseComplete', true);
           }, builder: Builder(
             builder: (context) {
+              print('Todays hours: $todaysHours');
               buildContext = context;
               return ConstrainedBox(
                   constraints:
@@ -194,19 +195,32 @@ class _PlaceCardState extends State<PlaceCard>
                                                 children: [
                                                   todaysHours != null
                                                       ? todaysHours != 'Closed'
-                                                          ? Text(
-                                                              'Open \'til: ${todaysHours.split('–')[1].trim()}',
-                                                              style: Theme.of(
-                                                                      context)
-                                                                  .textTheme
-                                                                  .bodySmall!
-                                                                  .copyWith(
-                                                                      fontWeight:
-                                                                          FontWeight
+                                                          ? todaysHours.contains(
+                                                                  '24 hours')
+                                                              ? Text(
+                                                                  'Open 24 Hours',
+                                                                  style: Theme.of(
+                                                                          context)
+                                                                      .textTheme
+                                                                      .bodySmall!
+                                                                      .copyWith(
+                                                                          fontWeight: FontWeight
                                                                               .bold,
-                                                                      color: Colors
-                                                                          .black54),
-                                                            )
+                                                                          color:
+                                                                              Colors.black54),
+                                                                )
+                                                              : Text(
+                                                                  'Open \'til: ${todaysHours.split('–')[1].trim()}',
+                                                                  style: Theme.of(
+                                                                          context)
+                                                                      .textTheme
+                                                                      .bodySmall!
+                                                                      .copyWith(
+                                                                          fontWeight: FontWeight
+                                                                              .bold,
+                                                                          color:
+                                                                              Colors.black54),
+                                                                )
                                                           : const Text(
                                                               'Closed Today!')
                                                       : const SizedBox(),
