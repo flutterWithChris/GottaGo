@@ -33,10 +33,10 @@ class SavedListsBloc extends Bloc<SavedListsEvent, SavedListsState> {
       }
     });
     on<SavedListsEvent>((event, emit) async {
-      myPlaceLists.clear();
-      sharedPlaceLists.clear();
       StreamSubscription placeListSubscription;
       if (event is LoadSavedLists) {
+        myPlaceLists.clear();
+        sharedPlaceLists.clear();
         if (state is SavedListsLoading == false) {
           emit(SavedListsLoading());
         }
@@ -54,11 +54,10 @@ class SavedListsBloc extends Bloc<SavedListsEvent, SavedListsState> {
                   milliseconds:
                       200 * _profileBloc.state.user.placeListIds!.length),
               () => emit(SavedListsLoaded(
-                  placeLists: myPlaceLists,
-                  sharedPlaceLists: sharedPlaceLists)));
+                    placeLists: myPlaceLists,
+                  )));
         } else {
-          emit(SavedListsLoaded(
-              placeLists: myPlaceLists, sharedPlaceLists: sharedPlaceLists));
+          emit(SavedListsLoaded(placeLists: myPlaceLists));
         }
       }
       if (event is AddList) {
