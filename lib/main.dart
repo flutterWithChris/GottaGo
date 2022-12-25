@@ -199,12 +199,12 @@ class _MyAppState extends State<MyApp> {
 // that case you can also remove them after copying the theme to your app.
               theme: FlexThemeData.light(
                 scheme: FlexScheme.bahamaBlue,
-                surfaceMode: FlexSurfaceMode.highScaffoldLowSurface,
+                surfaceMode: FlexSurfaceMode.levelSurfacesLowScaffold,
                 blendLevel: 9,
                 subThemesData: const FlexSubThemesData(
                   bottomSheetModalElevation: 0,
                   cardElevation: 0.6,
-                  defaultRadius: 24,
+                  defaultRadius: 20,
                   blendOnLevel: 10,
                   blendOnColors: false,
                 ),
