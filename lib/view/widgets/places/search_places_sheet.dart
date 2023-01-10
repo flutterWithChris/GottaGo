@@ -19,10 +19,7 @@ import 'package:material_floating_search_bar/material_floating_search_bar.dart';
 class SearchPlacesSheet extends StatefulWidget {
   const SearchPlacesSheet({
     Key? key,
-    required this.mounted,
   }) : super(key: key);
-
-  final bool mounted;
 
   @override
   State<SearchPlacesSheet> createState() => _SearchPlacesSheetState();

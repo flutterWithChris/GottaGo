@@ -103,7 +103,7 @@ class _PlaceCardState extends State<PlaceCard>
                       return InkWell(
                         splashColor: FlexColor.bahamaBlueDarkSecondary,
                         borderRadius: BorderRadius.circular(24),
-                        onTap: () {
+                        onTap: () async {
                           if (state is EditPlacesStarted) {
                             setState(() {
                               isSelected = !isSelected;
@@ -122,7 +122,7 @@ class _PlaceCardState extends State<PlaceCard>
                             context
                                 .read<ViewPlaceCubit>()
                                 .viewPlace(widget.place);
-                            showModalBottomSheet(
+                            await showModalBottomSheet(
                                 isScrollControlled: true,
                                 context: context,
                                 builder: (context) => DraggableScrollableSheet(

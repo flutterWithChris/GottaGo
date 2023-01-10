@@ -45,10 +45,10 @@ class SampleCategoryCard extends StatelessWidget {
                         ),
                       ),
                       minVerticalPadding: 24.0,
-                      onTap: () {
+                      onTap: () async {
                         //context.read<SavedPlacesBloc>().add(LoadPlaces());
                         // context.go('/placeList-page');
-                        showDialog(
+                        await showDialog(
                           context: context,
                           builder: (context) {
                             return const CreateListDialog();

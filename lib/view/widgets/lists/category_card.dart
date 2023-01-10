@@ -8,7 +8,7 @@ import 'package:leggo/bloc/saved_categories/bloc/saved_lists_bloc.dart';
 import 'package:leggo/bloc/saved_places/bloc/saved_places_bloc.dart';
 import 'package:leggo/globals.dart';
 import 'package:leggo/model/place_list.dart';
-import 'package:leggo/view/pages/category_page.dart';
+import 'package:leggo/view/widgets/list_page/dialogs.dart';
 import 'package:leggo/view/widgets/lists/delete_list_dialog.dart';
 import 'package:leggo/view/widgets/premium_offer.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
@@ -17,29 +17,17 @@ import 'package:showcaseview/showcaseview.dart';
 
 import '../../../bloc/profile_bloc.dart';
 
-class CategoryCard extends StatefulWidget {
+class CategoryCard extends StatelessWidget {
   final PlaceList placeList;
 
-  const CategoryCard({
+  CategoryCard({
     Key? key,
     required this.placeList,
   }) : super(key: key);
 
-  @override
-  State<CategoryCard> createState() => _CategoryCardState();
-}
-
-class _CategoryCardState extends State<CategoryCard> {
   final GlobalKey _categoryCardShowcase = GlobalKey();
   final GlobalKey _iconPickerShowcaseKey = GlobalKey();
   BuildContext? buildContext;
-
-  @override
-  void initState() {
-    // TODO: implement initState
-
-    super.initState();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -93,12 +81,12 @@ class _CategoryCardState extends State<CategoryCard> {
                                         PopupMenuItem(
                                           onTap: () => WidgetsBinding.instance
                                               .addPostFrameCallback(
-                                                  (timeStamp) {
-                                            showDialog(
+                                                  (timeStamp) async {
+                                            await showDialog(
                                               context: context,
                                               builder: (context) =>
                                                   EditListDialog(
-                                                placeList: widget.placeList,
+                                                placeList: placeList,
                                               ),
                                             );
                                           }),
@@ -117,12 +105,12 @@ class _CategoryCardState extends State<CategoryCard> {
                                           onTap: () {
                                             WidgetsBinding.instance
                                                 .addPostFrameCallback(
-                                                    (timeStamp) {
-                                              showDialog(
+                                                    (timeStamp) async {
+                                              await showDialog(
                                                 context: context,
                                                 builder: (context) {
                                                   return DeleteListDialog(
-                                                    placeList: widget.placeList,
+                                                    placeList: placeList,
                                                   );
                                                 },
                                               );
@@ -145,7 +133,7 @@ class _CategoryCardState extends State<CategoryCard> {
                             onTap: () {
                               context
                                   .read<SavedPlacesBloc>()
-                                  .add(LoadPlaces(placeList: widget.placeList));
+                                  .add(LoadPlaces(placeList: placeList));
                               context.push('/home/placeList-page');
                             },
                             contentPadding: const EdgeInsets.symmetric(
@@ -155,7 +143,7 @@ class _CategoryCardState extends State<CategoryCard> {
                               padding:
                                   const EdgeInsets.only(bottom: 4.0, left: 8.0),
                               child: Text(
-                                widget.placeList.name,
+                                placeList.name,
                                 style: Theme.of(context)
                                     .textTheme
                                     .titleMedium!
@@ -168,7 +156,7 @@ class _CategoryCardState extends State<CategoryCard> {
                                 children: [
                                   Text.rich(TextSpan(children: [
                                     TextSpan(
-                                        text: '${widget.placeList.placeCount} ',
+                                        text: '${placeList.placeCount} ',
                                         style: const TextStyle(
                                             fontWeight: FontWeight.bold)),
                                     const TextSpan(text: ' Saved Places'),
@@ -196,7 +184,7 @@ class _CategoryCardState extends State<CategoryCard> {
                                   return InkWell(
                                     onTap: () async {
                                       // TODO: Create Paywall Restriction
-                                      showModalBottomSheet(
+                                      await showModalBottomSheet(
                                         isScrollControlled: true,
                                         context: context,
                                         builder: (context) =>
@@ -211,16 +199,14 @@ class _CategoryCardState extends State<CategoryCard> {
                                         height: 40,
                                         width: 40,
                                         child: Icon(
-                                          deserializeIcon(
-                                                  widget.placeList.icon) ??
+                                          deserializeIcon(placeList.icon) ??
                                               Icons.list_rounded,
                                           color: Theme.of(context).brightness ==
                                                   Brightness.light
                                               ? FlexColor.bahamaBlueLightPrimary
                                               : Colors.white,
-                                          size: widget.placeList.icon
-                                                  .containsValue(
-                                                      'fontAwesomeIcons')
+                                          size: placeList.icon.containsValue(
+                                                  'fontAwesomeIcons')
                                               ? 30
                                               : 36,
                                         ),
@@ -240,9 +226,8 @@ class _CategoryCardState extends State<CategoryCard> {
                                             serializeIcon(icon);
                                         context.read<SavedListsBloc>().add(
                                             UpdateSavedLists(
-                                                placeList: widget.placeList
-                                                    .copyWith(
-                                                        icon: serializedIcon)));
+                                                placeList: placeList.copyWith(
+                                                    icon: serializedIcon)));
                                       } else {
                                         ScaffoldMessenger.of(context)
                                             .showSnackBar(const SnackBar(
@@ -267,16 +252,14 @@ class _CategoryCardState extends State<CategoryCard> {
                                         height: 40,
                                         width: 40,
                                         child: Icon(
-                                          deserializeIcon(
-                                                  widget.placeList.icon) ??
+                                          deserializeIcon(placeList.icon) ??
                                               Icons.list_rounded,
                                           color: Theme.of(context).brightness ==
                                                   Brightness.light
                                               ? FlexColor.bahamaBlueLightPrimary
                                               : Colors.white,
-                                          size: widget.placeList.icon
-                                                  .containsValue(
-                                                      'fontAwesomeIcons')
+                                          size: placeList.icon.containsValue(
+                                                  'fontAwesomeIcons')
                                               ? 30
                                               : 36,
                                         ),
@@ -291,13 +274,13 @@ class _CategoryCardState extends State<CategoryCard> {
                               },
                             ),
                           ),
-                          widget.placeList.listOwnerId !=
+                          placeList.listOwnerId !=
                                       context
                                           .read<ProfileBloc>()
                                           .state
                                           .user
                                           .id ||
-                                  widget.placeList.contributorIds.isNotEmpty
+                                  placeList.contributorIds.isNotEmpty
                               ? Positioned(
                                   left: 16.0,
                                   top: 10.0,

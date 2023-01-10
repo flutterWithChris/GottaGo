@@ -34,9 +34,6 @@ class _MyHomePageState extends State<MyHomePage> {
   List<Widget> rows = [];
 
   @override
-  void initState() {}
-
-  @override
   Widget build(BuildContext context) {
     List<PlaceList>? samplePlaceLists = [
       PlaceList(
@@ -87,7 +84,7 @@ class _MyHomePageState extends State<MyHomePage> {
           if (snapshot.hasData == false ||
               snapshot.connectionState == ConnectionState.active) {
             return Center(
-              child: LoadingAnimationWidget.inkDrop(
+              child: LoadingAnimationWidget.staggeredDotsWave(
                   color: FlexColor.materialDarkPrimaryHc, size: 40.0),
             );
           }
@@ -115,7 +112,7 @@ class _MyHomePageState extends State<MyHomePage> {
                             // Main List View
                             SliverFillRemaining(
                               child: Center(
-                                child: LoadingAnimationWidget.inkDrop(
+                                child: LoadingAnimationWidget.staggeredDotsWave(
                                     color: FlexColor.materialDarkPrimaryHc,
                                     size: 40.0),
                               ),
@@ -133,6 +130,7 @@ class _MyHomePageState extends State<MyHomePage> {
                           PlaceList placeList =
                               state.placeLists!.removeAt(oldIndex);
                           state.placeLists!.insert(newIndex, placeList);
+                          if (!mounted) return;
                           setState(() {
                             Widget row = rows.removeAt(oldIndex);
                             rows.insert(newIndex, row);
@@ -222,8 +220,8 @@ class _MyHomePageState extends State<MyHomePage> {
                         'You can use this button to create a list too!',
                     child: FloatingActionButton(
                       shape: const StadiumBorder(),
-                      onPressed: () {
-                        showDialog(
+                      onPressed: () async {
+                        await showDialog(
                           context: context,
                           builder: (context) {
                             return const CreateListDialog();

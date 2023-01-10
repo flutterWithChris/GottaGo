@@ -19,8 +19,8 @@ class ProfilePage extends StatelessWidget {
       floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
       floatingActionButton: FloatingActionButton(
         shape: const StadiumBorder(),
-        onPressed: () {
-          showDialog(
+        onPressed: () async {
+          await showDialog(
             context: context,
             builder: (context) {
               return const CreateListDialog();

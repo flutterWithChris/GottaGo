@@ -22,10 +22,10 @@ class BlankCategoryCard extends StatelessWidget {
                 //color: FlexColor.materialDarkPrimaryContainerHc,
                 child: ListTile(
                   minVerticalPadding: 30.0,
-                  onTap: () {
+                  onTap: () async {
                     //context.read<SavedPlacesBloc>().add(LoadPlaces());
                     // context.go('/placeList-page');
-                    showDialog(
+                    await showDialog(
                       context: context,
                       builder: (context) {
                         return const CreateListDialog();

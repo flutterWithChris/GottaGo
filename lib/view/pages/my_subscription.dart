@@ -186,8 +186,8 @@ class MySubscription extends StatelessWidget {
                                   children: [
                                     const Text('No Active Subscription!'),
                                     ElevatedButton(
-                                        onPressed: () {
-                                          showModalBottomSheet(
+                                        onPressed: () async {
+                                          await showModalBottomSheet(
                                               context: context,
                                               isScrollControlled: true,
                                               builder: (context) =>
