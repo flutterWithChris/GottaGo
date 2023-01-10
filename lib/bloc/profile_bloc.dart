@@ -11,24 +11,22 @@ part 'profile_state.dart';
 
 class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
   final UserRepository _userRepository;
-  final AuthBloc _authBloc;
-
-  StreamSubscription? _authSubscription;
+  StreamSubscription? _userSubscription;
   ProfileBloc(
       {required UserRepository userRepository, required AuthBloc authBloc})
       : _userRepository = userRepository,
-        _authBloc = authBloc,
         super(ProfileLoading()) {
-    _authSubscription = _authBloc.stream.listen((state) {
-      state.status == AuthStatus.authenticated
-          ? add(LoadProfile(userId: state.authUser!.uid))
-          : add(ResetProfile());
-    });
     on<LoadProfile>((event, emit) async {
-      await emit.forEach(_userRepository.getUser(event.userId), onData: (user) {
-        return ProfileLoaded(user: user);
-      });
+      _userSubscription =
+          await _userRepository.getUser(event.userId).listen((user) {
+        emit(ProfileLoaded(user: user));
+      }).asFuture();
     });
     on<ResetProfile>((event, emit) => emit(ProfileLoading()));
+  }
+  @override
+  Future<void> close() {
+    _userSubscription?.cancel();
+    return super.close();
   }
 }

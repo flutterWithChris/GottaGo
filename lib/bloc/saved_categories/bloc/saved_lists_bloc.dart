@@ -15,6 +15,7 @@ class SavedListsBloc extends Bloc<SavedListsEvent, SavedListsState> {
   final UserRepository _userRepository;
   final ProfileBloc _profileBloc;
   StreamSubscription? _profileSubscription;
+  StreamSubscription? _savedListsSubscription;
   int placeCount = 0;
 
   List<PlaceList> myPlaceLists = [];
@@ -27,59 +28,62 @@ class SavedListsBloc extends Bloc<SavedListsEvent, SavedListsState> {
         _userRepository = userRepository,
         _profileBloc = profileBloc,
         super(SavedListsLoading()) {
+    // add(LoadSavedLists());
     _profileSubscription = _profileBloc.stream.listen((state) {
       if (state is ProfileLoaded) {
         add(LoadSavedLists());
       }
     });
-    on<SavedListsEvent>((event, emit) async {
-      StreamSubscription placeListSubscription;
-      if (event is LoadSavedLists) {
-        myPlaceLists.clear();
-        sharedPlaceLists.clear();
-        if (state is SavedListsLoading == false) {
-          emit(SavedListsLoading());
-        }
-        if (_profileBloc.state.user.placeListIds != null) {
-          for (String placeListId in _profileBloc.state.user.placeListIds!) {
-            int placeCount =
-                await placeListRepository.getPlaceListItemCount(placeListId);
-            placeListRepository.getPlaceList(placeListId)!.listen((placeList) {
-              myPlaceLists.add(placeList.copyWith(placeCount: placeCount));
-            });
-          }
-
-          await Future.delayed(
-              Duration(
-                  milliseconds:
-                      200 * _profileBloc.state.user.placeListIds!.length),
-              () => emit(SavedListsLoaded(
-                    placeLists: myPlaceLists,
-                  )));
-        } else {
-          emit(SavedListsLoaded(placeLists: myPlaceLists));
-        }
-      }
-      if (event is AddList) {
-        await placeListRepository.createPlaceList(event.placeList);
-        emit(SavedListsUpdated());
-        await Future.delayed(const Duration(seconds: 2));
-        add(LoadSavedLists());
-      }
-      if (event is UpdateSavedLists) {
+    on<LoadSavedLists>((event, emit) async {
+      myPlaceLists.clear();
+      sharedPlaceLists.clear();
+      if (state is SavedListsLoading == false) {
         emit(SavedListsLoading());
-        await _placeListRepository.updatePlaceLists(event.placeList);
-        emit(SavedListsUpdated());
-        await Future.delayed(const Duration(seconds: 2));
-        add(LoadSavedLists());
       }
-      if (event is RemoveList) {
-        emit(SavedListsLoading());
-        await placeListRepository.removePlaceList(event.placeList);
-        emit(SavedListsUpdated());
-        add(LoadSavedLists());
+      if (_profileBloc.state.user.placeListIds != null) {
+        print('Profile Ids: ${_profileBloc.state.user.placeListIds!.length}');
+        for (String placeListId in _profileBloc.state.user.placeListIds!) {
+          int placeCount =
+              await placeListRepository.getPlaceListItemCount(placeListId);
+          _savedListsSubscription = placeListRepository
+              .getPlaceList(placeListId)!
+              .listen((placeList) {
+            myPlaceLists.add(placeList.copyWith(placeCount: placeCount));
+          });
+        }
+        print('My Place Lists: ${myPlaceLists.length}');
+        await Future.delayed(
+            Duration(
+                milliseconds:
+                    200 * _profileBloc.state.user.placeListIds!.length),
+            () => emit(SavedListsLoaded(
+                  placeLists: myPlaceLists,
+                )));
+      } else {
+        emit(SavedListsLoaded(placeLists: const []));
       }
-      if (event is RearrangeSavedLists) {}
     });
+    on<AddList>((event, emit) async {
+      emit(SavedListsLoading());
+      await _placeListRepository.createPlaceList(event.placeList);
+      //    add(LoadSavedLists());
+    });
+    on<UpdateSavedLists>((event, emit) async {
+      emit(SavedListsLoading());
+      await _placeListRepository.updatePlaceLists(event.placeList);
+      //    add(LoadSavedLists());
+    });
+    on<RemoveList>((event, emit) {
+      emit(SavedListsLoading());
+      _placeListRepository.removePlaceList(event.placeList);
+      // add(LoadSavedLists());
+    });
+  }
+  @override
+  Future<void> close() {
+    // TODO: implement close
+    _profileSubscription?.cancel();
+    _savedListsSubscription?.cancel();
+    return super.close();
   }
 }

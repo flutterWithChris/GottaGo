@@ -8,7 +8,16 @@ abstract class SavedListsState extends Equatable {
   List<Object?> get props => [placeLists];
 }
 
-class SavedListsLoading extends SavedListsState {}
+class SavedListsInitial extends SavedListsState {}
+
+class SavedListsLoading extends SavedListsState {
+  @override
+  final List<PlaceList>? placeLists;
+  SavedListsLoading({this.placeLists = const []});
+  @override
+  // TODO: implement props
+  List<Object?> get props => [placeLists];
+}
 
 class SavedListsLoaded extends SavedListsState {
   @override

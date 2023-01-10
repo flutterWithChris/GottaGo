@@ -82,7 +82,7 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  late AuthBloc bloc;
+  var bloc;
   @override
   Widget build(BuildContext context) {
     return MultiRepositoryProvider(
@@ -115,6 +115,7 @@ class _MyAppState extends State<MyApp> {
       child: MultiBlocProvider(
         providers: [
           BlocProvider(
+            lazy: false,
             create: (context) => AuthBloc(
                 purchasesRepository: context.read<PurchasesRepository>(),
                 authRepository: context.read<AuthRepository>(),
@@ -420,6 +421,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   body: BlocBuilder<SavedListsBloc, SavedListsState>(
                     builder: (context, state) {
                       if (state is SavedListsLoading ||
+                          state is SavedListsInitial ||
                           state is SavedListsUpdated) {
                         return CustomScrollView(
                           controller: mainScrollController,
@@ -468,22 +470,18 @@ class _MyHomePageState extends State<MyHomePage> {
                           });
                         }
 
-                        // if (state.placeLists!.isNotEmpty) {
-                        //   addCategoriesToList();
-                        // }
-
-                        if (state.placeLists!.isNotEmpty) {
+                        var placeLists =
+                            context.watch<SavedListsBloc>().myPlaceLists;
+                        if (placeLists.isNotEmpty) {
                           rows.clear();
                           rows = [
-                            for (PlaceList placeList in state.placeLists!)
+                            for (PlaceList placeList in placeLists)
                               Animate(
                                   effects: const [SlideEffect()],
                                   child: CategoryCard(placeList: placeList))
                           ];
-                          if (state.placeLists!.length < 5) {
-                            for (int i = 0;
-                                i < 5 - state.placeLists!.length;
-                                i++) {
+                          if (placeLists.length < 5) {
+                            for (int i = 0; i < 5 - placeLists.length; i++) {
                               rows.add(Animate(
                                   effects: const [SlideEffect()],
                                   child: SampleCategoryCard(
@@ -492,7 +490,6 @@ class _MyHomePageState extends State<MyHomePage> {
                           }
                         } else {
                           rows.clear();
-                          // List<SampleCategoryCard> sampleCategoryCards = [];
                           for (PlaceList placeList in samplePlaceLists) {
                             rows.add(Animate(
                                 effects: const [SlideEffect()],
@@ -668,13 +665,7 @@ class InviteList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocConsumer<InviteInboxBloc, InviteInboxState>(
-      listener: (context, state) {
-        if (state.status == InviteInboxStatus.accepted ||
-            state.status == InviteInboxStatus.declined) {
-          context.read<SavedListsBloc>().add(LoadSavedLists());
-        }
-      },
+    return BlocBuilder<InviteInboxBloc, InviteInboxState>(
       builder: (context, state) {
         if (state.status == InviteInboxStatus.loading) {
           return LoadingAnimationWidget.fourRotatingDots(
