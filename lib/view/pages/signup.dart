@@ -30,7 +30,7 @@ class SignUp extends StatelessWidget {
     final PageController pageController = PageController();
     return Scaffold(
       body: PageView(
-        physics: const NeverScrollableScrollPhysics(),
+        // physics: const NeverScrollableScrollPhysics(),
         controller: pageController,
         children: [
           WelcomePage(pageController: pageController),
@@ -323,16 +323,18 @@ class FeatureChecklistItem extends StatelessWidget {
 
 Future<void> setUserProfilePicture(BuildContext context, XFile? image) async {
   ImagePicker picker = ImagePicker();
-  image = await picker.pickImage(source: ImageSource.gallery);
+  image = await picker.pickImage(source: ImageSource.gallery).whenComplete(() {
+    if (image == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('No Image was selected!')));
+    }
 
-  if (image == null) {
-    ScaffoldMessenger.of(context)
-        .showSnackBar(const SnackBar(content: Text('No Image was selected!')));
-  }
-
-  if (image != null) {
-    context.read<OnboardingBloc>().add(UpdateUserProfilePicture(image: image));
-  }
+    if (image != null) {
+      context
+          .read<OnboardingBloc>()
+          .add(UpdateUserProfilePicture(image: image));
+    }
+  });
 }
 
 class ProfileInfo extends StatefulWidget {
@@ -375,7 +377,8 @@ class _ProfileInfoState extends State<ProfileInfo> {
                     if (state is OnboardingLoaded &&
                         (state).user.profilePicture == '') {
                       return InkWell(
-                        onTap: () => setUserProfilePicture(context, image),
+                        onTap: () async =>
+                            await setUserProfilePicture(context, image),
                         child: CircleAvatar(
                             radius: 60,
                             child: Text(
@@ -400,7 +403,8 @@ class _ProfileInfoState extends State<ProfileInfo> {
                     if (state is OnboardingLoaded &&
                         state.user.profilePicture != '') {
                       return InkWell(
-                        onTap: () => setUserProfilePicture(context, image),
+                        onTap: () async =>
+                            await setUserProfilePicture(context, image),
                         child: CachedNetworkImage(
                           placeholder: (context, url) => CircleAvatar(
                             radius: 60,
@@ -429,7 +433,7 @@ class _ProfileInfoState extends State<ProfileInfo> {
                 bottom: -4,
                 child: IconButton(
                   onPressed: () async {
-                    setUserProfilePicture(context, image);
+                    await setUserProfilePicture(context, image);
                   },
                   icon: Container(
                     decoration: BoxDecoration(
