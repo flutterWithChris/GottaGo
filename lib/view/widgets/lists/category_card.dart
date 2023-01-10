@@ -236,7 +236,6 @@ class CategoryCard extends StatelessWidget {
                                             style:
                                                 TextStyle(color: Colors.white),
                                           ),
-                                          backgroundColor: Colors.red,
                                         ));
                                       }
                                     },

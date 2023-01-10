@@ -51,7 +51,6 @@ String? getTodaysHours(Place place) {
 Future<IconData?> pickIcon(BuildContext context) async {
   IconData? icon = await FlutterIconPicker.showIconPicker(context,
       iconPackModes: [IconPack.material, IconPack.fontAwesomeIcons]);
-  var serialized = serializeIcon(icon!);
   return icon;
 }
 

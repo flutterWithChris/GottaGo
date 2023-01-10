@@ -81,13 +81,6 @@ class _MyHomePageState extends State<MyHomePage> {
               );
             });
           }
-          if (snapshot.hasData == false ||
-              snapshot.connectionState == ConnectionState.active) {
-            return Center(
-              child: LoadingAnimationWidget.staggeredDotsWave(
-                  color: FlexColor.materialDarkPrimaryHc, size: 40.0),
-            );
-          }
           return ShowCaseWidget(
             onFinish: () async {
               SharedPreferences prefs = await SharedPreferences.getInstance();
