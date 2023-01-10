@@ -1,4 +1,3 @@
-import 'dart:async';
 import 'dart:core';
 
 import 'package:flutter/material.dart';
@@ -119,22 +118,5 @@ class LowerCaseTextFormatter extends TextInputFormatter {
       TextEditingValue oldValue, TextEditingValue newValue) {
     return TextEditingValue(
         text: newValue.text.toLowerCase(), selection: newValue.selection);
-  }
-}
-
-class GoRouterRefreshStream extends ChangeNotifier {
-  late final StreamSubscription<dynamic> _subscription;
-
-  GoRouterRefreshStream(Stream<dynamic> stream) {
-    notifyListeners();
-    _subscription = stream.asBroadcastStream().listen(
-          (dynamic _) => notifyListeners(),
-        );
-  }
-
-  @override
-  void dispose() {
-    _subscription.cancel();
-    super.dispose();
   }
 }
