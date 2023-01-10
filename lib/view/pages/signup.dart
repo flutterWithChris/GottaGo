@@ -30,7 +30,7 @@ class SignUp extends StatelessWidget {
     final PageController pageController = PageController();
     return Scaffold(
       body: PageView(
-        // physics: const NeverScrollableScrollPhysics(),
+        physics: const NeverScrollableScrollPhysics(),
         controller: pageController,
         children: [
           WelcomePage(pageController: pageController),
