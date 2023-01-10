@@ -26,16 +26,13 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         _purchasesRepository = purchasesRepository,
         super(const AuthState.unknown()) {
     on<AuthUserChanged>(_onAuthUserChanged);
-
-    _authUserSubscription = _authRepository.user.listen((event) {});
-
     _authUserSubscription = _authRepository.user.listen((authUser) {
       if (authUser != null) {
         _userRepository.getUser(authUser.uid).listen((user) {
           add(AuthUserChanged(authUser: authUser, user: user));
         });
       } else {
-        add(AuthUserChanged(authUser: authUser));
+        add(const AuthUserChanged(authUser: null));
       }
     });
   }
