@@ -349,10 +349,9 @@ class _ProfileInfoState extends State<ProfileInfo> {
   var maxLength = 15;
   var textLength = 0;
   var userNameFieldController = TextEditingController();
-
+  XFile? image;
   @override
   Widget build(BuildContext context) {
-    XFile? image;
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
