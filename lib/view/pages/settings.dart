@@ -47,8 +47,8 @@ class SettingsPage extends StatelessWidget {
                     sections: [
                       SettingsSection(title: const Text('Account'), tiles: [
                         SettingsTile.navigation(
-                          onPressed: (context) {
-                            showDialog(
+                          onPressed: (context) async {
+                            await showDialog(
                               context: context,
                               builder: (context) {
                                 return const ChangeNameDialog();
@@ -72,7 +72,7 @@ class SettingsPage extends StatelessWidget {
                                       .name!))),
                         ),
                         SettingsTile.navigation(
-                          onPressed: (context) => showDialog(
+                          onPressed: (context) async => await showDialog(
                               context: context,
                               builder: (context) =>
                                   const ChangeUsernameDialog()),
@@ -99,8 +99,8 @@ class SettingsPage extends StatelessWidget {
                           title: const Text('Sign Out'),
                         ),
                         SettingsTile.navigation(
-                          onPressed: (context) {
-                            showDialog(
+                          onPressed: (context) async {
+                            await showDialog(
                               context: context,
                               builder: (context) =>
                                   DeleteAccountDialog(currentUser: currentUser),
@@ -125,7 +125,7 @@ class SettingsPage extends StatelessWidget {
                             SettingsTile.navigation(
                               leading: const Icon(Icons.report),
                               title: const Text('Report an Issue / Bug'),
-                              onPressed: (context) => showDialog(
+                              onPressed: (context) async => await showDialog(
                                   context: context,
                                   builder: (context) =>
                                       const ReportBugDialog()),

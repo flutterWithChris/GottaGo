@@ -96,8 +96,8 @@ class _RandomWheelPageState extends State<RandomWheelPage> {
                           int randomInt = random.nextInt(places.length);
                           controller.add(randomInt);
                         },
-                        onAnimationEnd: () {
-                          showModalBottomSheet(
+                        onAnimationEnd: () async {
+                          await showModalBottomSheet(
                             isScrollControlled: true,
                             context: context,
                             builder: (context) {

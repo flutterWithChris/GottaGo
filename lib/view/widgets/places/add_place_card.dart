@@ -46,15 +46,15 @@ class _PlaceCardState extends State<AddPlaceCard> {
         child: ConstrainedBox(
           constraints: const BoxConstraints(minHeight: 170, maxHeight: 180),
           child: InkWell(
-            onTap: () {
-              showModalBottomSheet(
+            onTap: () async {
+              await showModalBottomSheet(
                   backgroundColor: Theme.of(context)
                       .scaffoldBackgroundColor
                       .withOpacity(0.8),
                   isScrollControlled: true,
                   context: context,
                   builder: (context) {
-                    return SearchPlacesSheet(mounted: mounted);
+                    return const SearchPlacesSheet();
                   });
             },
             child: Card(
@@ -148,16 +148,15 @@ class _PlaceCardState extends State<AddPlaceCard> {
                                   //   Colors.white.withOpacity(0.9),
                                   // ),
                                 ),
-                                onPressed: () {
-                                  showModalBottomSheet(
+                                onPressed: () async {
+                                  await showModalBottomSheet(
                                       backgroundColor: Theme.of(context)
                                           .scaffoldBackgroundColor
                                           .withOpacity(0.8),
                                       isScrollControlled: true,
                                       context: context,
                                       builder: (context) {
-                                        return SearchPlacesSheet(
-                                            mounted: mounted);
+                                        return const SearchPlacesSheet();
                                       });
                                 },
                                 icon: const Icon(Icons.add_circle_rounded),
