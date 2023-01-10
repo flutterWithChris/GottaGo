@@ -73,7 +73,6 @@ class _CreateListDialogState extends State<CreateListDialog> {
                     //   counterText: "",
                     filled: true,
                     hintText: "ex. Breakfast Ideas...",
-
                     errorBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(50),
                         borderSide: const BorderSide(
