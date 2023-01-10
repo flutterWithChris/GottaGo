@@ -41,7 +41,6 @@ class SavedListsBloc extends Bloc<SavedListsEvent, SavedListsState> {
         emit(SavedListsLoading());
       }
       if (_profileBloc.state.user.placeListIds != null) {
-        print('Profile Ids: ${_profileBloc.state.user.placeListIds!.length}');
         for (String placeListId in _profileBloc.state.user.placeListIds!) {
           int placeCount =
               await placeListRepository.getPlaceListItemCount(placeListId);
@@ -51,7 +50,6 @@ class SavedListsBloc extends Bloc<SavedListsEvent, SavedListsState> {
             myPlaceLists.add(placeList.copyWith(placeCount: placeCount));
           });
         }
-        print('My Place Lists: ${myPlaceLists.length}');
         await Future.delayed(
             Duration(
                 milliseconds:
