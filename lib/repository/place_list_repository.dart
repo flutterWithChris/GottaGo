@@ -533,10 +533,9 @@ class PlaceListRepository {
     }
   }
 
-  Future<void> updatePlaceLists(PlaceList placeList) {
+  Future<void> updatePlaceLists(PlaceList placeList) async {
     try {
-      final auth.User firebaseUser = auth.FirebaseAuth.instance.currentUser!;
-      return _firebaseFirestore
+      await _firebaseFirestore
           .collection('place_lists')
           .doc(placeList.placeListId)
           .update(placeList.toDocument());
@@ -552,13 +551,23 @@ class PlaceListRepository {
     }
   }
 
-  Future<void> removePlaceList(PlaceList placeList) {
+  Future<void> removePlaceList(PlaceList placeList) async {
     try {
       final auth.User firebaseUser = auth.FirebaseAuth.instance.currentUser!;
-      return _firebaseFirestore
-          .collection('place_lists')
-          .doc(placeList.placeListId)
-          .delete();
+      // Remove the place list id from the user's place list ids
+      await _firebaseFirestore
+          .collection('users')
+          .doc(firebaseUser.uid)
+          .update({
+        'placeListIds': FieldValue.arrayRemove([placeList.placeListId])
+      });
+      // Delete the place list if the user is the owner of the place list
+      if (placeList.listOwnerId == firebaseUser.uid) {
+        await _firebaseFirestore
+            .collection('place_lists')
+            .doc(placeList.placeListId)
+            .delete();
+      }
     } on FirebaseException catch (e) {
       final SnackBar snackBar = SnackBar(
         content: Text(e.message.toString()),
