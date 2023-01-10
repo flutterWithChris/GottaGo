@@ -58,7 +58,7 @@ class _CreateListDialogState extends State<CreateListDialog> {
                   //     textLength = value.length;
                   //   });
                   // },
-                  // maxLength: 20,
+                  maxLength: 30,
                   inputFormatters: [
                     FilteringTextInputFormatter.allow(
                         RegExp("[A-Za-z0-9#+-. ]*")),
@@ -94,7 +94,7 @@ class _CreateListDialogState extends State<CreateListDialog> {
                   ),
                 )),
             Padding(
-              padding: const EdgeInsets.only(top: 20.0),
+              padding: const EdgeInsets.only(top: 0.0),
               child: ElevatedButton.icon(
                   style: ElevatedButton.styleFrom(fixedSize: const Size(150, 35)
                       // backgroundColor: FlexColor.espressoDarkTertiary,
