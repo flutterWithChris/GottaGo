@@ -97,7 +97,7 @@ class _PlaceCardState extends State<PlaceCard>
               buildContext = context;
               return ConstrainedBox(
                   constraints:
-                      const BoxConstraints(minHeight: 170, maxHeight: 225),
+                      const BoxConstraints(minHeight: 170, maxHeight: 235),
                   child: BlocBuilder<EditPlacesBloc, EditPlacesState>(
                     builder: (context, state) {
                       return InkWell(
@@ -155,8 +155,8 @@ class _PlaceCardState extends State<PlaceCard>
                                   children: [
                                     ConstrainedBox(
                                         constraints: const BoxConstraints(
-                                            minHeight: 225,
-                                            maxHeight: 225,
+                                            minHeight: 235,
+                                            maxHeight: 235,
                                             minWidth: 120,
                                             maxWidth: 120),
                                         child: CachedNetworkImage(
