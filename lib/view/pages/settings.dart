@@ -379,13 +379,11 @@ class ChangeNameDialog extends StatefulWidget {
 }
 
 class _ChangeNameDialogState extends State<ChangeNameDialog> {
-  final TextEditingController bugReportFieldController =
-      TextEditingController();
+  final TextEditingController nameFieldController = TextEditingController();
 
   @override
   void initState() {
-    bugReportFieldController.text =
-        context.read<ProfileBloc>().state.user.name!;
+    nameFieldController.text = context.read<ProfileBloc>().state.user.name!;
     super.initState();
   }
 
@@ -406,7 +404,7 @@ class _ChangeNameDialogState extends State<ChangeNameDialog> {
               ),
               TextField(
                 autofocus: true,
-                controller: bugReportFieldController,
+                controller: nameFieldController,
               ),
               BlocConsumer<SettingsBloc, SettingsState>(
                 listener: (context, state) async {
@@ -449,8 +447,7 @@ class _ChangeNameDialogState extends State<ChangeNameDialog> {
                                 .state
                                 .user
                                 .copyWith(
-                                    name:
-                                        bugReportFieldController.value.text)));
+                                    name: nameFieldController.value.text)));
                       },
                       child: const Text('Update Name'));
                 },

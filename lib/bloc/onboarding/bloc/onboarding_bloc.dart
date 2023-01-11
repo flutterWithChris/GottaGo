@@ -38,7 +38,7 @@ class OnboardingBloc extends Bloc<OnboardingEvent, OnboardingState> {
       // * Set Username if passed check & not null.
       if (event.user.userName != '') {
         await _databaseRepository.registerUsername(
-            event.user.name!, event.user.id!);
+            event.user.userName!, event.user.id!);
       }
       await _databaseRepository.updateUser(event.user);
       emit(OnboardingLoaded(user: event.user));
