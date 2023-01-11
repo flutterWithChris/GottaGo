@@ -91,18 +91,19 @@ class ProfilePage extends StatelessWidget {
                         ],
                       )),
                 ),
-                SliverToBoxAdapter(
+                SliverFillRemaining(
                   child: Padding(
                     padding: const EdgeInsets.symmetric(
-                        vertical: 24.0, horizontal: 8.0),
-                    child: SizedBox(
-                      height: 280,
-                      width: MediaQuery.of(context).size.width,
+                        vertical: 12.0, horizontal: 8.0),
+                    child: FractionallySizedBox(
+                      heightFactor: 0.9,
+                      widthFactor: 1,
                       child: Card(
                         child: Padding(
                           padding: const EdgeInsets.symmetric(
                               horizontal: 24.0, vertical: 20.0),
                           child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
                             mainAxisSize: MainAxisSize.min,
                             children: [
                               Row(
