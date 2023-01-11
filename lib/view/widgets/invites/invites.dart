@@ -108,7 +108,7 @@ class DeclinedGroupInvite extends StatelessWidget {
   Widget build(BuildContext context) {
     return Card(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)),
-      elevation: 0,
+      elevation: 1.2,
       child: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
@@ -177,25 +177,6 @@ class DeclinedGroupInvite extends StatelessWidget {
                 ],
               ),
             ),
-            // Row(
-            //   mainAxisAlignment: MainAxisAlignment.start,
-            //   children: [
-            //     Text(
-            //       'As a',
-            //       style: Theme.of(context).textTheme.subtitle2!,
-            //     ),
-            //     Text(
-            //       ' ${thisInvite.inviteType}',
-            //       style: Theme.of(context).textTheme.subtitle2!.copyWith(
-            //             color: Colors.blue,
-            //           ),
-            //     ),
-            //   ],
-            // ),
-            // const Padding(
-            //   padding: EdgeInsets.all(8.0),
-            //   child: Divider(),
-            // )
           ],
         ),
       ),
@@ -215,7 +196,7 @@ class AcceptedGroupInvite extends StatelessWidget {
   Widget build(BuildContext context) {
     return Card(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)),
-      elevation: 0,
+      elevation: 1.2,
       child: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(

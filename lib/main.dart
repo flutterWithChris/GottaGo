@@ -14,7 +14,6 @@ import 'package:leggo/bloc/bloc/invite/bloc/invite_bloc.dart';
 import 'package:leggo/bloc/bloc/invite_inbox/invite_inbox_bloc.dart';
 import 'package:leggo/bloc/bloc/purchases/purchases_bloc.dart';
 import 'package:leggo/bloc/onboarding/bloc/onboarding_bloc.dart';
-import 'package:leggo/bloc/place/edit_places_bloc.dart';
 import 'package:leggo/bloc/place/place_bloc.dart';
 import 'package:leggo/bloc/profile_bloc.dart';
 import 'package:leggo/bloc/saved_categories/bloc/saved_lists_bloc.dart';
@@ -24,10 +23,8 @@ import 'package:leggo/cubit/cubit/cubit/view_place_cubit.dart';
 import 'package:leggo/cubit/cubit/login/login_cubit.dart';
 import 'package:leggo/cubit/cubit/random_wheel_cubit.dart';
 import 'package:leggo/cubit/cubit/signup/sign_up_cubit.dart';
-import 'package:leggo/cubit/lists/list_sort_cubit.dart';
 import 'package:leggo/firebase_options.dart';
 import 'package:leggo/globals.dart';
-import 'package:leggo/random_wheel_page.dart';
 import 'package:leggo/repository/auth_repository.dart';
 import 'package:leggo/repository/database/database_repository.dart';
 import 'package:leggo/repository/invite_repository.dart';
@@ -37,14 +34,6 @@ import 'package:leggo/repository/purchases_repository.dart';
 import 'package:leggo/repository/storage/storage_repository.dart';
 import 'package:leggo/repository/user_repository.dart';
 import 'package:leggo/router/app_router.dart';
-import 'package:leggo/view/pages/category_page.dart';
-import 'package:leggo/view/pages/homepage.dart';
-import 'package:leggo/view/pages/login.dart';
-import 'package:leggo/view/pages/my_subscription.dart';
-import 'package:leggo/view/pages/profile.dart';
-import 'package:leggo/view/pages/settings.dart';
-import 'package:leggo/view/pages/signup.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -184,10 +173,6 @@ class _MyAppState extends State<MyApp> {
             bloc = context.read<AuthBloc>();
             return MaterialApp.router(
               scaffoldMessengerKey: snackbarKey,
-// This theme was made for FlexColorScheme version 6.1.1. Make sure
-// you use same or higher version, but still same major version. If
-// you use a lower version, some properties may not be supported. In
-// that case you can also remove them after copying the theme to your app.
               theme: FlexThemeData.light(
                 scheme: FlexScheme.bahamaBlue,
                 surfaceMode: FlexSurfaceMode.levelSurfacesLowScaffold,
@@ -202,7 +187,6 @@ class _MyAppState extends State<MyApp> {
                 visualDensity: FlexColorScheme.comfortablePlatformDensity,
                 useMaterial3: true,
                 swapLegacyOnMaterial3: true,
-                // To use the playground font, add GoogleFonts package and uncomment
                 fontFamily: GoogleFonts.archivo().fontFamily,
               ),
               darkTheme: FlexThemeData.dark(
@@ -218,13 +202,8 @@ class _MyAppState extends State<MyApp> {
                 visualDensity: FlexColorScheme.comfortablePlatformDensity,
                 useMaterial3: true,
                 swapLegacyOnMaterial3: true,
-                // To use the Playground font, add GoogleFonts package and uncomment
                 fontFamily: GoogleFonts.archivo().fontFamily,
               ),
-// If you do not have a themeMode switch, uncomment this line
-// to let the device system mode control the theme mode:
-// themeMode: ThemeMode.system,
-
               themeMode: ThemeMode.system,
               routeInformationParser: router.routeInformationParser,
               routeInformationProvider: router.routeInformationProvider,
