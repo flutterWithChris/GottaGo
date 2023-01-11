@@ -64,17 +64,16 @@ class SavedListsBloc extends Bloc<SavedListsEvent, SavedListsState> {
     on<AddList>((event, emit) async {
       emit(SavedListsLoading());
       await _placeListRepository.createPlaceList(event.placeList);
-      //    add(LoadSavedLists());
     });
     on<UpdateSavedLists>((event, emit) async {
       emit(SavedListsLoading());
       await _placeListRepository.updatePlaceLists(event.placeList);
-      //    add(LoadSavedLists());
+      emit(SavedListsUpdated());
+      add(LoadSavedLists());
     });
-    on<RemoveList>((event, emit) {
+    on<RemoveList>((event, emit) async {
       emit(SavedListsLoading());
-      _placeListRepository.removePlaceList(event.placeList);
-      // add(LoadSavedLists());
+      await _placeListRepository.removePlaceList(event.placeList);
     });
   }
   @override
