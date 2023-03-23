@@ -50,7 +50,7 @@ class AppRouter {
         GoRoute(
           name: 'signup',
           path: '/signup',
-          builder: (context, state) => const SignUp(),
+          builder: (context, state) => SignUp(),
         ),
         GoRoute(
           path: '/login',

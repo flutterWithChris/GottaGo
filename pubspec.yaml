@@ -17,7 +17,7 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 # https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
 # In Windows, build-name is used as the major, minor, and patch parts
 # of the product and file versions while build-number is used as the build suffix.
-version: 1.1.1+4
+version: 1.1.2+1
 
 environment:
   sdk: '>=2.18.0 <3.0.0'
@@ -55,6 +55,9 @@ dependencies:
   glassmorphism: ^3.0.0
   salomon_bottom_bar: ^3.3.1
   google_fonts: ^4.0.3
+  bubble_bottom_bar:
+    git:
+      url: https://github.com/westdabestdb/bubble_bottom_bar
   flutter_fortune_wheel: ^1.2.0
   rxdart: any
   animations: ^2.0.4
@@ -81,9 +84,7 @@ dependencies:
   flutter_iconpicker:
     git:
       url: https://github.com/flutterWithChris/FlutterIconPicker
-  bubble_bottom_bar:
-    git:
-      url: https://github.com/flutterWithChris/bubble_bottom_bar
+
       
 dev_dependencies:
   flutter_test:
