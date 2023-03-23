@@ -19,6 +19,10 @@ class SignUpCubit extends Cubit<SignUpState> {
     emit(state.copyWith(password: password, status: SignupStatus.initial));
   }
 
+  void nameChanged(String name) {
+    emit(state.copyWith(name: name, status: SignupStatus.initial));
+  }
+
   void signUpWithCredential() async {
     emit(state.copyWith(status: SignupStatus.submitting));
     try {

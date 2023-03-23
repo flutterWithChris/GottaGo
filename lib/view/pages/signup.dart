@@ -23,11 +23,10 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
 class SignUp extends StatelessWidget {
-  const SignUp({super.key});
-
+  SignUp({super.key});
+  final PageController pageController = PageController();
   @override
   Widget build(BuildContext context) {
-    final PageController pageController = PageController();
     return Scaffold(
       body: PageView(
         physics: const NeverScrollableScrollPhysics(),
@@ -38,18 +37,18 @@ class SignUp extends StatelessWidget {
           IntroPaywall(pageController: pageController),
         ],
       ),
-      bottomNavigationBar: Container(
+      bottomNavigationBar: SizedBox(
         height: 60,
-        color: FlexColor.bahamaBlueDarkPrimaryContainer,
+        // color: FlexColor.bahamaBlueDarkPrimaryContainer,
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 8.0),
           child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
             SmoothPageIndicator(
               controller: pageController,
               count: 3,
-              effect: WormEffect(
+              effect: const WormEffect(
                   activeDotColor: FlexColor.bahamaBlueDarkSecondary,
-                  dotColor: Theme.of(context).scaffoldBackgroundColor),
+                  dotColor: FlexColor.bahamaBlueDarkPrimaryContainer),
             ),
           ]),
         ),
@@ -613,6 +612,8 @@ class WelcomePage extends StatefulWidget {
 }
 
 class _WelcomePageState extends State<WelcomePage> {
+  final nameFieldKey = GlobalKey<FormState>();
+
   @override
   Widget build(BuildContext context) {
     return BlocConsumer<SignUpCubit, SignUpState>(
@@ -669,6 +670,84 @@ class _WelcomePageState extends State<WelcomePage> {
                                       .read<SignUpCubit>()
                                       .signUpWithApple();
                                   if (!mounted) return;
+                                  // Check if the user's name is null
+                                  if (context.read<SignUpCubit>().state.name ==
+                                      '') {
+                                    // If it is, then ask the user to enter a name
+                                    await showDialog(
+                                        context: context,
+                                        barrierDismissible: false,
+                                        builder: (context) {
+                                          final nameFieldController =
+                                              TextEditingController();
+                                          return AlertDialog(
+                                            //  insetPadding: const EdgeInsets.symmetric(vertical: 24.0),
+                                            titlePadding: const EdgeInsets.only(
+                                              top: 24.0,
+                                            ),
+                                            title: const Text(
+                                                'Enter Your Name:',
+                                                textAlign: TextAlign.center),
+                                            content: Column(
+                                              mainAxisSize: MainAxisSize.min,
+                                              children: [
+                                                const Padding(
+                                                  padding: EdgeInsets.only(
+                                                      bottom: 24.0),
+                                                  child: Text(
+                                                      'So we know what to call you!'),
+                                                ),
+                                                Form(
+                                                  key: nameFieldKey,
+                                                  child: TextFormField(
+                                                    textCapitalization:
+                                                        TextCapitalization
+                                                            .words,
+                                                    validator: (value) {
+                                                      if (value == null ||
+                                                          value.isEmpty) {
+                                                        return 'Please enter your name';
+                                                      }
+                                                      // Check if user provided a first and last name
+                                                      if (value
+                                                              .split(' ')
+                                                              .length <
+                                                          2) {
+                                                        return 'Please enter your first & last name';
+                                                      }
+                                                      return null;
+                                                    },
+                                                    controller:
+                                                        nameFieldController,
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                            actions: [
+                                              TextButton(
+                                                  onPressed: () {
+                                                    Navigator.pop(context);
+                                                    return;
+                                                  },
+                                                  child: const Text('Cancel')),
+                                              ElevatedButton(
+                                                  onPressed: () async {
+                                                    if (nameFieldKey
+                                                        .currentState!
+                                                        .validate()) {
+                                                      context
+                                                          .read<SignUpCubit>()
+                                                          .nameChanged(
+                                                              nameFieldController
+                                                                  .value.text);
+                                                      Navigator.pop(context);
+                                                    }
+                                                  },
+                                                  child: const Text('Submit'))
+                                            ],
+                                          );
+                                        });
+                                  }
                                   User user = User(
                                       id: context
                                           .read<SignUpCubit>()
@@ -677,11 +756,9 @@ class _WelcomePageState extends State<WelcomePage> {
                                           .uid,
                                       userName: '',
                                       name: context
-                                              .read<SignUpCubit>()
-                                              .state
-                                              .user
-                                              ?.displayName ??
-                                          '',
+                                          .read<SignUpCubit>()
+                                          .state
+                                          .name,
                                       email: context
                                               .read<SignUpCubit>()
                                               .state
@@ -717,6 +794,83 @@ class _WelcomePageState extends State<WelcomePage> {
                                       .read<SignUpCubit>()
                                       .signUpWithGoogle();
                                   if (!mounted) return;
+                                  if (context.read<SignUpCubit>().state.name ==
+                                      '') {
+                                    // If it is, then ask the user to enter a name
+                                    await showDialog(
+                                        barrierDismissible: false,
+                                        context: context,
+                                        builder: (context) {
+                                          final nameFieldController =
+                                              TextEditingController();
+                                          return AlertDialog(
+                                            //  insetPadding: const EdgeInsets.symmetric(vertical: 24.0),
+                                            titlePadding: const EdgeInsets.only(
+                                              top: 24.0,
+                                            ),
+                                            title: const Text(
+                                                'Enter Your Name:',
+                                                textAlign: TextAlign.center),
+                                            content: Column(
+                                              mainAxisSize: MainAxisSize.min,
+                                              children: [
+                                                const Padding(
+                                                  padding: EdgeInsets.only(
+                                                      bottom: 24.0),
+                                                  child: Text(
+                                                      'So we know what to call you!'),
+                                                ),
+                                                Form(
+                                                  key: nameFieldKey,
+                                                  child: TextFormField(
+                                                    textCapitalization:
+                                                        TextCapitalization
+                                                            .words,
+                                                    validator: (value) {
+                                                      if (value == null ||
+                                                          value.isEmpty) {
+                                                        return 'Please enter your name';
+                                                      }
+                                                      // Check if user provided a first and last name
+                                                      if (value
+                                                              .split(' ')
+                                                              .length <
+                                                          2) {
+                                                        return 'Please enter your first & last name';
+                                                      }
+                                                      return null;
+                                                    },
+                                                    controller:
+                                                        nameFieldController,
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                            actions: [
+                                              TextButton(
+                                                  onPressed: () {
+                                                    Navigator.pop(context);
+                                                    return;
+                                                  },
+                                                  child: const Text('Cancel')),
+                                              ElevatedButton(
+                                                  onPressed: () async {
+                                                    if (nameFieldKey
+                                                        .currentState!
+                                                        .validate()) {
+                                                      context
+                                                          .read<SignUpCubit>()
+                                                          .nameChanged(
+                                                              nameFieldController
+                                                                  .value.text);
+                                                      Navigator.pop(context);
+                                                    }
+                                                  },
+                                                  child: const Text('Submit'))
+                                            ],
+                                          );
+                                        });
+                                  }
                                   User user = User(
                                       id: context
                                           .read<SignUpCubit>()
@@ -725,11 +879,9 @@ class _WelcomePageState extends State<WelcomePage> {
                                           .uid,
                                       userName: '',
                                       name: context
-                                              .read<SignUpCubit>()
-                                              .state
-                                              .user
-                                              ?.displayName ??
-                                          '',
+                                          .read<SignUpCubit>()
+                                          .state
+                                          .name,
                                       email: context
                                               .read<SignUpCubit>()
                                               .state
