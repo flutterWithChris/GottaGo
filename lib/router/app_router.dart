@@ -10,6 +10,7 @@ import 'package:leggo/view/pages/my_subscription.dart';
 import 'package:leggo/view/pages/profile.dart';
 import 'package:leggo/view/pages/settings.dart';
 import 'package:leggo/view/pages/signup.dart';
+import 'package:leggo/view/widgets/dialogs/review_card_dialog.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../cubit/lists/list_sort_cubit.dart';
@@ -18,6 +19,7 @@ import '../view/pages/category_page.dart';
 
 class AppRouter {
   GoRouter router = GoRouter(
+      observers: [HeroController()],
       initialLocation: '/',
       redirect: (context, state) async {
         bool loggedIn =
@@ -72,6 +74,13 @@ class AppRouter {
           name: 'my-subscription',
           pageBuilder: (context, state) =>
               const MaterialPage<void>(child: MySubscription()),
+        ),
+        GoRoute(
+          path: '/review-card-dialog',
+          name: 'review-card-dialog',
+          pageBuilder: (context, state) => MaterialPage<void>(
+              fullscreenDialog: true,
+              child: ReviewCardDialog(review: state.extra! as dynamic)),
         ),
         GoRoute(
             name: '/',

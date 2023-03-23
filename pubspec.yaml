@@ -36,7 +36,7 @@ dependencies:
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.2
-  go_router: ^5.1.1
+  go_router: ^6.0.1
   flutter_typeahead: ^4.1.0
   anim_search_bar: ^2.0.2
   flutter_dotenv: ^5.0.2
@@ -46,18 +46,18 @@ dependencies:
   equatable: ^2.0.5
   flutter_rating_bar: ^4.0.1
   font_awesome_flutter: ^10.2.1
-  flutter_animate: ^2.0.0
-  reorderables: ^0.5.0
+  flutter_animate: ^4.1.0
+  reorderables: ^0.6.0
   loading_animation_widget: ^1.2.0+3
   firebase_core: ^2.1.0
   firebase_auth: ^4.0.2
   cloud_firestore: ^4.0.2
   glassmorphism: ^3.0.0
   salomon_bottom_bar: ^3.3.1
+  google_fonts: ^4.0.3
   bubble_bottom_bar:
     git:
       url: https://github.com/westdabestdb/bubble_bottom_bar
-  google_fonts: ^3.0.1
   flutter_fortune_wheel: ^1.2.0
   rxdart: any
   animations: ^2.0.4
@@ -78,14 +78,14 @@ dependencies:
   firebase_crashlytics: ^3.0.6
   purchases_flutter: ^4.4.1
   roundcheckbox: ^2.0.5
-  flutter_iconpicker: 
-    git:
-      url: https://github.com/flutterWithChris/FlutterIconPicker
   blobs: ^2.0.0
   settings_ui: ^2.0.2
   showcaseview: ^2.0.0+1
+  flutter_iconpicker:
+    git:
+      url: https://github.com/flutterWithChris/FlutterIconPicker
 
-
+      
 dev_dependencies:
   flutter_test:
     sdk: flutter
