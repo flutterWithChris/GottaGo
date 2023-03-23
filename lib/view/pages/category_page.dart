@@ -1,10 +1,8 @@
 import 'dart:async';
 
-import 'package:confetti/confetti.dart';
 import 'package:flex_color_scheme/flex_color_scheme.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_animate/animate.dart';
-import 'package:flutter_animate/effects/effects.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:leggo/bloc/place/edit_places_bloc.dart';
 import 'package:leggo/bloc/saved_categories/bloc/saved_lists_bloc.dart';
@@ -41,7 +39,6 @@ class _CategoryPageState extends State<CategoryPage> {
   final StreamController<int> controller = StreamController.broadcast();
   final DraggableScrollableController draggableScrollableController =
       DraggableScrollableController();
-  late ConfettiController confettiController;
   int selectionType = 1;
   final GlobalKey _addPlaceShowcase = GlobalKey();
   final GlobalKey _checklistShowcase = GlobalKey();
@@ -51,16 +48,13 @@ class _CategoryPageState extends State<CategoryPage> {
 
   @override
   void initState() {
-    // TODO: implement initState
     mainScrollController = ScrollController();
-    confettiController =
-        ConfettiController(duration: const Duration(seconds: 10));
+    super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
     BuildContext? buildContext;
-    final TextEditingController textEditingController = TextEditingController();
     List<Place> selectedPlaces = context.watch<EditPlacesBloc>().selectedPlaces;
     return FutureBuilder<bool?>(
         future: getShowcaseStatus('categoryPageShowcaseComplete'),
@@ -121,8 +115,11 @@ class _CategoryPageState extends State<CategoryPage> {
                           Opacity(
                             opacity: 0.4,
                             child: Animate(
+                              onComplete: (controller) {
+                                controller.repeat();
+                              },
                               effects: const [
-                                FadeEffect(),
+                                //FadeEffect(),
                                 ShimmerEffect(
                                     duration: Duration(milliseconds: 500),
                                     curve: Curves.easeInOut),
@@ -161,6 +158,16 @@ class _CategoryPageState extends State<CategoryPage> {
                                   icon: const Icon(Icons.more_vert)),
                             ],
                           ),
+                          RandomPlaceBar(
+                              keys: [
+                                _visitedFilterShowcase,
+                                _inviteCollaboratorShowcase,
+                                _randomWheelShowcase,
+                                _checklistShowcase
+                              ],
+                              currentPlaceList: null,
+                              controller: controller,
+                              places: null),
                           ReorderableSliverList(
                             enabled: false,
                             onReorder: (oldIndex, newIndex) {},
@@ -203,33 +210,23 @@ class _CategoryPageState extends State<CategoryPage> {
                       }
 
                       if (places.isNotEmpty) {
-                        rows = [
-                          for (Place place in places)
-                            Animate(
-                              effects: const [
-                                SlideEffect(
-                                    curve: Curves.easeOutBack,
-                                    duration: Duration(milliseconds: 600)),
-                                ShimmerEffect(
-                                    duration: Duration(milliseconds: 500),
-                                    curve: Curves.easeInOut),
-                              ],
-                              child: Padding(
-                                padding: const EdgeInsets.symmetric(
-                                    vertical: 4.0, horizontal: 8.0),
-                                child: PlaceCard(
-                                    place: place,
-                                    placeList: currentPlaceList,
-                                    imageUrl: place.mainPhoto,
-                                    memoryImage: place.mainPhoto,
-                                    placeName: place.name!,
-                                    ratingsTotal: place.rating,
-                                    placeDescription: place.reviews![0]['text'],
-                                    closingTime: place.hours![0],
-                                    placeLocation: place.city!),
-                              ),
-                            )
-                        ];
+                        // rows = [
+                        //   for (Place place in places)
+                        //     Padding(
+                        //       padding: const EdgeInsets.symmetric(
+                        //           vertical: 4.0, horizontal: 8.0),
+                        //       child: PlaceCard(
+                        //           place: place,
+                        //           placeList: currentPlaceList,
+                        //           imageUrl: place.mainPhoto,
+                        //           memoryImage: place.mainPhoto,
+                        //           placeName: place.name!,
+                        //           ratingsTotal: place.rating,
+                        //           placeDescription: place.reviews![0]['text'],
+                        //           closingTime: place.hours![0],
+                        //           placeLocation: place.city!),
+                        //     )
+                        // ];
                         if (state.places.length < 5) {
                           for (int i = 0; i < 5 - state.places.length; i++) {
                             rows.add(Opacity(
@@ -297,6 +294,7 @@ class _CategoryPageState extends State<CategoryPage> {
                             alignment: AlignmentDirectional.bottomCenter,
                             children: [
                               CustomScrollView(
+                                cacheExtent: 1000,
                                 controller: mainScrollController,
                                 slivers: [
                                   CategoryPageAppBar(
@@ -314,14 +312,22 @@ class _CategoryPageState extends State<CategoryPage> {
                                       currentPlaceList: currentPlaceList,
                                       controller: controller,
                                       places: places),
-                                  ReorderableSliverList(
-                                    enabled: false,
-                                    onReorder: _onReorder,
-                                    delegate:
-                                        ReorderableSliverChildBuilderDelegate(
-                                            childCount: rows.length,
-                                            (context, index) {
-                                      return rows[index];
+                                  SliverList(
+                                    delegate: SliverChildBuilderDelegate(
+                                        childCount: places.length,
+                                        (context, index) {
+                                      Place place = places[index];
+                                      return PlaceCard(
+                                          place: place,
+                                          placeList: currentPlaceList,
+                                          imageUrl: place.mainPhoto,
+                                          memoryImage: place.mainPhoto,
+                                          placeName: place.name!,
+                                          ratingsTotal: place.rating,
+                                          placeDescription: place.reviews![0]
+                                              ['text'],
+                                          closingTime: place.hours![0],
+                                          placeLocation: place.city!);
                                     }),
                                   )
                                 ],
@@ -486,7 +492,6 @@ class _CategoryPageState extends State<CategoryPage> {
 
   @override
   void dispose() {
-    // TODO: implement dispose
     draggableScrollableController.dispose();
     super.dispose();
   }

@@ -19,7 +19,7 @@ import '../places/view_place_sheet.dart';
 
 class RandomPlaceBar extends StatelessWidget {
   final List<GlobalKey> keys;
-  final PlaceList currentPlaceList;
+  final PlaceList? currentPlaceList;
   const RandomPlaceBar({
     super.key,
     required this.keys,
@@ -29,10 +29,11 @@ class RandomPlaceBar extends StatelessWidget {
   });
 
   final StreamController<int> controller;
-  final List<Place> places;
+  final List<Place>? places;
 
   @override
   Widget build(BuildContext context) {
+    bool placeListLoaded = currentPlaceList != null && places != null;
     return BlocBuilder<RandomWheelCubit, RandomWheelState>(
       builder: (context, state) {
         ScrollController scrollController = ScrollController();
@@ -51,15 +52,22 @@ class RandomPlaceBar extends StatelessWidget {
                 child: FortuneBar(
                     styleStrategy: const AlternatingStyleStrategy(),
                     selected: controller.stream,
-                    onFling: () async {
-                      Random random = Random();
-                      int randomInt = random.nextInt(places.length);
-                      controller.add(randomInt);
-                      Place place = places[randomInt];
-                      context.read<RandomWheelCubit>().wheelHasChosen(place);
-                      await Future.delayed(const Duration(seconds: 8),
-                          () => context.read<RandomWheelCubit>().resetWheel());
-                    },
+                    onFling: placeListLoaded == false
+                        ? () {}
+                        : () async {
+                            Random random = Random();
+                            int randomInt = random.nextInt(places!.length);
+                            controller.add(randomInt);
+                            Place place = places![randomInt];
+                            context
+                                .read<RandomWheelCubit>()
+                                .wheelHasChosen(place);
+                            await Future.delayed(
+                                const Duration(seconds: 8),
+                                () => context
+                                    .read<RandomWheelCubit>()
+                                    .resetWheel());
+                          },
                     onAnimationEnd: () async {
                       context.read<ViewPlaceCubit>().viewPlace(
                           context.read<RandomWheelCubit>().selectedPlace!);
@@ -76,23 +84,25 @@ class RandomPlaceBar extends StatelessWidget {
                       );
                     },
                     animateFirst: false,
-                    items: [
-                      for (Place place in places)
-                        FortuneItem(
-                          child: SizedBox(
-                            child: Padding(
-                              padding:
-                                  const EdgeInsets.symmetric(horizontal: 16.0),
-                              child: Text(
-                                place.name!,
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                                textAlign: TextAlign.center,
+                    items: placeListLoaded == false
+                        ? []
+                        : [
+                            for (Place place in places!)
+                              FortuneItem(
+                                child: SizedBox(
+                                  child: Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 16.0),
+                                    child: Text(
+                                      place.name!,
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                      textAlign: TextAlign.center,
+                                    ),
+                                  ),
+                                ),
                               ),
-                            ),
-                          ),
-                        ),
-                    ]),
+                          ]),
               ),
             ),
           );
@@ -117,8 +127,8 @@ class PlaceListButtonBar extends StatefulWidget {
     required this.places,
   });
 
-  final List<Place> places;
-  final PlaceList currentPlaceList;
+  final List<Place>? places;
+  final PlaceList? currentPlaceList;
 
   @override
   State<PlaceListButtonBar> createState() => _PlaceListButtonBarState();
@@ -127,6 +137,8 @@ class PlaceListButtonBar extends StatefulWidget {
 class _PlaceListButtonBarState extends State<PlaceListButtonBar> {
   @override
   Widget build(BuildContext context) {
+    bool placeListLoaded =
+        widget.currentPlaceList != null && widget.places != null;
     String dropdownValue = context.watch<ListSortCubit>().state.status!;
     return SliverToBoxAdapter(
       child: Padding(
@@ -157,30 +169,33 @@ class _PlaceListButtonBarState extends State<PlaceListButtonBar> {
                       child: Text('Visited'),
                     ),
                   ],
-                  onChanged: (value) {
-                    if (value != dropdownValue) {
-                      setState(() {
-                        dropdownValue = value!;
-                      });
-                      switch (value) {
-                        case 'Visited':
-                          context
-                              .read<ListSortCubit>()
-                              .sortByVisitedStatus('Visited');
-                          context.read<SavedPlacesBloc>().add(LoadVisitedPlaces(
-                              placeList: widget.currentPlaceList));
-                          break;
+                  onChanged: placeListLoaded == false
+                      ? (value) {}
+                      : (value) {
+                          if (value != dropdownValue) {
+                            setState(() {
+                              dropdownValue = value!;
+                            });
+                            switch (value) {
+                              case 'Visited':
+                                context
+                                    .read<ListSortCubit>()
+                                    .sortByVisitedStatus('Visited');
+                                context.read<SavedPlacesBloc>().add(
+                                    LoadVisitedPlaces(
+                                        placeList: widget.currentPlaceList!));
+                                break;
 
-                        case 'Not Visited':
-                          context
-                              .read<ListSortCubit>()
-                              .sortByVisitedStatus('Not Visited');
-                          context.read<SavedPlacesBloc>().add(
-                              LoadPlaces(placeList: widget.currentPlaceList));
-                          break;
-                      }
-                    }
-                  },
+                              case 'Not Visited':
+                                context
+                                    .read<ListSortCubit>()
+                                    .sortByVisitedStatus('Not Visited');
+                                context.read<SavedPlacesBloc>().add(LoadPlaces(
+                                    placeList: widget.currentPlaceList!));
+                                break;
+                            }
+                          }
+                        },
                 ),
               ),
             ),
@@ -199,8 +214,7 @@ class _PlaceListButtonBarState extends State<PlaceListButtonBar> {
                         'Select multiple places to mark visited, delete, etc.',
                     child: EditButton(
                         places: widget.places,
-                        placeList:
-                            context.read<SavedPlacesBloc>().state.placeList!),
+                        placeList: widget.currentPlaceList),
                   ),
                   // const SizedBox(
                   //   width: 8.0,
@@ -238,9 +252,7 @@ class _PlaceListButtonBarState extends State<PlaceListButtonBar> {
                             true
                         ? 'Invite friends to join your list & help adding places!'
                         : 'Invite friends to join your list & help adding places!\n(Requires Premium)',
-                    child: InviteButton(
-                        placeList:
-                            context.read<SavedPlacesBloc>().state.placeList!),
+                    child: InviteButton(placeList: widget.currentPlaceList),
                   ),
                 ],
               ),

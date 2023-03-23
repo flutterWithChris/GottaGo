@@ -14,7 +14,7 @@ import 'package:loading_animation_widget/loading_animation_widget.dart';
 import '../../../model/place.dart';
 
 class GoButton extends StatelessWidget {
-  final List<Place> places;
+  final List<Place>? places;
   const GoButton({
     Key? key,
     required this.places,
@@ -60,19 +60,21 @@ class GoButton extends StatelessWidget {
             child: Animate(
               effects: const [SlideEffect()],
               child: ElevatedButton(
-                onPressed: places.isEmpty && places.length < 2
-                    ? () => ScaffoldMessenger.of(context)
-                            .showSnackBar(const SnackBar(
-                          content: Text(
-                            'Add at least two places!',
-                            style: TextStyle(color: Colors.white),
-                          ),
-                          backgroundColor: Colors.red,
-                        ))
-                    : () {
-                        context.read<RandomWheelCubit>().loadWheel(places);
-                        //context.goNamed('random-wheel');
-                      },
+                onPressed: places != null
+                    ? places!.isEmpty && places!.length < 2
+                        ? () => ScaffoldMessenger.of(context)
+                                .showSnackBar(const SnackBar(
+                              content: Text(
+                                'Add at least two places!',
+                                style: TextStyle(color: Colors.white),
+                              ),
+                              backgroundColor: Colors.red,
+                            ))
+                        : () {
+                            context.read<RandomWheelCubit>().loadWheel(places!);
+                            //context.goNamed('random-wheel');
+                          }
+                    : () {},
                 style: ElevatedButton.styleFrom(
                   fixedSize: const Size(60, 35),
                   minimumSize: const Size(30, 30),
@@ -98,7 +100,7 @@ class GoButton extends StatelessWidget {
 }
 
 class InviteButton extends StatelessWidget {
-  final PlaceList placeList;
+  final PlaceList? placeList;
   const InviteButton({
     required this.placeList,
     Key? key,
@@ -118,20 +120,23 @@ class InviteButton extends StatelessWidget {
             child: Animate(
               effects: const [SlideEffect()],
               child: ElevatedButton(
-                onPressed: () {
-                  WidgetsBinding.instance
-                      .addPostFrameCallback((timeStamp) async {
-                    await showDialog(
-                      useRootNavigator: false,
-                      context: context,
-                      builder: (dialogContext) {
-                        return InviteDialog(
-                            placeList: placeList, dialogContext: dialogContext);
-                      },
-                    );
-                  });
-                  //context.goNamed('random-wheel');
-                },
+                onPressed: placeList != null
+                    ? () {
+                        WidgetsBinding.instance
+                            .addPostFrameCallback((timeStamp) async {
+                          await showDialog(
+                            useRootNavigator: false,
+                            context: context,
+                            builder: (dialogContext) {
+                              return InviteDialog(
+                                  placeList: placeList!,
+                                  dialogContext: dialogContext);
+                            },
+                          );
+                        });
+                        //context.goNamed('random-wheel');
+                      }
+                    : () {},
                 style: ElevatedButton.styleFrom(
                   fixedSize: const Size(60, 35),
                   minimumSize: const Size(30, 20),
@@ -191,8 +196,8 @@ class InviteButton extends StatelessWidget {
 }
 
 class EditButton extends StatelessWidget {
-  final PlaceList placeList;
-  final List<Place> places;
+  final PlaceList? placeList;
+  final List<Place>? places;
   const EditButton({
     required this.places,
     required this.placeList,
@@ -229,7 +234,7 @@ class EditButton extends StatelessWidget {
               );
             }
             return ElevatedButton(
-              onPressed: places.isEmpty
+              onPressed: places != null && places!.isEmpty
                   ? () =>
                       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
                         content: Text(

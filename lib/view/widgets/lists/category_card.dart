@@ -51,7 +51,7 @@ class CategoryCard extends StatelessWidget {
             builder: (context) {
               buildContext = context;
               return Padding(
-                padding: const EdgeInsets.fromLTRB(8.0, 8.0, 8.0, 8.0),
+                padding: const EdgeInsets.fromLTRB(8.0, 6.0, 8.0, 6.0),
                 child: SizedBox(
                   height: 125,
                   width: MediaQuery.of(context).size.width,

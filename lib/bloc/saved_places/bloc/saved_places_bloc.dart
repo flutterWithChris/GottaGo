@@ -72,7 +72,7 @@ class SavedPlacesBloc extends Bloc<SavedPlacesEvent, SavedPlacesState> {
         placeListRepository.getListOwner(event.placeList).listen((user) {
           listOwner = user;
         });
-        await Future.delayed(const Duration(milliseconds: 600));
+        await Future.delayed(const Duration(seconds: 1));
         emit(SavedPlacesLoaded(
             listOwner: listOwner!,
             places: savedPlaces,

@@ -12,6 +12,9 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:showcaseview/showcaseview.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import '../dialogs/review_card_dialog.dart';
+import '../tweens/custom_rect_tween.dart';
+
 class ViewPlaceSheet extends StatefulWidget {
   final Place place;
   final ScrollController scrollController;
@@ -159,7 +162,7 @@ class _ViewPlaceSheetState extends State<ViewPlaceSheet> {
                         ),
                         Padding(
                           padding: const EdgeInsets.only(
-                              left: 16.0, right: 16.0, top: 8.0, bottom: 4.0),
+                              left: 16.0, right: 16.0, top: 12.0, bottom: 8.0),
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             mainAxisSize: MainAxisSize.min,
@@ -237,6 +240,7 @@ class _ViewPlaceSheetState extends State<ViewPlaceSheet> {
                         Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 16.0),
                           child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               Flexible(
@@ -266,12 +270,9 @@ class _ViewPlaceSheetState extends State<ViewPlaceSheet> {
                                           child: Chip(
                                             label:
                                                 Text.rich(TextSpan(children: [
-                                              const TextSpan(
-                                                  text: 'Today: ',
-                                                  style: TextStyle(
-                                                      fontWeight:
-                                                          FontWeight.bold)),
-                                              TextSpan(text: todaysHours),
+                                              TextSpan(
+                                                  text:
+                                                      'Closes at $todaysHours'),
                                             ])),
                                           ),
                                         ),
@@ -310,112 +311,143 @@ class _ViewPlaceSheetState extends State<ViewPlaceSheet> {
                                       child: Padding(
                                         padding: const EdgeInsets.symmetric(
                                             horizontal: 4.0),
-                                        child: Card(
-                                          elevation: 1.6,
-                                          child: Center(
-                                              child: Padding(
-                                            padding: const EdgeInsets.symmetric(
-                                                vertical: 12.0,
-                                                horizontal: 16.0),
-                                            child: Column(
-                                              mainAxisSize: MainAxisSize.min,
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.start,
-                                              children: [
-                                                Text(
-                                                  '"${widget.place.reviews![index]['text']}"',
-                                                  maxLines: 4,
-                                                  overflow:
-                                                      TextOverflow.ellipsis,
-                                                ),
-                                                SizedBox(
-                                                  height: 40,
-                                                  width: 125,
-                                                  child: FittedBox(
-                                                    child: Wrap(
-                                                        crossAxisAlignment:
-                                                            WrapCrossAlignment
-                                                                .center,
-                                                        spacing: 8.0,
+                                        child: GestureDetector(
+                                          onTap: () {
+                                            // Navigator.of(context).push(
+                                            //     HeroDialogRoute(
+                                            //         builder: (context) {
+                                            //   return ReviewCardDialog(
+                                            //       review: thisReview);
+                                            // }));
+                                            showDialog(
+                                                context: context,
+                                                builder: (context) =>
+                                                    ReviewCardDialog(
+                                                      review: thisReview,
+                                                    ));
+                                            // context.push('/review-card-dialog',
+                                            //     extra: thisReview);
+                                          },
+                                          child: Hero(
+                                            //transitionOnUserGestures: true,
+                                            createRectTween: (begin, end) {
+                                              return CustomRectTween(
+                                                  begin: begin!, end: end!);
+                                            },
+                                            tag: 'reviewHero',
+                                            child: Card(
+                                              elevation: 1.6,
+                                              child: Center(
+                                                  child: Padding(
+                                                padding:
+                                                    const EdgeInsets.symmetric(
+                                                        vertical: 12.0,
+                                                        horizontal: 16.0),
+                                                child: Column(
+                                                  mainAxisSize:
+                                                      MainAxisSize.min,
+                                                  crossAxisAlignment:
+                                                      CrossAxisAlignment.start,
+                                                  children: [
+                                                    Text(
+                                                      '"${widget.place.reviews![index]['text']}"',
+                                                      maxLines: 4,
+                                                      overflow:
+                                                          TextOverflow.ellipsis,
+                                                    ),
+                                                    SizedBox(
+                                                      height: 40,
+                                                      width: 125,
+                                                      child: FittedBox(
+                                                        child: Wrap(
+                                                            crossAxisAlignment:
+                                                                WrapCrossAlignment
+                                                                    .center,
+                                                            spacing: 8.0,
+                                                            children: [
+                                                              RatingBar.builder(
+                                                                  allowHalfRating:
+                                                                      true,
+                                                                  itemSize: 12,
+                                                                  itemCount: 5,
+                                                                  ignoreGestures:
+                                                                      true,
+                                                                  initialRating:
+                                                                      thisReview[
+                                                                              'rating']
+                                                                          .toDouble(),
+                                                                  itemBuilder:
+                                                                      (context,
+                                                                          index) {
+                                                                    return const Icon(
+                                                                      Icons
+                                                                          .star,
+                                                                      color: Colors
+                                                                          .amber,
+                                                                    );
+                                                                  },
+                                                                  onRatingUpdate:
+                                                                      (value) {}),
+                                                              Text(
+                                                                '${thisReview['rating'].toString()}.0',
+                                                                style: Theme.of(
+                                                                        context)
+                                                                    .textTheme
+                                                                    .bodySmall!
+                                                                    .copyWith(
+                                                                        fontSize:
+                                                                            10,
+                                                                        fontWeight:
+                                                                            FontWeight.bold),
+                                                              )
+                                                            ]),
+                                                      ),
+                                                    ),
+                                                    Padding(
+                                                      padding: const EdgeInsets
+                                                              .symmetric(
+                                                          vertical: 8.0),
+                                                      child: Row(
                                                         children: [
-                                                          RatingBar.builder(
-                                                              allowHalfRating:
-                                                                  true,
-                                                              itemSize: 12,
-                                                              itemCount: 5,
-                                                              ignoreGestures:
-                                                                  true,
-                                                              initialRating:
-                                                                  thisReview[
-                                                                          'rating']
-                                                                      .toDouble(),
-                                                              itemBuilder:
-                                                                  (context,
-                                                                      index) {
-                                                                return const Icon(
-                                                                  Icons.star,
-                                                                  color: Colors
-                                                                      .amber,
-                                                                );
-                                                              },
-                                                              onRatingUpdate:
-                                                                  (value) {}),
-                                                          Text(
-                                                            '${thisReview['rating'].toString()}.0',
-                                                            style: Theme.of(
-                                                                    context)
-                                                                .textTheme
-                                                                .bodySmall!
-                                                                .copyWith(
-                                                                    fontSize:
-                                                                        10,
+                                                          Flexible(
+                                                            child: CircleAvatar(
+                                                              radius: 16,
+                                                              child: CachedNetworkImage(
+                                                                  imageUrl:
+                                                                      thisReview[
+                                                                          'profile_photo_url']),
+                                                            ),
+                                                          ),
+                                                          const SizedBox(
+                                                            width: 12.0,
+                                                          ),
+                                                          Flexible(
+                                                            flex: 4,
+                                                            child: FittedBox(
+                                                              child: Text(
+                                                                thisReview[
+                                                                    'author_name'],
+                                                                overflow:
+                                                                    TextOverflow
+                                                                        .ellipsis,
+                                                                style: const TextStyle(
                                                                     fontWeight:
                                                                         FontWeight
                                                                             .bold),
-                                                          )
-                                                        ]),
-                                                  ),
-                                                ),
-                                                Padding(
-                                                  padding: const EdgeInsets
-                                                      .symmetric(vertical: 8.0),
-                                                  child: Row(
-                                                    children: [
-                                                      Flexible(
-                                                        child: CircleAvatar(
-                                                          radius: 16,
-                                                          child: CachedNetworkImage(
-                                                              imageUrl: thisReview[
-                                                                  'profile_photo_url']),
-                                                        ),
-                                                      ),
-                                                      const SizedBox(
-                                                        width: 12.0,
-                                                      ),
-                                                      Flexible(
-                                                        flex: 4,
-                                                        child: FittedBox(
-                                                          child: Text(
-                                                            thisReview[
-                                                                'author_name'],
-                                                            overflow:
-                                                                TextOverflow
-                                                                    .ellipsis,
-                                                            style: const TextStyle(
-                                                                fontWeight:
-                                                                    FontWeight
-                                                                        .bold),
-                                                            textAlign:
-                                                                TextAlign.left,
+                                                                textAlign:
+                                                                    TextAlign
+                                                                        .left,
+                                                              ),
+                                                            ),
                                                           ),
-                                                        ),
+                                                        ],
                                                       ),
-                                                    ],
-                                                  ),
+                                                    ),
+                                                  ],
                                                 ),
-                                              ],
+                                              )),
                                             ),
-                                          )),
+                                          ),
                                         ),
                                       ),
                                     );

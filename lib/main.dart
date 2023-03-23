@@ -48,6 +48,10 @@ void main() async {
   FlutterFireUIAuth.configureProviders(
       [GoogleProviderConfiguration(clientId: dotenv.get('GOOGLE_CLIENT_ID'))]);
 
+// TODO: Uncomment this to enable Crashlytics in your application.
+  // Pass all uncaught errors from the framework to Crashlytics.
+  //FlutterError.onError = FirebaseCrashlytics.instance.recordFlutterFatalError;
+
   runApp(const MyApp());
 }
 

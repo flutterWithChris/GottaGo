@@ -11,7 +11,6 @@ import 'package:leggo/view/widgets/lists/create_list_dialog.dart';
 import 'package:leggo/view/widgets/main_bottom_navbar.dart';
 import 'package:leggo/view/widgets/main_top_app_bar.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
-import 'package:reorderables/reorderables.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:showcaseview/showcaseview.dart';
 
@@ -182,6 +181,7 @@ class _MyHomePageState extends State<MyHomePage> {
                         }
 
                         return CustomScrollView(
+                          cacheExtent: 1500,
                           controller: mainScrollController,
                           slivers: [
                             const MainTopAppBar(),
@@ -189,13 +189,12 @@ class _MyHomePageState extends State<MyHomePage> {
                             const SliverToBoxAdapter(
                               child: SizedBox(height: 12.0),
                             ),
-                            ReorderableSliverList(
-                                enabled: false,
-                                delegate: ReorderableSliverChildBuilderDelegate(
-                                    childCount: rows.length, (context, index) {
-                                  return rows[index];
-                                }),
-                                onReorder: _onReorderSampleItem)
+                            SliverList(
+                              delegate: SliverChildBuilderDelegate(
+                                  childCount: rows.length, (context, index) {
+                                return rows[index];
+                              }),
+                            )
                           ],
                         );
                       } else {
