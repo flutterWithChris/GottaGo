@@ -265,14 +265,16 @@ class _ViewPlaceSheetState extends State<ViewPlaceSheet> {
                                   ? Flexible(
                                       flex: 1,
                                       child: SizedBox(
-                                        height: 40,
+                                        height: 38,
                                         child: FittedBox(
                                           child: Chip(
                                             label:
                                                 Text.rich(TextSpan(children: [
                                               TextSpan(
-                                                  text:
-                                                      'Closes at $todaysHours'),
+                                                  text: 'Open: $todaysHours',
+                                                  style: const TextStyle(
+                                                      fontWeight:
+                                                          FontWeight.bold)),
                                             ])),
                                           ),
                                         ),
