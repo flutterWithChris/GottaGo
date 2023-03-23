@@ -16,6 +16,9 @@ import 'package:leggo/model/place.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:material_floating_search_bar/material_floating_search_bar.dart';
 
+import '../dialogs/review_card_dialog.dart';
+import '../tweens/custom_rect_tween.dart';
+
 class SearchPlacesSheet extends StatefulWidget {
   const SearchPlacesSheet({
     Key? key,
@@ -127,6 +130,10 @@ class _SearchPlacesSheetState extends State<SearchPlacesSheet> {
                                               googlePlace.website != null
                                                   ? CircleAvatar(
                                                       radius: 18,
+                                                      backgroundColor:
+                                                          Theme.of(context)
+                                                              .colorScheme
+                                                              .secondary,
                                                       child: IconButton(
                                                         onPressed: () {
                                                           launchWebView(Uri
@@ -144,6 +151,10 @@ class _SearchPlacesSheetState extends State<SearchPlacesSheet> {
                                                       null
                                                   ? CircleAvatar(
                                                       radius: 18,
+                                                      backgroundColor:
+                                                          Theme.of(context)
+                                                              .colorScheme
+                                                              .secondary,
                                                       child: IconButton(
                                                         onPressed: () {
                                                           launchCall(Uri(
@@ -356,112 +367,136 @@ class _SearchPlacesSheetState extends State<SearchPlacesSheet> {
                                                     padding: const EdgeInsets
                                                             .symmetric(
                                                         horizontal: 4.0),
-                                                    child: Card(
-                                                      elevation: 1.6,
-                                                      child: Center(
-                                                          child: Padding(
-                                                        padding:
-                                                            const EdgeInsets
-                                                                    .symmetric(
-                                                                vertical: 12.0,
-                                                                horizontal:
-                                                                    16.0),
-                                                        child: Column(
-                                                          mainAxisSize:
-                                                              MainAxisSize.min,
-                                                          crossAxisAlignment:
-                                                              CrossAxisAlignment
-                                                                  .start,
-                                                          children: [
-                                                            Text(
-                                                              '"${state.googlePlace.reviews![index]['text']}"',
-                                                              maxLines: 4,
-                                                              overflow:
-                                                                  TextOverflow
-                                                                      .ellipsis,
-                                                            ),
-                                                            SizedBox(
-                                                              height: 40,
-                                                              width: 125,
-                                                              child: FittedBox(
-                                                                child: Wrap(
-                                                                    crossAxisAlignment:
-                                                                        WrapCrossAlignment
-                                                                            .center,
-                                                                    spacing:
-                                                                        8.0,
-                                                                    children: [
-                                                                      RatingBar.builder(
-                                                                          allowHalfRating: true,
-                                                                          itemSize: 12,
-                                                                          itemCount: 5,
-                                                                          ignoreGestures: true,
-                                                                          initialRating: thisReview['rating'].toDouble(),
-                                                                          itemBuilder: (context, index) {
-                                                                            return const Icon(
-                                                                              Icons.star,
-                                                                              color: Colors.amber,
-                                                                            );
-                                                                          },
-                                                                          onRatingUpdate: (value) {}),
-                                                                      Text(
-                                                                        '${thisReview['rating'].toString()}.0',
-                                                                        style: Theme.of(context)
-                                                                            .textTheme
-                                                                            .bodySmall!
-                                                                            .copyWith(
-                                                                              fontWeight: FontWeight.bold,
-                                                                              fontSize: 10,
-                                                                            ),
-                                                                      )
-                                                                    ]),
-                                                              ),
-                                                            ),
-                                                            Padding(
-                                                              padding:
-                                                                  const EdgeInsets
+                                                    child: GestureDetector(
+                                                      onTap: () {
+                                                        // Navigator.of(context).push(
+                                                        //     HeroDialogRoute(
+                                                        //         builder: (context) {
+                                                        //   return ReviewCardDialog(
+                                                        //       review: thisReview);
+                                                        // }));
+                                                        showDialog(
+                                                            context: context,
+                                                            builder: (context) =>
+                                                                ReviewCardDialog(
+                                                                  review:
+                                                                      thisReview,
+                                                                ));
+                                                        // context.push('/review-card-dialog',
+                                                        //     extra: thisReview);
+                                                      },
+                                                      child: Hero(
+                                                        //transitionOnUserGestures: true,
+                                                        createRectTween:
+                                                            (begin, end) {
+                                                          return CustomRectTween(
+                                                              begin: begin!,
+                                                              end: end!);
+                                                        },
+                                                        tag: 'reviewHero',
+                                                        child: Card(
+                                                          elevation: 1.6,
+                                                          child: Center(
+                                                              child: Padding(
+                                                            padding:
+                                                                const EdgeInsets
+                                                                        .symmetric(
+                                                                    vertical:
+                                                                        12.0,
+                                                                    horizontal:
+                                                                        16.0),
+                                                            child: Column(
+                                                              mainAxisSize:
+                                                                  MainAxisSize
+                                                                      .min,
+                                                              crossAxisAlignment:
+                                                                  CrossAxisAlignment
+                                                                      .start,
+                                                              children: [
+                                                                Text(
+                                                                  '"${state.googlePlace.reviews![index]['text']}"',
+                                                                  maxLines: 4,
+                                                                  overflow:
+                                                                      TextOverflow
+                                                                          .ellipsis,
+                                                                ),
+                                                                SizedBox(
+                                                                  height: 40,
+                                                                  width: 125,
+                                                                  child:
+                                                                      FittedBox(
+                                                                    child: Wrap(
+                                                                        crossAxisAlignment:
+                                                                            WrapCrossAlignment
+                                                                                .center,
+                                                                        spacing:
+                                                                            8.0,
+                                                                        children: [
+                                                                          RatingBar.builder(
+                                                                              allowHalfRating: true,
+                                                                              itemSize: 12,
+                                                                              itemCount: 5,
+                                                                              ignoreGestures: true,
+                                                                              initialRating: thisReview['rating'].toDouble(),
+                                                                              itemBuilder: (context, index) {
+                                                                                return const Icon(
+                                                                                  Icons.star,
+                                                                                  color: Colors.amber,
+                                                                                );
+                                                                              },
+                                                                              onRatingUpdate: (value) {}),
+                                                                          Text(
+                                                                            '${thisReview['rating'].toString()}.0',
+                                                                            style:
+                                                                                Theme.of(context).textTheme.bodySmall!.copyWith(fontSize: 10, fontWeight: FontWeight.bold),
+                                                                          )
+                                                                        ]),
+                                                                  ),
+                                                                ),
+                                                                Padding(
+                                                                  padding: const EdgeInsets
                                                                           .symmetric(
                                                                       vertical:
                                                                           8.0),
-                                                              child: Row(
-                                                                children: [
-                                                                  Flexible(
-                                                                    child:
-                                                                        CircleAvatar(
-                                                                      radius:
-                                                                          16,
-                                                                      child: CachedNetworkImage(
-                                                                          imageUrl:
-                                                                              thisReview['profile_photo_url']),
-                                                                    ),
-                                                                  ),
-                                                                  const SizedBox(
-                                                                    width: 12.0,
-                                                                  ),
-                                                                  Flexible(
-                                                                    flex: 4,
-                                                                    child:
-                                                                        FittedBox(
-                                                                      child:
-                                                                          Text(
-                                                                        thisReview[
-                                                                            'author_name'],
-                                                                        overflow:
-                                                                            TextOverflow.ellipsis,
-                                                                        style: const TextStyle(
-                                                                            fontWeight:
-                                                                                FontWeight.bold),
-                                                                        textAlign:
-                                                                            TextAlign.left,
+                                                                  child: Row(
+                                                                    children: [
+                                                                      Flexible(
+                                                                        child:
+                                                                            CircleAvatar(
+                                                                          radius:
+                                                                              16,
+                                                                          child:
+                                                                              CachedNetworkImage(imageUrl: thisReview['profile_photo_url']),
+                                                                        ),
                                                                       ),
-                                                                    ),
+                                                                      const SizedBox(
+                                                                        width:
+                                                                            12.0,
+                                                                      ),
+                                                                      Flexible(
+                                                                        flex: 4,
+                                                                        child:
+                                                                            FittedBox(
+                                                                          child:
+                                                                              Text(
+                                                                            thisReview['author_name'],
+                                                                            overflow:
+                                                                                TextOverflow.ellipsis,
+                                                                            style:
+                                                                                const TextStyle(fontWeight: FontWeight.bold),
+                                                                            textAlign:
+                                                                                TextAlign.left,
+                                                                          ),
+                                                                        ),
+                                                                      ),
+                                                                    ],
                                                                   ),
-                                                                ],
-                                                              ),
+                                                                ),
+                                                              ],
                                                             ),
-                                                          ],
+                                                          )),
                                                         ),
-                                                      )),
+                                                      ),
                                                     ),
                                                   ),
                                                 );
