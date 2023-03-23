@@ -51,7 +51,7 @@ class ProfilePage extends StatelessWidget {
               slivers: [
                 const MainTopAppBar(),
                 const SliverToBoxAdapter(
-                  child: SizedBox(height: 30.0),
+                  child: SizedBox(height: 40.0),
                 ),
                 SliverToBoxAdapter(
                   child: Center(
@@ -98,188 +98,186 @@ class ProfilePage extends StatelessWidget {
                     child: FractionallySizedBox(
                       heightFactor: 0.9,
                       widthFactor: 1,
-                      child: Card(
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 24.0, vertical: 20.0),
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Row(
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 24.0, vertical: 20.0),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Row(
+                              children: [
+                                Text(
+                                  'Your Lists & Places',
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .titleMedium!
+                                      .copyWith(
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 18),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(
+                              height: 4.0,
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.symmetric(
+                                  vertical: 16.0, horizontal: 4.0),
+                              child: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
                                 children: [
-                                  Text(
-                                    'Your Lists & Places',
-                                    style: Theme.of(context)
-                                        .textTheme
-                                        .titleMedium!
-                                        .copyWith(
-                                            fontWeight: FontWeight.bold,
-                                            fontSize: 18),
+                                  Column(
+                                    children: const [
+                                      Icon(
+                                        Icons.list_alt_rounded,
+                                        size: 40,
+                                      ),
+                                      SizedBox(
+                                        height: 4.0,
+                                      ),
+                                      Text('Lists')
+                                    ],
+                                  ),
+                                  Column(
+                                    children: [
+                                      Text(
+                                        state.user.placeListIds?.length
+                                                .toString() ??
+                                            '0',
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .titleLarge,
+                                      ),
+                                      const SizedBox(
+                                        height: 4.0,
+                                      ),
+                                      const Text('Lists')
+                                    ],
+                                  ),
+                                  Column(
+                                    children: [
+                                      Text(
+                                        context
+                                            .read<SavedListsBloc>()
+                                            .myPlaceLists
+                                            .where((element) => element
+                                                .contributorIds.isNotEmpty)
+                                            .length
+                                            .toString(),
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .titleLarge,
+                                      ),
+                                      const SizedBox(
+                                        height: 4.0,
+                                      ),
+                                      const Text(
+                                        'Shared',
+                                        textAlign: TextAlign.center,
+                                      )
+                                    ],
                                   ),
                                 ],
                               ),
-                              const SizedBox(
-                                height: 4.0,
+                            ),
+                            const Divider(),
+                            Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(vertical: 16.0),
+                              child: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Column(
+                                    children: const [
+                                      Icon(
+                                        Icons.location_pin,
+                                        size: 30,
+                                      ),
+                                      SizedBox(
+                                        height: 4.0,
+                                      ),
+                                      Text('Places')
+                                    ],
+                                  ),
+                                  Column(
+                                    children: [
+                                      FutureBuilder(
+                                          future: context
+                                              .read<PlaceListRepository>()
+                                              .getSavedPlacesTotalCount(
+                                                  state.user),
+                                          builder: (context, snapshot) {
+                                            var data = snapshot.data;
+                                            if (data is int) {
+                                              return Text(
+                                                data.toString(),
+                                                style: Theme.of(context)
+                                                    .textTheme
+                                                    .titleLarge,
+                                              );
+                                            } else {
+                                              return SizedBox(
+                                                height: 28,
+                                                child: LoadingAnimationWidget
+                                                    .staggeredDotsWave(
+                                                        color: FlexColor
+                                                            .bahamaBlueDarkSecondary,
+                                                        size: 16.0),
+                                              );
+                                            }
+                                          }),
+                                      const SizedBox(
+                                        height: 4.0,
+                                      ),
+                                      const Text(
+                                        'Not Visited',
+                                        textAlign: TextAlign.center,
+                                      )
+                                    ],
+                                  ),
+                                  Column(
+                                    children: [
+                                      FutureBuilder(
+                                          future: context
+                                              .read<PlaceListRepository>()
+                                              .getVisitedPlacesTotalCount(
+                                                  state.user),
+                                          builder: (context, snapshot) {
+                                            var data = snapshot.data;
+                                            if (data is int) {
+                                              return Text(
+                                                data.toString(),
+                                                style: Theme.of(context)
+                                                    .textTheme
+                                                    .titleLarge,
+                                              );
+                                            } else {
+                                              return SizedBox(
+                                                height: 28,
+                                                child: LoadingAnimationWidget
+                                                    .staggeredDotsWave(
+                                                        color: FlexColor
+                                                            .bahamaBlueDarkSecondary,
+                                                        size: 16.0),
+                                              );
+                                            }
+                                          }),
+                                      const SizedBox(
+                                        height: 4.0,
+                                      ),
+                                      const Text(
+                                        'Visited',
+                                        textAlign: TextAlign.center,
+                                      )
+                                    ],
+                                  ),
+                                ],
                               ),
-                              Padding(
-                                padding: const EdgeInsets.symmetric(
-                                    vertical: 16.0, horizontal: 4.0),
-                                child: Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    Column(
-                                      children: const [
-                                        Icon(
-                                          Icons.list_alt_rounded,
-                                          size: 40,
-                                        ),
-                                        SizedBox(
-                                          height: 4.0,
-                                        ),
-                                        Text('Lists')
-                                      ],
-                                    ),
-                                    Column(
-                                      children: [
-                                        Text(
-                                          state.user.placeListIds?.length
-                                                  .toString() ??
-                                              '0',
-                                          style: Theme.of(context)
-                                              .textTheme
-                                              .titleLarge,
-                                        ),
-                                        const SizedBox(
-                                          height: 4.0,
-                                        ),
-                                        const Text('Lists')
-                                      ],
-                                    ),
-                                    Column(
-                                      children: [
-                                        Text(
-                                          context
-                                              .read<SavedListsBloc>()
-                                              .myPlaceLists
-                                              .where((element) => element
-                                                  .contributorIds.isNotEmpty)
-                                              .length
-                                              .toString(),
-                                          style: Theme.of(context)
-                                              .textTheme
-                                              .titleLarge,
-                                        ),
-                                        const SizedBox(
-                                          height: 4.0,
-                                        ),
-                                        const Text(
-                                          'Shared',
-                                          textAlign: TextAlign.center,
-                                        )
-                                      ],
-                                    ),
-                                  ],
-                                ),
-                              ),
-                              const Divider(),
-                              Padding(
-                                padding:
-                                    const EdgeInsets.symmetric(vertical: 16.0),
-                                child: Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    Column(
-                                      children: const [
-                                        Icon(
-                                          Icons.location_pin,
-                                          size: 30,
-                                        ),
-                                        SizedBox(
-                                          height: 4.0,
-                                        ),
-                                        Text('Places')
-                                      ],
-                                    ),
-                                    Column(
-                                      children: [
-                                        FutureBuilder(
-                                            future: context
-                                                .read<PlaceListRepository>()
-                                                .getSavedPlacesTotalCount(
-                                                    state.user),
-                                            builder: (context, snapshot) {
-                                              var data = snapshot.data;
-                                              if (data is int) {
-                                                return Text(
-                                                  data.toString(),
-                                                  style: Theme.of(context)
-                                                      .textTheme
-                                                      .titleLarge,
-                                                );
-                                              } else {
-                                                return SizedBox(
-                                                  height: 28,
-                                                  child: LoadingAnimationWidget
-                                                      .staggeredDotsWave(
-                                                          color: FlexColor
-                                                              .bahamaBlueDarkSecondary,
-                                                          size: 16.0),
-                                                );
-                                              }
-                                            }),
-                                        const SizedBox(
-                                          height: 4.0,
-                                        ),
-                                        const Text(
-                                          'Not Visited',
-                                          textAlign: TextAlign.center,
-                                        )
-                                      ],
-                                    ),
-                                    Column(
-                                      children: [
-                                        FutureBuilder(
-                                            future: context
-                                                .read<PlaceListRepository>()
-                                                .getVisitedPlacesTotalCount(
-                                                    state.user),
-                                            builder: (context, snapshot) {
-                                              var data = snapshot.data;
-                                              if (data is int) {
-                                                return Text(
-                                                  data.toString(),
-                                                  style: Theme.of(context)
-                                                      .textTheme
-                                                      .titleLarge,
-                                                );
-                                              } else {
-                                                return SizedBox(
-                                                  height: 28,
-                                                  child: LoadingAnimationWidget
-                                                      .staggeredDotsWave(
-                                                          color: FlexColor
-                                                              .bahamaBlueDarkSecondary,
-                                                          size: 16.0),
-                                                );
-                                              }
-                                            }),
-                                        const SizedBox(
-                                          height: 4.0,
-                                        ),
-                                        const Text(
-                                          'Visited',
-                                          textAlign: TextAlign.center,
-                                        )
-                                      ],
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ],
-                          ),
+                            ),
+                          ],
                         ),
                       ),
                     ),

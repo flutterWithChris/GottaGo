@@ -81,7 +81,7 @@ class _CategoryPageAppBarState extends State<CategoryPageAppBar> {
       actionsIconTheme: IconThemeData(
           color: Theme.of(context).brightness == Brightness.dark
               ? Colors.white
-              : FlexColor.bahamaBlueLightPrimary),
+              : Colors.grey[800]),
       title: AnimatedPadding(
         curve: Curves.easeOutSine,
         duration: const Duration(milliseconds: 300),
@@ -119,6 +119,10 @@ class _CategoryPageAppBarState extends State<CategoryPageAppBar> {
                               child: Icon(
                                 deserializeIcon(widget.placeList.icon) ??
                                     Icons.list_alt_rounded,
+                                color: Theme.of(context).brightness ==
+                                        Brightness.dark
+                                    ? Colors.white
+                                    : Colors.grey[800],
                                 size: widget.placeList.icon
                                         .containsValue('fontAwesomeIcons')
                                     ? 28
@@ -202,7 +206,7 @@ class _CategoryPageAppBarState extends State<CategoryPageAppBar> {
             icon: Icon(
               Icons.more_vert_rounded,
               color: Theme.of(context).brightness == Brightness.light
-                  ? FlexColor.bahamaBlueLightPrimary
+                  ? Colors.grey[800]
                   : Colors.white,
             ),
             itemBuilder: (context) => <PopupMenuEntry>[

@@ -67,14 +67,17 @@ class CategoryCard extends StatelessWidget {
                         children: [
                           ListTile(
                             trailing: Padding(
-                              padding: const EdgeInsets.only(bottom: 16.0),
+                              padding: const EdgeInsets.only(bottom: 8.0),
                               child: PopupMenuButton(
+                                  // elevation: 0,
+                                  surfaceTintColor:
+                                      Theme.of(context).scaffoldBackgroundColor,
                                   position: PopupMenuPosition.under,
                                   icon: Icon(
                                     Icons.more_vert_rounded,
                                     color: Theme.of(context).brightness ==
                                             Brightness.light
-                                        ? FlexColor.bahamaBlueLightPrimary
+                                        ? Colors.grey[800]
                                         : Colors.white,
                                   ),
                                   itemBuilder: (context) => <PopupMenuEntry>[
@@ -203,7 +206,7 @@ class CategoryCard extends StatelessWidget {
                                               Icons.list_rounded,
                                           color: Theme.of(context).brightness ==
                                                   Brightness.light
-                                              ? FlexColor.bahamaBlueLightPrimary
+                                              ? Colors.grey[800]
                                               : Colors.white,
                                           size: placeList.icon.containsValue(
                                                   'fontAwesomeIcons')
@@ -255,7 +258,7 @@ class CategoryCard extends StatelessWidget {
                                               Icons.list_rounded,
                                           color: Theme.of(context).brightness ==
                                                   Brightness.light
-                                              ? FlexColor.bahamaBlueLightPrimary
+                                              ? Colors.grey[800]
                                               : Colors.white,
                                           size: placeList.icon.containsValue(
                                                   'fontAwesomeIcons')

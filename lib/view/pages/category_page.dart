@@ -317,17 +317,21 @@ class _CategoryPageState extends State<CategoryPage> {
                                         childCount: places.length,
                                         (context, index) {
                                       Place place = places[index];
-                                      return PlaceCard(
-                                          place: place,
-                                          placeList: currentPlaceList,
-                                          imageUrl: place.mainPhoto,
-                                          memoryImage: place.mainPhoto,
-                                          placeName: place.name!,
-                                          ratingsTotal: place.rating,
-                                          placeDescription: place.reviews![0]
-                                              ['text'],
-                                          closingTime: place.hours![0],
-                                          placeLocation: place.city!);
+                                      return Padding(
+                                        padding: const EdgeInsets.symmetric(
+                                            horizontal: 8.0, vertical: 4.0),
+                                        child: PlaceCard(
+                                            place: place,
+                                            placeList: currentPlaceList,
+                                            imageUrl: place.mainPhoto,
+                                            memoryImage: place.mainPhoto,
+                                            placeName: place.name!,
+                                            ratingsTotal: place.rating,
+                                            placeDescription: place.reviews![0]
+                                                ['text'],
+                                            closingTime: place.hours![0],
+                                            placeLocation: place.city!),
+                                      );
                                     }),
                                   )
                                 ],
