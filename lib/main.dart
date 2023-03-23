@@ -48,7 +48,7 @@ void main() async {
   FlutterFireUIAuth.configureProviders(
       [GoogleProviderConfiguration(clientId: dotenv.get('GOOGLE_CLIENT_ID'))]);
 
-// TODO: Uncomment this to enable Crashlytics in your application.
+// ! TODO: Uncomment this to enable Crashlytics in your application.
   // Pass all uncaught errors from the framework to Crashlytics.
   //FlutterError.onError = FirebaseCrashlytics.instance.recordFlutterFatalError;
 
@@ -181,7 +181,11 @@ class _MyAppState extends State<MyApp> {
                 scheme: FlexScheme.bahamaBlue,
                 surfaceMode: FlexSurfaceMode.levelSurfacesLowScaffold,
                 blendLevel: 9,
+                secondary: const Color(0xFFDD520F),
                 subThemesData: const FlexSubThemesData(
+                  elevatedButtonSchemeColor: SchemeColor.onPrimary,
+                  elevatedButtonSecondarySchemeColor: SchemeColor.secondary,
+                  fabSchemeColor: SchemeColor.secondary,
                   bottomSheetModalElevation: 0,
                   cardElevation: 0.6,
                   defaultRadius: 20,
