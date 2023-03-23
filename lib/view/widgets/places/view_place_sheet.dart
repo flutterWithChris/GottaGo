@@ -201,6 +201,9 @@ class _ViewPlaceSheetState extends State<ViewPlaceSheet> {
                                       placeWebsite != null
                                           ? CircleAvatar(
                                               radius: 18,
+                                              backgroundColor: Theme.of(context)
+                                                  .colorScheme
+                                                  .secondary,
                                               child: IconButton(
                                                 onPressed: () async {
                                                   await launchUrl(
@@ -217,6 +220,9 @@ class _ViewPlaceSheetState extends State<ViewPlaceSheet> {
                                       placePhoneNumber != null
                                           ? CircleAvatar(
                                               radius: 18,
+                                              backgroundColor: Theme.of(context)
+                                                  .colorScheme
+                                                  .secondary,
                                               child: IconButton(
                                                 onPressed: () async {
                                                   await launchUrl(
