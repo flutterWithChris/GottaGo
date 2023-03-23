@@ -193,7 +193,11 @@ class _MyAppState extends State<MyApp> {
                 scheme: FlexScheme.bahamaBlue,
                 surfaceMode: FlexSurfaceMode.highScaffoldLowSurface,
                 blendLevel: 15,
+                secondary: const Color(0xFFDD520F),
                 subThemesData: const FlexSubThemesData(
+                  elevatedButtonSchemeColor: SchemeColor.onPrimary,
+                  elevatedButtonSecondarySchemeColor: SchemeColor.secondary,
+                  fabSchemeColor: SchemeColor.secondary,
                   bottomSheetModalElevation: 0,
                   cardElevation: 0.6,
                   defaultRadius: 24,

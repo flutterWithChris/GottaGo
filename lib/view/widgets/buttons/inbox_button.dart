@@ -75,11 +75,11 @@ class InboxButton extends StatelessWidget {
                     // )
                   ],
                   child: Positioned(
-                    top: 10,
+                    top: 4,
                     left: 2,
                     child: CircleAvatar(
                       radius: 10.0,
-                      backgroundColor: Colors.blueAccent,
+                      backgroundColor: Theme.of(context).colorScheme.secondary,
                       child: Text(
                         '$inviteCount',
                         style: const TextStyle(
