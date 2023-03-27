@@ -59,88 +59,9 @@ class _ProfileInfoState extends State<ProfileInfo> {
           ),
         ),
         const Text('Choose a profile photo & username.'),
-        Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Stack(
-            alignment: Alignment.bottomRight,
-            children: [
-              CircleAvatar(
-                radius: 65,
-                backgroundColor: Colors.white,
-                child: BlocBuilder<OnboardingBloc, OnboardingState>(
-                  builder: (context, state) {
-                    if (state is OnboardingLoaded &&
-                        (state).user.profilePicture == '') {
-                      return InkWell(
-                        onTap: () async => await setUserProfilePicture(context),
-                        child: CircleAvatar(
-                            radius: 60,
-                            child: Text(
-                              'Add a Photo!',
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .titleSmall!
-                                  .copyWith(
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.white),
-                            )),
-                      );
-                    }
-                    if (state is OnboardingLoading) {
-                      return CircleAvatar(
-                        radius: 60.0,
-                        child: LoadingAnimationWidget.staggeredDotsWave(
-                            color: FlexColor.bahamaBlueDarkSecondary,
-                            size: 30.0),
-                      );
-                    }
-                    if (state is OnboardingLoaded &&
-                        state.user.profilePicture != '') {
-                      return InkWell(
-                        onTap: () async => await setUserProfilePicture(context),
-                        child: CachedNetworkImage(
-                          placeholder: (context, url) => CircleAvatar(
-                            radius: 60,
-                            child: LoadingAnimationWidget.staggeredDotsWave(
-                                color: FlexColor.bahamaBlueDarkSecondary,
-                                size: 30.0),
-                          ),
-                          imageUrl: state.user.profilePicture!,
-                          imageBuilder: (context, imageProvider) =>
-                              CircleAvatar(
-                            foregroundImage: imageProvider,
-                            radius: 60,
-                          ),
-                        ),
-                      );
-                    } else {
-                      return const Center(
-                        child: Text('Something Went Wrong...'),
-                      );
-                    }
-                  },
-                ),
-              ),
-              Positioned(
-                right: -8,
-                bottom: -4,
-                child: IconButton(
-                  onPressed: () async {
-                    await setUserProfilePicture(context);
-                  },
-                  icon: Container(
-                    decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(50),
-                        color: Colors.white),
-                    child: const Icon(
-                      Icons.add_circle_rounded,
-                      color: FlexColor.bahamaBlueDarkSecondaryContainer,
-                    ),
-                  ),
-                ),
-              )
-            ],
-          ),
+        const Padding(
+          padding: EdgeInsets.all(16.0),
+          child: SetProfilePhotoAvatar(),
         ),
         Padding(
           padding: const EdgeInsets.all(8.0),
@@ -278,6 +199,88 @@ class _ProfileInfoState extends State<ProfileInfo> {
             }
           },
         ),
+      ],
+    );
+  }
+}
+
+class SetProfilePhotoAvatar extends StatelessWidget {
+  const SetProfilePhotoAvatar({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Stack(
+      alignment: Alignment.bottomRight,
+      children: [
+        CircleAvatar(
+          radius: 65,
+          backgroundColor: Colors.white,
+          child: BlocBuilder<OnboardingBloc, OnboardingState>(
+            builder: (context, state) {
+              if (state is OnboardingLoaded &&
+                  (state).user.profilePicture == '') {
+                return InkWell(
+                  onTap: () async => await setUserProfilePicture(context),
+                  child: CircleAvatar(
+                      radius: 60,
+                      child: Text(
+                        'Add a Photo!',
+                        style: Theme.of(context).textTheme.titleSmall!.copyWith(
+                            fontWeight: FontWeight.bold, color: Colors.white),
+                      )),
+                );
+              }
+              if (state is OnboardingLoading) {
+                return CircleAvatar(
+                  radius: 60.0,
+                  child: LoadingAnimationWidget.staggeredDotsWave(
+                      color: FlexColor.bahamaBlueDarkSecondary, size: 30.0),
+                );
+              }
+              if (state is OnboardingLoaded &&
+                  state.user.profilePicture != '') {
+                return InkWell(
+                  onTap: () async => await setUserProfilePicture(context),
+                  child: CachedNetworkImage(
+                    placeholder: (context, url) => CircleAvatar(
+                      radius: 60,
+                      child: LoadingAnimationWidget.staggeredDotsWave(
+                          color: FlexColor.bahamaBlueDarkSecondary, size: 30.0),
+                    ),
+                    imageUrl: state.user.profilePicture!,
+                    imageBuilder: (context, imageProvider) => CircleAvatar(
+                      foregroundImage: imageProvider,
+                      radius: 60,
+                    ),
+                  ),
+                );
+              } else {
+                return const Center(
+                  child: Text('Something Went Wrong...'),
+                );
+              }
+            },
+          ),
+        ),
+        Positioned(
+          right: -8,
+          bottom: -4,
+          child: IconButton(
+            onPressed: () async {
+              await setUserProfilePicture(context);
+            },
+            icon: Container(
+              decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(50), color: Colors.white),
+              child: const Icon(
+                Icons.add_circle_rounded,
+                color: FlexColor.bahamaBlueDarkSecondaryContainer,
+              ),
+            ),
+          ),
+        )
       ],
     );
   }

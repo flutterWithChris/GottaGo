@@ -122,6 +122,7 @@ class _MyAppState extends State<MyApp> {
           ),
           BlocProvider(
             create: (context) => ProfileBloc(
+                storageRepository: context.read<StorageRepository>(),
                 userRepository: context.read<UserRepository>(),
                 authBloc: context.read<AuthBloc>())
               ..add(LoadProfile(

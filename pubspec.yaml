@@ -84,6 +84,7 @@ dependencies:
   flutter_iconpicker:
     git:
       url: https://github.com/flutterWithChris/FlutterIconPicker
+  fluttertoast: ^8.2.1
 
       
 dev_dependencies:

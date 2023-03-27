@@ -1,7 +1,12 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flex_color_scheme/flex_color_scheme.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:leggo/bloc/profile_bloc.dart';
 import 'package:leggo/bloc/saved_categories/bloc/saved_lists_bloc.dart';
 import 'package:leggo/globals.dart';
 import 'package:leggo/model/place_list.dart';
@@ -118,6 +123,18 @@ class _MyHomePageState extends State<MyHomePage> {
                         );
                       }
                       if (state is SavedListsLoaded) {
+                        if (context.watch<ProfileBloc>().state
+                                is ProfileIncomplete &&
+                            ModalRoute.of(context)!.isCurrent) {
+                          WidgetsBinding.instance
+                              .addPostFrameCallback((timeStamp) async {
+                            await showDialog(
+                                barrierDismissible: false,
+                                context: context,
+                                builder: (context) =>
+                                    const IncompleteProfileDialog());
+                          });
+                        }
                         void _onReorder(int oldIndex, int newIndex) {
                           PlaceList placeList =
                               state.placeLists!.removeAt(oldIndex);
@@ -229,5 +246,349 @@ class _MyHomePageState extends State<MyHomePage> {
             ),
           );
         });
+  }
+}
+
+class IncompleteProfileDialog extends StatefulWidget {
+  const IncompleteProfileDialog({super.key});
+
+  @override
+  State<IncompleteProfileDialog> createState() =>
+      _IncompleteProfileDialogState();
+}
+
+class _IncompleteProfileDialogState extends State<IncompleteProfileDialog> {
+  var maxLength = 15;
+  var textLength = 0;
+  var userNameFieldController = TextEditingController();
+
+  final GlobalKey<FormState> resetProfileFormKey = GlobalKey<FormState>();
+  final TextEditingController nameFieldController = TextEditingController();
+  @override
+  Widget build(BuildContext context) {
+    var user = context.watch<ProfileBloc>().state.user;
+
+    return Dialog(
+      child: Form(
+        key: resetProfileFormKey,
+        child: Column(
+            mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Padding(
+                padding: const EdgeInsets.only(top: 16.0),
+                child: Text('Whoops!',
+                    style: Theme.of(context)
+                        .textTheme
+                        .headlineLarge
+                        ?.copyWith(fontWeight: FontWeight.bold)),
+              ),
+              const Padding(
+                padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+                child: Text(
+                  'Your profile is incomplete.',
+                  textAlign: TextAlign.center,
+                ),
+              ),
+              const Padding(
+                padding: EdgeInsets.all(8.0),
+                child: ResetProfilePhotoAvatar(),
+              ),
+              Padding(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+                child: TextFormField(
+                  inputFormatters: [
+                    FilteringTextInputFormatter.deny(
+                      RegExp('[ ]'),
+                    ),
+                    LowerCaseTextFormatter(),
+                  ],
+                  validator: (value) {
+                    if (value!.length < 3) {
+                      return 'Must be 3 characters or more.';
+                    }
+                    return null;
+                  },
+                  autovalidateMode: AutovalidateMode.onUserInteraction,
+                  maxLength: 15,
+                  enableSuggestions: false,
+                  autocorrect: false,
+                  controller: userNameFieldController,
+                  onChanged: (value) {
+                    setState(() {
+                      textLength = value.length;
+                    });
+                  },
+                  decoration: InputDecoration(
+                    suffixText:
+                        '${textLength.toString()}/${maxLength.toString()}',
+                    suffixStyle: Theme.of(context).textTheme.bodySmall,
+                    counterText: "",
+                    prefix: const Text('@'),
+                    contentPadding: const EdgeInsets.symmetric(
+                        vertical: 16.0, horizontal: 24.0),
+                    label: const Text('Username'),
+                    enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(50),
+                        borderSide: BorderSide(
+                            width: 2.0,
+                            color: Theme.of(context)
+                                .inputDecorationTheme
+                                .enabledBorder!
+                                .borderSide
+                                .color)),
+                    errorBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(50),
+                        borderSide: const BorderSide(
+                            width: 2.0, color: Colors.redAccent)),
+                    focusedErrorBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(50),
+                        borderSide: const BorderSide(
+                            width: 2.0, color: Colors.redAccent)),
+                    focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(50),
+                        borderSide: BorderSide(
+                            width: 2.0,
+                            color: Theme.of(context)
+                                .inputDecorationTheme
+                                .enabledBorder!
+                                .borderSide
+                                .color)),
+                  ),
+                ),
+              ),
+              Padding(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+                child: TextFormField(
+                  // autofocus: true,
+                  textCapitalization: TextCapitalization.words,
+                  decoration: InputDecoration(
+                    contentPadding: const EdgeInsets.symmetric(
+                        vertical: 16.0, horizontal: 24.0),
+                    label: const Text('Name'),
+                    enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(50),
+                        borderSide: BorderSide(
+                            width: 2.0,
+                            color: Theme.of(context)
+                                .inputDecorationTheme
+                                .enabledBorder!
+                                .borderSide
+                                .color)),
+                    errorBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(50),
+                        borderSide: const BorderSide(
+                            width: 2.0, color: Colors.redAccent)),
+                    focusedErrorBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(50),
+                        borderSide: const BorderSide(
+                            width: 2.0, color: Colors.redAccent)),
+                    focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(50),
+                        borderSide: BorderSide(
+                            width: 2.0,
+                            color: Theme.of(context)
+                                .inputDecorationTheme
+                                .enabledBorder!
+                                .borderSide
+                                .color)),
+                  ),
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Please enter your name';
+                    }
+                    // Check if user provided a first and last name
+                    if (value.split(' ').length < 2) {
+                      return 'Please enter your first & last name';
+                    }
+                    return null;
+                  },
+                  controller: nameFieldController,
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.only(bottom: 8.0),
+                child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                        fixedSize: const Size(160, 40)),
+                    onPressed: () async {
+                      if (resetProfileFormKey.currentState!.validate() &&
+                          context
+                                  .read<ProfileBloc>()
+                                  .state
+                                  .user
+                                  .profilePicture !=
+                              '') {
+                        context.read<ProfileBloc>().add(
+                              UpdateProfile(
+                                  user: context
+                                      .read<ProfileBloc>()
+                                      .state
+                                      .user
+                                      .copyWith(
+                                        name: nameFieldController.text,
+                                        userName: userNameFieldController.text,
+                                      )),
+                            );
+                        await Future.delayed(const Duration(seconds: 1), () {
+                          Navigator.pop(context);
+                        });
+                      } else {
+                        if (context
+                                .read<ProfileBloc>()
+                                .state
+                                .user
+                                .profilePicture ==
+                            '') {
+                          Fluttertoast.showToast(
+                              msg: 'Please select a profile picture!',
+                              textColor: Colors.white,
+                              backgroundColor: Colors.redAccent);
+                          // ScaffoldMessenger.of(context)
+                          //     .showSnackBar(const SnackBar(
+                          //   content: Text(
+                          //     'Please select a profile picture!',
+                          //     style: TextStyle(color: Colors.white),
+                          //   ),
+                          //   backgroundColor: Colors.redAccent,
+                          // ));
+                        } else {
+                          Fluttertoast.showToast(
+                              msg: 'Please fill out all fields!',
+                              textColor: Colors.white,
+                              backgroundColor: Colors.redAccent);
+                        }
+                      }
+                    },
+                    child:
+                        context.watch<ProfileBloc>().state is ProfileLoaded &&
+                                (user.name != '' &&
+                                    user.userName != '' &&
+                                    user.profilePicture != '')
+                            ? Wrap(
+                                crossAxisAlignment: WrapCrossAlignment.center,
+                                children: [
+                                  const Icon(
+                                    Icons.check,
+                                    color: Colors.white,
+                                  ).animate().rotate(),
+                                  const Text('Updated!'),
+                                ],
+                              )
+                            : const Text('Update')),
+              ),
+            ]),
+      ),
+    );
+  }
+}
+
+Future<void> resetUserProfilePicture(BuildContext context) async {
+  ImagePicker picker = ImagePicker();
+  final XFile? image;
+
+  image = await picker.pickImage(source: ImageSource.gallery);
+  if (image == null) {
+    ScaffoldMessenger.of(context)
+        .showSnackBar(const SnackBar(content: Text('No Image was selected!')));
+  }
+
+  if (image != null) {
+    context.read<ProfileBloc>().add(UpdateProfilePicture(
+        user: context.read<ProfileBloc>().state.user, image: image));
+  }
+}
+
+class ResetProfilePhotoAvatar extends StatelessWidget {
+  const ResetProfilePhotoAvatar({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Stack(
+      alignment: Alignment.bottomRight,
+      children: [
+        CircleAvatar(
+          radius: 45,
+          backgroundColor: Colors.white,
+          child: BlocBuilder<ProfileBloc, ProfileState>(
+            builder: (context, state) {
+              var profilePicture =
+                  context.watch<ProfileBloc>().state.user.profilePicture;
+              if ((state is ProfileLoaded || state is ProfileIncomplete) &&
+                  profilePicture == '') {
+                return InkWell(
+                  onTap: () async => await resetUserProfilePicture(context),
+                  child: CircleAvatar(
+                      radius: 40,
+                      child: Padding(
+                        padding: const EdgeInsets.all(4.0),
+                        child: Text(
+                          'Add a Photo!',
+                          textAlign: TextAlign.center,
+                          style: Theme.of(context)
+                              .textTheme
+                              .bodySmall!
+                              .copyWith(
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.white),
+                        ),
+                      )),
+                );
+              }
+              if (state is ProfileLoading) {
+                return CircleAvatar(
+                  radius: 40.0,
+                  child: LoadingAnimationWidget.staggeredDotsWave(
+                      color: FlexColor.bahamaBlueDarkSecondary, size: 30.0),
+                );
+              }
+              if ((state is ProfileLoaded || state is ProfileIncomplete) &&
+                  profilePicture != '') {
+                return InkWell(
+                  onTap: () async => await resetUserProfilePicture(context),
+                  child: CachedNetworkImage(
+                    placeholder: (context, url) => CircleAvatar(
+                      radius: 40,
+                      child: LoadingAnimationWidget.staggeredDotsWave(
+                          color: FlexColor.bahamaBlueDarkSecondary, size: 30.0),
+                    ),
+                    imageUrl: profilePicture!,
+                    imageBuilder: (context, imageProvider) => CircleAvatar(
+                      foregroundImage: imageProvider,
+                      radius: 40,
+                    ),
+                  ),
+                );
+              } else {
+                return const Center(
+                  child: Text('Something Went Wrong...'),
+                );
+              }
+            },
+          ),
+        ),
+        Positioned(
+          right: -8,
+          bottom: -4,
+          child: IconButton(
+            onPressed: () async {
+              await resetUserProfilePicture(context);
+            },
+            icon: Container(
+              decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(50), color: Colors.white),
+              child: const Icon(
+                Icons.add_circle_rounded,
+                color: FlexColor.bahamaBlueDarkSecondaryContainer,
+              ),
+            ),
+          ),
+        )
+      ],
+    );
   }
 }
