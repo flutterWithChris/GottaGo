@@ -30,7 +30,7 @@ class SavedListsBloc extends Bloc<SavedListsEvent, SavedListsState> {
         super(SavedListsLoading()) {
     // add(LoadSavedLists());
     _profileSubscription = _profileBloc.stream.listen((state) {
-      if (state is ProfileLoaded) {
+      if (state is ProfileLoaded || state is ProfileIncomplete) {
         add(LoadSavedLists());
       }
     });

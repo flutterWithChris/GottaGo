@@ -13,8 +13,27 @@ class LoadProfile extends ProfileEvent {
     required this.userId,
   });
   @override
-  // TODO: implement props
   List<Object> get props => [userId];
 }
 
 class ResetProfile extends ProfileEvent {}
+
+class UpdateProfile extends ProfileEvent {
+  final User user;
+  const UpdateProfile({
+    required this.user,
+  });
+  @override
+  List<Object> get props => [user];
+}
+
+class UpdateProfilePicture extends ProfileEvent {
+  final User user;
+  final XFile image;
+  const UpdateProfilePicture({
+    required this.user,
+    required this.image,
+  });
+  @override
+  List<Object> get props => [user, image];
+}

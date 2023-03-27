@@ -23,4 +23,15 @@ class ProfileLoaded extends ProfileState {
   List<Object> get props => [user];
 }
 
+class ProfileIncomplete extends ProfileState {
+  @override
+  final User user;
+  const ProfileIncomplete({
+    required this.user,
+  });
+  @override
+  // TODO: implement props
+  List<Object> get props => [user];
+}
+
 class ProfileFailed extends ProfileState {}

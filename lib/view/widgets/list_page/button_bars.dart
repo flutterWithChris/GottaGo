@@ -75,11 +75,17 @@ class RandomPlaceBar extends StatelessWidget {
                         isScrollControlled: true,
                         context: context,
                         builder: (context) {
-                          return ViewPlaceSheet(
-                              place: context
-                                  .read<RandomWheelCubit>()
-                                  .selectedPlace!,
-                              scrollController: scrollController);
+                          return DraggableScrollableSheet(
+                              expand: false,
+                              initialChildSize: 0.75,
+                              maxChildSize: 0.9,
+                              builder: (context, controller) {
+                                return ViewPlaceSheet(
+                                    place: context
+                                        .read<RandomWheelCubit>()
+                                        .selectedPlace!,
+                                    scrollController: scrollController);
+                              });
                         },
                       );
                     },

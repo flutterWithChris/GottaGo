@@ -127,8 +127,8 @@ class _PlaceCardState extends State<PlaceCard>
                                 context: context,
                                 builder: (context) => DraggableScrollableSheet(
                                     expand: false,
-                                    initialChildSize: 0.85,
-                                    maxChildSize: 0.85,
+                                    initialChildSize: 0.75,
+                                    maxChildSize: 0.9,
                                     builder: (context, scrollController) {
                                       return ViewPlaceSheet(
                                           place: widget.place,

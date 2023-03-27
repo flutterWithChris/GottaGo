@@ -7,6 +7,7 @@ import 'package:leggo/model/user.dart';
 import 'package:leggo/repository/auth_repository.dart';
 import 'package:leggo/repository/purchases_repository.dart';
 import 'package:leggo/repository/user_repository.dart';
+import 'package:leggo/router/app_router.dart';
 
 part 'auth_event.dart';
 part 'auth_state.dart';
@@ -52,6 +53,8 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         ? emit(AuthState.authenticated(
             authUser: event.authUser!, user: event.user!))
         : emit(const AuthState.unauthenticated());
+
+    event.authUser != null ? router.refresh() : null;
   }
 
   @override
