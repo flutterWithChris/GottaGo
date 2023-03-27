@@ -128,8 +128,10 @@ class _MyHomePageState extends State<MyHomePage> {
                             ModalRoute.of(context)!.isCurrent) {
                           WidgetsBinding.instance
                               .addPostFrameCallback((timeStamp) async {
-                            await showDialog(
-                                barrierDismissible: false,
+                            showModalBottomSheet(
+                                isScrollControlled: true,
+                                isDismissible: false,
+                                enableDrag: false,
                                 context: context,
                                 builder: (context) =>
                                     const IncompleteProfileDialog());
@@ -268,219 +270,255 @@ class _IncompleteProfileDialogState extends State<IncompleteProfileDialog> {
   Widget build(BuildContext context) {
     var user = context.watch<ProfileBloc>().state.user;
 
-    return Dialog(
-      child: Form(
-        key: resetProfileFormKey,
-        child: Column(
-            mainAxisSize: MainAxisSize.min,
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Padding(
-                padding: const EdgeInsets.only(top: 16.0),
-                child: Text('Whoops!',
-                    style: Theme.of(context)
-                        .textTheme
-                        .headlineLarge
-                        ?.copyWith(fontWeight: FontWeight.bold)),
-              ),
-              const Padding(
-                padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-                child: Text(
-                  'Your profile is incomplete.',
-                  textAlign: TextAlign.center,
-                ),
-              ),
-              const Padding(
-                padding: EdgeInsets.all(8.0),
-                child: ResetProfilePhotoAvatar(),
-              ),
-              Padding(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-                child: TextFormField(
-                  inputFormatters: [
-                    FilteringTextInputFormatter.deny(
-                      RegExp('[ ]'),
-                    ),
-                    LowerCaseTextFormatter(),
-                  ],
-                  validator: (value) {
-                    if (value!.length < 3) {
-                      return 'Must be 3 characters or more.';
-                    }
-                    return null;
-                  },
-                  autovalidateMode: AutovalidateMode.onUserInteraction,
-                  maxLength: 15,
-                  enableSuggestions: false,
-                  autocorrect: false,
-                  controller: userNameFieldController,
-                  onChanged: (value) {
-                    setState(() {
-                      textLength = value.length;
-                    });
-                  },
-                  decoration: InputDecoration(
-                    suffixText:
-                        '${textLength.toString()}/${maxLength.toString()}',
-                    suffixStyle: Theme.of(context).textTheme.bodySmall,
-                    counterText: "",
-                    prefix: const Text('@'),
-                    contentPadding: const EdgeInsets.symmetric(
-                        vertical: 16.0, horizontal: 24.0),
-                    label: const Text('Username'),
-                    enabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(50),
-                        borderSide: BorderSide(
-                            width: 2.0,
-                            color: Theme.of(context)
-                                .inputDecorationTheme
-                                .enabledBorder!
-                                .borderSide
-                                .color)),
-                    errorBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(50),
-                        borderSide: const BorderSide(
-                            width: 2.0, color: Colors.redAccent)),
-                    focusedErrorBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(50),
-                        borderSide: const BorderSide(
-                            width: 2.0, color: Colors.redAccent)),
-                    focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(50),
-                        borderSide: BorderSide(
-                            width: 2.0,
-                            color: Theme.of(context)
-                                .inputDecorationTheme
-                                .enabledBorder!
-                                .borderSide
-                                .color)),
-                  ),
-                ),
-              ),
-              Padding(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-                child: TextFormField(
-                  // autofocus: true,
-                  textCapitalization: TextCapitalization.words,
-                  decoration: InputDecoration(
-                    contentPadding: const EdgeInsets.symmetric(
-                        vertical: 16.0, horizontal: 24.0),
-                    label: const Text('Name'),
-                    enabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(50),
-                        borderSide: BorderSide(
-                            width: 2.0,
-                            color: Theme.of(context)
-                                .inputDecorationTheme
-                                .enabledBorder!
-                                .borderSide
-                                .color)),
-                    errorBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(50),
-                        borderSide: const BorderSide(
-                            width: 2.0, color: Colors.redAccent)),
-                    focusedErrorBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(50),
-                        borderSide: const BorderSide(
-                            width: 2.0, color: Colors.redAccent)),
-                    focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(50),
-                        borderSide: BorderSide(
-                            width: 2.0,
-                            color: Theme.of(context)
-                                .inputDecorationTheme
-                                .enabledBorder!
-                                .borderSide
-                                .color)),
-                  ),
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Please enter your name';
-                    }
-                    // Check if user provided a first and last name
-                    if (value.split(' ').length < 2) {
-                      return 'Please enter your first & last name';
-                    }
-                    return null;
-                  },
-                  controller: nameFieldController,
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.only(bottom: 8.0),
-                child: ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                        fixedSize: const Size(160, 40)),
-                    onPressed: () async {
-                      if (resetProfileFormKey.currentState!.validate() &&
-                          context
-                                  .read<ProfileBloc>()
-                                  .state
-                                  .user
-                                  .profilePicture !=
-                              '') {
-                        context.read<ProfileBloc>().add(
-                              UpdateProfile(
-                                  user: context
-                                      .read<ProfileBloc>()
-                                      .state
-                                      .user
-                                      .copyWith(
-                                        name: nameFieldController.text,
-                                        userName: userNameFieldController.text,
-                                      )),
-                            );
-                        await Future.delayed(const Duration(seconds: 1), () {
-                          Navigator.pop(context);
-                        });
-                      } else {
-                        if (context
-                                .read<ProfileBloc>()
-                                .state
-                                .user
-                                .profilePicture ==
-                            '') {
-                          Fluttertoast.showToast(
-                              msg: 'Please select a profile picture!',
-                              textColor: Colors.white,
-                              backgroundColor: Colors.redAccent);
-                          // ScaffoldMessenger.of(context)
-                          //     .showSnackBar(const SnackBar(
-                          //   content: Text(
-                          //     'Please select a profile picture!',
-                          //     style: TextStyle(color: Colors.white),
-                          //   ),
-                          //   backgroundColor: Colors.redAccent,
-                          // ));
-                        } else {
-                          Fluttertoast.showToast(
-                              msg: 'Please fill out all fields!',
-                              textColor: Colors.white,
-                              backgroundColor: Colors.redAccent);
-                        }
-                      }
-                    },
-                    child:
-                        context.watch<ProfileBloc>().state is ProfileLoaded &&
-                                (user.name != '' &&
-                                    user.userName != '' &&
-                                    user.profilePicture != '')
-                            ? Wrap(
-                                crossAxisAlignment: WrapCrossAlignment.center,
-                                children: [
-                                  const Icon(
-                                    Icons.check,
-                                    color: Colors.white,
-                                  ).animate().rotate(),
-                                  const Text('Updated!'),
-                                ],
-                              )
-                            : const Text('Update')),
-              ),
-            ]),
-      ),
+    return Padding(
+      padding:
+          EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
+      child: DraggableScrollableSheet(
+          expand: false,
+          minChildSize: 0.7,
+          initialChildSize: 0.7,
+          maxChildSize: 1.0,
+          builder: (context, controller) {
+            return BottomSheet(
+                enableDrag: false,
+                onClosing: () {},
+                builder: (context) {
+                  return Form(
+                    key: resetProfileFormKey,
+                    child: ListView(
+                        padding: EdgeInsets.zero,
+                        shrinkWrap: true,
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.only(top: 24.0),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Text('Whoops!',
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .headlineLarge
+                                        ?.copyWith(
+                                            fontWeight: FontWeight.bold)),
+                              ],
+                            ),
+                          ),
+                          const Padding(
+                            padding: EdgeInsets.symmetric(
+                                horizontal: 16.0, vertical: 8.0),
+                            child: Text(
+                              'We had some serious bugs & are incredibly sorry for the inconvenience. We have fixed them now, but we need you to set your missing profile information.\n\nWe promise it will be worth it! 😊',
+                              textAlign: TextAlign.center,
+                            ),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: const [
+                                ResetProfilePhotoAvatar(),
+                              ],
+                            ),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 16.0, vertical: 8.0),
+                            child: TextFormField(
+                              inputFormatters: [
+                                FilteringTextInputFormatter.deny(
+                                  RegExp('[ ]'),
+                                ),
+                                LowerCaseTextFormatter(),
+                              ],
+                              validator: (value) {
+                                if (value!.length < 3) {
+                                  return 'Must be 3 characters or more.';
+                                }
+                                return null;
+                              },
+                              autovalidateMode:
+                                  AutovalidateMode.onUserInteraction,
+                              maxLength: 15,
+                              enableSuggestions: false,
+                              autocorrect: false,
+                              controller: userNameFieldController,
+                              onChanged: (value) {
+                                setState(() {
+                                  textLength = value.length;
+                                });
+                              },
+                              decoration: InputDecoration(
+                                suffixText:
+                                    '${textLength.toString()}/${maxLength.toString()}',
+                                suffixStyle:
+                                    Theme.of(context).textTheme.bodySmall,
+                                counterText: "",
+                                prefix: const Text('@'),
+                                contentPadding: const EdgeInsets.symmetric(
+                                    vertical: 16.0, horizontal: 24.0),
+                                label: const Text('Username'),
+                                enabledBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(50),
+                                    borderSide: BorderSide(
+                                        width: 2.0,
+                                        color: Theme.of(context)
+                                            .inputDecorationTheme
+                                            .enabledBorder!
+                                            .borderSide
+                                            .color)),
+                                errorBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(50),
+                                    borderSide: const BorderSide(
+                                        width: 2.0, color: Colors.redAccent)),
+                                focusedErrorBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(50),
+                                    borderSide: const BorderSide(
+                                        width: 2.0, color: Colors.redAccent)),
+                                focusedBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(50),
+                                    borderSide: BorderSide(
+                                        width: 2.0,
+                                        color: Theme.of(context)
+                                            .inputDecorationTheme
+                                            .enabledBorder!
+                                            .borderSide
+                                            .color)),
+                              ),
+                            ),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 16.0, vertical: 8.0),
+                            child: TextFormField(
+                              // autofocus: true,
+                              textCapitalization: TextCapitalization.words,
+                              decoration: InputDecoration(
+                                contentPadding: const EdgeInsets.symmetric(
+                                    vertical: 16.0, horizontal: 24.0),
+                                label: const Text('Name'),
+                                enabledBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(50),
+                                    borderSide: BorderSide(
+                                        width: 2.0,
+                                        color: Theme.of(context)
+                                            .inputDecorationTheme
+                                            .enabledBorder!
+                                            .borderSide
+                                            .color)),
+                                errorBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(50),
+                                    borderSide: const BorderSide(
+                                        width: 2.0, color: Colors.redAccent)),
+                                focusedErrorBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(50),
+                                    borderSide: const BorderSide(
+                                        width: 2.0, color: Colors.redAccent)),
+                                focusedBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(50),
+                                    borderSide: BorderSide(
+                                        width: 2.0,
+                                        color: Theme.of(context)
+                                            .inputDecorationTheme
+                                            .enabledBorder!
+                                            .borderSide
+                                            .color)),
+                              ),
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return 'Please enter your name';
+                                }
+                                // Check if user provided a first and last name
+                                if (value.split(' ').length < 2) {
+                                  return 'Please enter your first & last name';
+                                }
+                                return null;
+                              },
+                              controller: nameFieldController,
+                            ),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.only(
+                                bottom: 8.0, top: 4.0, left: 48.0, right: 48.0),
+                            child: ElevatedButton(
+                                style: ElevatedButton.styleFrom(
+                                    fixedSize: const Size(100, 40)),
+                                onPressed: () async {
+                                  if (resetProfileFormKey.currentState!
+                                          .validate() &&
+                                      context
+                                              .read<ProfileBloc>()
+                                              .state
+                                              .user
+                                              .profilePicture !=
+                                          '') {
+                                    context.read<ProfileBloc>().add(
+                                          UpdateProfile(
+                                              user: context
+                                                  .read<ProfileBloc>()
+                                                  .state
+                                                  .user
+                                                  .copyWith(
+                                                    name: nameFieldController
+                                                        .text,
+                                                    userName:
+                                                        userNameFieldController
+                                                            .text,
+                                                  )),
+                                        );
+                                    await Future.delayed(
+                                        const Duration(seconds: 1), () {
+                                      Navigator.pop(context);
+                                    });
+                                  } else {
+                                    if (context
+                                            .read<ProfileBloc>()
+                                            .state
+                                            .user
+                                            .profilePicture ==
+                                        '') {
+                                      Fluttertoast.showToast(
+                                          msg:
+                                              'Please select a profile picture!',
+                                          textColor: Colors.white,
+                                          backgroundColor: Colors.redAccent);
+                                      // ScaffoldMessenger.of(context)
+                                      //     .showSnackBar(const SnackBar(
+                                      //   content: Text(
+                                      //     'Please select a profile picture!',
+                                      //     style: TextStyle(color: Colors.white),
+                                      //   ),
+                                      //   backgroundColor: Colors.redAccent,
+                                      // ));
+                                    } else {
+                                      Fluttertoast.showToast(
+                                          msg: 'Please fill out all fields!',
+                                          textColor: Colors.white,
+                                          backgroundColor: Colors.redAccent);
+                                    }
+                                  }
+                                },
+                                child: context.watch<ProfileBloc>().state
+                                            is ProfileLoaded &&
+                                        (user.name != '' &&
+                                            user.userName != '' &&
+                                            user.profilePicture != '')
+                                    ? Wrap(
+                                        crossAxisAlignment:
+                                            WrapCrossAlignment.center,
+                                        children: [
+                                          const Icon(
+                                            Icons.check,
+                                            color: Colors.white,
+                                          ).animate().rotate(),
+                                          const Text('Updated!'),
+                                        ],
+                                      )
+                                    : const Text('Update')),
+                          ),
+                        ]),
+                  );
+                });
+          }),
     );
   }
 }
