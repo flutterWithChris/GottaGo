@@ -181,6 +181,8 @@ class _ViewPlaceSheetState extends State<ViewPlaceSheet> {
                                         .textTheme
                                         .titleLarge
                                         ?.copyWith(fontWeight: FontWeight.bold),
+                                    maxLines: 2,
+                                    overflow: TextOverflow.ellipsis,
                                     textAlign: TextAlign.left,
                                   ),
                                 ),

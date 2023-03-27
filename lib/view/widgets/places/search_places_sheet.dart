@@ -44,7 +44,7 @@ class _SearchPlacesSheetState extends State<SearchPlacesSheet> {
     return DraggableScrollableSheet(
       controller: scrollableController,
       initialChildSize: 0.75,
-      maxChildSize: 0.75,
+      maxChildSize: 0.9,
       expand: false,
       builder: (context, scrollController) {
         return Padding(
