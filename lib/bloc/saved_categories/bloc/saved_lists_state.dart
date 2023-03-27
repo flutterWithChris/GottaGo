@@ -2,30 +2,24 @@ part of 'saved_lists_bloc.dart';
 
 abstract class SavedListsState extends Equatable {
   List<PlaceList>? placeLists;
+  Stream<List<PlaceList>>? placeListsStream;
   SavedListsState({this.placeLists});
 
   @override
-  List<Object?> get props => [placeLists];
+  List<Object?> get props => [placeLists, placeListsStream];
 }
 
 class SavedListsInitial extends SavedListsState {}
 
-class SavedListsLoading extends SavedListsState {
-  @override
-  final List<PlaceList>? placeLists;
-  SavedListsLoading({this.placeLists = const []});
-  @override
-  // TODO: implement props
-  List<Object?> get props => [placeLists];
-}
+class SavedListsLoading extends SavedListsState {}
 
 class SavedListsLoaded extends SavedListsState {
   @override
-  final List<PlaceList>? placeLists;
-  SavedListsLoaded({required this.placeLists});
+  final Stream<List<PlaceList>>? placeListsStream;
+  SavedListsLoaded({this.placeListsStream});
   @override
   // TODO: implement props
-  List<Object?> get props => [placeLists];
+  List<Object?> get props => [placeListsStream];
 }
 
 class SavedListsFailed extends SavedListsState {}

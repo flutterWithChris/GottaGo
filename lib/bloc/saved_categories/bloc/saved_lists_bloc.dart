@@ -16,6 +16,7 @@ class SavedListsBloc extends Bloc<SavedListsEvent, SavedListsState> {
   final ProfileBloc _profileBloc;
   StreamSubscription? _profileSubscription;
   StreamSubscription? _savedListsSubscription;
+  Stream<List<PlaceList>>? _placeListsStream;
   int placeCount = 0;
 
   List<PlaceList> myPlaceLists = [];
@@ -40,26 +41,12 @@ class SavedListsBloc extends Bloc<SavedListsEvent, SavedListsState> {
       if (state is SavedListsLoading == false) {
         emit(SavedListsLoading());
       }
-      if (_profileBloc.state.user.placeListIds != null) {
-        for (String placeListId in _profileBloc.state.user.placeListIds!) {
-          int placeCount =
-              await placeListRepository.getPlaceListItemCount(placeListId);
-          _savedListsSubscription = placeListRepository
-              .getPlaceList(placeListId)!
-              .listen((placeList) {
-            myPlaceLists.add(placeList.copyWith(placeCount: placeCount));
-          });
-        }
-        await Future.delayed(
-            Duration(
-                milliseconds:
-                    200 * _profileBloc.state.user.placeListIds!.length),
-            () => emit(SavedListsLoaded(
-                  placeLists: myPlaceLists,
-                )));
-      } else {
-        emit(SavedListsLoaded(placeLists: const []));
-      }
+
+      _placeListsStream = _placeListRepository.getPlaceLists();
+
+      emit(SavedListsLoaded(
+        placeListsStream: _placeListsStream,
+      ));
     });
     on<AddList>((event, emit) async {
       emit(SavedListsLoading());
