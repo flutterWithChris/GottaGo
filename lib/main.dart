@@ -1,13 +1,11 @@
 import 'dart:async';
 
 import 'package:firebase_core/firebase_core.dart';
-import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flex_color_scheme/flex_color_scheme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutterfire_ui/auth.dart' hide AuthState;
-import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:leggo/bloc/autocomplete/bloc/autocomplete_bloc.dart';
 import 'package:leggo/bloc/bloc/auth/bloc/auth_bloc.dart';
@@ -40,7 +38,7 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   // // * Force onboarding pref
   // SharedPreferences prefs = await SharedPreferences.getInstance();
-  // prefs.setInt('initScreen', 0);
+  // prefs.setInt('initScreen', 1);
 
   await Future.wait([
     dotenv.load(fileName: '.env'),
@@ -48,9 +46,9 @@ void main() async {
   ]);
   FlutterFireUIAuth.configureProviders(
       [GoogleProviderConfiguration(clientId: dotenv.get('GOOGLE_CLIENT_ID'))]);
-
+// TODO: Uncomment this line to set up Crashlytics.
   // Pass all uncaught errors from the framework to Crashlytics.
-  FlutterError.onError = FirebaseCrashlytics.instance.recordFlutterFatalError;
+  // FlutterError.onError = FirebaseCrashlytics.instance.recordFlutterFatalError;
 
   runApp(const MyApp());
 }
@@ -170,60 +168,54 @@ class _MyAppState extends State<MyApp> {
                 databaseRepository: context.read<DatabaseRepository>()),
           ),
         ],
-        child: BlocBuilder<AuthBloc, AuthState>(
-          builder: (context, state) {
-            final AppRouter appRouter = AppRouter();
-            GoRouter router = appRouter.router;
-            bloc = context.read<AuthBloc>();
-            return MaterialApp.router(
-              scaffoldMessengerKey: snackbarKey,
-              theme: FlexThemeData.light(
-                scheme: FlexScheme.bahamaBlue,
-                surfaceMode: FlexSurfaceMode.highScaffoldLowSurfaces,
-                blendLevel: 9,
-                secondary: const Color(0xFFDD520F),
-                applyElevationOverlayColor: false,
-                subThemesData: const FlexSubThemesData(
-                  popupMenuElevation: 0.2,
-                  elevatedButtonSchemeColor: SchemeColor.onPrimary,
-                  elevatedButtonSecondarySchemeColor: SchemeColor.secondary,
-                  fabSchemeColor: SchemeColor.secondary,
-                  bottomSheetModalElevation: 0,
-                  cardElevation: 0,
-                  defaultRadius: 20,
-                  blendOnLevel: 10,
-                  blendOnColors: false,
-                ),
-                visualDensity: FlexColorScheme.comfortablePlatformDensity,
-                useMaterial3: true,
-                swapLegacyOnMaterial3: true,
-                fontFamily: GoogleFonts.archivo().fontFamily,
-              ),
-              darkTheme: FlexThemeData.dark(
-                scheme: FlexScheme.bahamaBlue,
-                surfaceMode: FlexSurfaceMode.highScaffoldLowSurface,
-                blendLevel: 15,
-                secondary: const Color(0xFFDD520F),
-                subThemesData: const FlexSubThemesData(
-                  elevatedButtonSchemeColor: SchemeColor.onPrimary,
-                  elevatedButtonSecondarySchemeColor: SchemeColor.secondary,
-                  fabSchemeColor: SchemeColor.secondary,
-                  bottomSheetModalElevation: 0,
-                  cardElevation: 0.6,
-                  defaultRadius: 24,
-                  blendOnLevel: 20,
-                ),
-                visualDensity: FlexColorScheme.comfortablePlatformDensity,
-                useMaterial3: true,
-                swapLegacyOnMaterial3: true,
-                fontFamily: GoogleFonts.archivo().fontFamily,
-              ),
-              themeMode: ThemeMode.system,
-              routeInformationParser: router.routeInformationParser,
-              routeInformationProvider: router.routeInformationProvider,
-              routerDelegate: router.routerDelegate,
-            );
-          },
+        child: MaterialApp.router(
+          debugShowCheckedModeBanner: false,
+          scaffoldMessengerKey: snackbarKey,
+          theme: FlexThemeData.light(
+            scheme: FlexScheme.bahamaBlue,
+            surfaceMode: FlexSurfaceMode.highScaffoldLowSurfaces,
+            blendLevel: 9,
+            secondary: const Color(0xFFDD520F),
+            applyElevationOverlayColor: false,
+            subThemesData: const FlexSubThemesData(
+              popupMenuElevation: 0.2,
+              elevatedButtonSchemeColor: SchemeColor.onPrimary,
+              elevatedButtonSecondarySchemeColor: SchemeColor.secondary,
+              fabSchemeColor: SchemeColor.secondary,
+              bottomSheetModalElevation: 0,
+              cardElevation: 0,
+              defaultRadius: 20,
+              blendOnLevel: 10,
+              blendOnColors: false,
+            ),
+            visualDensity: FlexColorScheme.comfortablePlatformDensity,
+            useMaterial3: true,
+            swapLegacyOnMaterial3: true,
+            fontFamily: GoogleFonts.archivo().fontFamily,
+          ),
+          darkTheme: FlexThemeData.dark(
+            scheme: FlexScheme.bahamaBlue,
+            surfaceMode: FlexSurfaceMode.highScaffoldLowSurface,
+            blendLevel: 15,
+            secondary: const Color(0xFFDD520F),
+            subThemesData: const FlexSubThemesData(
+              elevatedButtonSchemeColor: SchemeColor.onPrimary,
+              elevatedButtonSecondarySchemeColor: SchemeColor.secondary,
+              fabSchemeColor: SchemeColor.secondary,
+              bottomSheetModalElevation: 0,
+              cardElevation: 0.6,
+              defaultRadius: 24,
+              blendOnLevel: 20,
+            ),
+            visualDensity: FlexColorScheme.comfortablePlatformDensity,
+            useMaterial3: true,
+            swapLegacyOnMaterial3: true,
+            fontFamily: GoogleFonts.archivo().fontFamily,
+          ),
+          themeMode: ThemeMode.system,
+          routeInformationParser: router.routeInformationParser,
+          routeInformationProvider: router.routeInformationProvider,
+          routerDelegate: router.routerDelegate,
         ),
       ),
     );

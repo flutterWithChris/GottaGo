@@ -17,103 +17,103 @@ import '../cubit/lists/list_sort_cubit.dart';
 import '../random_wheel_page.dart';
 import '../view/pages/category_page.dart';
 
-class AppRouter {
-  GoRouter router = GoRouter(
-      observers: [HeroController()],
-      initialLocation: '/',
-      redirect: (context, state) async {
-        bool loggedIn =
-            context.read<AuthBloc>().state.status == AuthStatus.authenticated;
-        SharedPreferences prefs = await SharedPreferences.getInstance();
-        int? initScreen = prefs.getInt("initScreen");
-        bool isLoggingIn = state.location == '/login';
-        bool isOnboarding = state.location == '/signup';
-        bool completedOnboarding = initScreen == 1;
-
-        if (!loggedIn) {
-          return isLoggingIn
-              ? completedOnboarding
-                  ? null
-                  : '/signup'
-              : isOnboarding
-                  ? null
-                  : '/login';
-        }
-
-        final isLoggedIn = state.location == '/';
-
-        if (loggedIn && isLoggingIn) return isLoggedIn ? null : '/';
-
+final GoRouter router = GoRouter(
+    debugLogDiagnostics: true,
+    observers: [HeroController()],
+    initialLocation: '/',
+    redirect: (context, state) async {
+      bool loggedIn =
+          context.read<AuthBloc>().state.status == AuthStatus.authenticated;
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      int? initScreen = prefs.getInt("initScreen");
+      bool isLoggingIn = state.location == '/login';
+      bool isOnboarding = state.location == '/signup';
+      bool completedOnboarding = initScreen == 1;
+      print('isOnboarding: $isOnboarding');
+      if (isOnboarding) {
         return null;
-      },
-      routes: [
-        GoRoute(
-          name: 'signup',
-          path: '/signup',
-          builder: (context, state) => SignUp(),
-        ),
-        GoRoute(
-          path: '/login',
-          pageBuilder: (context, state) =>
-              const MaterialPage<void>(child: LoginPage()),
-        ),
-        GoRoute(
-          path: '/profile',
-          name: 'profile',
-          pageBuilder: (context, state) =>
-              const MaterialPage<void>(child: ProfilePage()),
-        ),
-        GoRoute(
-          path: '/settings',
-          name: 'settings',
-          pageBuilder: (context, state) =>
-              const MaterialPage<void>(child: SettingsPage()),
-        ),
-        GoRoute(
-          path: '/my-subscription',
-          name: 'my-subscription',
-          pageBuilder: (context, state) =>
-              const MaterialPage<void>(child: MySubscription()),
-        ),
-        GoRoute(
-          path: '/review-card-dialog',
-          name: 'review-card-dialog',
-          pageBuilder: (context, state) => MaterialPage<void>(
-              fullscreenDialog: true,
-              child: ReviewCardDialog(review: state.extra! as dynamic)),
-        ),
-        GoRoute(
-            name: '/',
-            path: '/',
-            pageBuilder: (context, state) => const MaterialPage<void>(
-                    child: MyHomePage(
-                  title: 'Leggo',
-                )),
-            routes: [
-              GoRoute(
-                  path: 'home/placeList-page',
-                  pageBuilder: (context, state) => MaterialPage<void>(
-                          child: MultiBlocProvider(
-                        providers: [
-                          BlocProvider(
-                            create: (context) => EditPlacesBloc(
-                                placeListRepository:
-                                    context.read<PlaceListRepository>()),
-                          ),
-                          BlocProvider(
-                            create: (context) => ListSortCubit(),
-                          ),
-                        ],
-                        child: const CategoryPage(),
-                      )),
-                  routes: [
-                    GoRoute(
-                      name: 'random-wheel',
-                      path: 'home/placeList-page/random-wheel',
-                      pageBuilder: (context, state) =>
-                          const MaterialPage<void>(child: RandomWheelPage()),
-                    )
-                  ])
-            ]),
-      ]);
-}
+      }
+      if (!completedOnboarding) {
+        return '/signup';
+      }
+      print('loggedIn: $loggedIn');
+      if (!loggedIn) {
+        return isLoggingIn ? null : '/login';
+      }
+
+      final isLoggedIn = state.location == '/';
+
+      if (loggedIn && isLoggingIn) return isLoggedIn ? null : '/';
+
+      return null;
+    },
+    routes: [
+      GoRoute(
+        name: 'signup',
+        path: '/signup',
+        builder: (context, state) => const SignUp(),
+      ),
+      GoRoute(
+        path: '/login',
+        pageBuilder: (context, state) =>
+            const MaterialPage<void>(child: LoginPage()),
+      ),
+      GoRoute(
+        path: '/profile',
+        name: 'profile',
+        pageBuilder: (context, state) =>
+            const MaterialPage<void>(child: ProfilePage()),
+      ),
+      GoRoute(
+        path: '/settings',
+        name: 'settings',
+        pageBuilder: (context, state) =>
+            const MaterialPage<void>(child: SettingsPage()),
+      ),
+      GoRoute(
+        path: '/my-subscription',
+        name: 'my-subscription',
+        pageBuilder: (context, state) =>
+            const MaterialPage<void>(child: MySubscription()),
+      ),
+      GoRoute(
+        path: '/review-card-dialog',
+        name: 'review-card-dialog',
+        pageBuilder: (context, state) => MaterialPage<void>(
+            fullscreenDialog: true,
+            child: ReviewCardDialog(review: state.extra! as dynamic)),
+      ),
+      GoRoute(
+          name: '/',
+          path: '/',
+          pageBuilder: (context, state) => const MaterialPage<void>(
+                  child: MyHomePage(
+                title: 'Leggo',
+              )),
+          routes: [
+            GoRoute(
+                path: 'home/placeList-page',
+                pageBuilder: (context, state) => MaterialPage<void>(
+                        child: MultiBlocProvider(
+                      providers: [
+                        BlocProvider(
+                          create: (context) => EditPlacesBloc(
+                              placeListRepository:
+                                  context.read<PlaceListRepository>()),
+                        ),
+                        BlocProvider(
+                          create: (context) => ListSortCubit(),
+                        ),
+                      ],
+                      child: const CategoryPage(),
+                    )),
+                routes: [
+                  GoRoute(
+                    name: 'random-wheel',
+                    path: 'home/placeList-page/random-wheel',
+                    pageBuilder: (context, state) =>
+                        const MaterialPage<void>(child: RandomWheelPage()),
+                  )
+                ])
+          ]),
+    ]);

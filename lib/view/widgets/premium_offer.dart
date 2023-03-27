@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:leggo/bloc/bloc/purchases/purchases_bloc.dart';
-import 'package:leggo/view/pages/signup.dart';
+import 'package:leggo/view/pages/signup/intro_paywall.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:purchases_flutter/purchases_flutter.dart';
 
