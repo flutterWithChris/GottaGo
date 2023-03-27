@@ -8,6 +8,7 @@ import 'package:leggo/bloc/saved_categories/bloc/saved_lists_bloc.dart';
 import 'package:leggo/bloc/saved_places/bloc/saved_places_bloc.dart';
 import 'package:leggo/globals.dart';
 import 'package:leggo/model/place_list.dart';
+import 'package:leggo/repository/place_list_repository.dart';
 import 'package:leggo/view/widgets/list_page/dialogs.dart';
 import 'package:leggo/view/widgets/lists/delete_list_dialog.dart';
 import 'package:leggo/view/widgets/premium_offer.dart';
@@ -157,13 +158,30 @@ class CategoryCard extends StatelessWidget {
                               padding: const EdgeInsets.only(left: 23.0),
                               child: Wrap(
                                 children: [
-                                  Text.rich(TextSpan(children: [
-                                    TextSpan(
-                                        text: '${placeList.placeCount} ',
-                                        style: const TextStyle(
-                                            fontWeight: FontWeight.bold)),
-                                    const TextSpan(text: ' Saved Places'),
-                                  ])),
+                                  FutureBuilder<int>(
+                                      future: context
+                                          .read<PlaceListRepository>()
+                                          .getPlaceListItemCount(
+                                              placeList.placeListId!),
+                                      builder: (context, snapshot) {
+                                        var data = snapshot.data;
+                                        if (data == null) {
+                                          return const Text('0 Saved Places');
+                                        }
+                                        if (snapshot.hasData) {
+                                          return Text.rich(TextSpan(children: [
+                                            TextSpan(
+                                                text: '$data ',
+                                                style: const TextStyle(
+                                                    fontWeight:
+                                                        FontWeight.bold)),
+                                            const TextSpan(
+                                                text: ' Saved Places'),
+                                          ]));
+                                        } else {
+                                          return const Text('0 Saved Places');
+                                        }
+                                      }),
                                 ],
                               ),
                             ),

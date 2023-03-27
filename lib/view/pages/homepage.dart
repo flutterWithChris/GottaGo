@@ -102,18 +102,40 @@ class _MyHomePageState extends State<MyHomePage> {
                       if (state is SavedListsLoading ||
                           state is SavedListsInitial ||
                           state is SavedListsUpdated) {
+                        for (PlaceList placeList in samplePlaceLists) {
+                          rows.add(Animate(
+                              onComplete: (controller) => controller.repeat(),
+                              effects: const [
+                                ShimmerEffect(
+                                  duration: Duration(milliseconds: 400),
+                                )
+                              ],
+                              child: SampleCategoryCard(placeList: placeList)));
+                        }
+                        // rows.insert(
+                        //     0,
+                        //     Showcase(
+                        //       descriptionAlignment: TextAlign.center,
+                        //       targetShapeBorder: RoundedRectangleBorder(
+                        //           borderRadius: BorderRadius.circular(50.0)),
+                        //       key: _createListShowcaseKey,
+                        //       description:
+                        //           'Create lists for different categories, locations, etc.',
+                        //       child: Animate(
+                        //           effects: const [SlideEffect()],
+                        //           child: const BlankCategoryCard()),
+                        //     ));
                         return CustomScrollView(
                           controller: mainScrollController,
                           slivers: [
                             const MainTopAppBar(),
                             // Main List View
-                            SliverFillRemaining(
-                              child: Center(
-                                child: LoadingAnimationWidget.staggeredDotsWave(
-                                    color: FlexColor.materialDarkPrimaryHc,
-                                    size: 40.0),
-                              ),
-                            ),
+                            SliverList(
+                              delegate: SliverChildBuilderDelegate(
+                                  childCount: rows.length, (context, index) {
+                                return rows[index];
+                              }),
+                            )
                           ],
                         );
                       }
@@ -158,64 +180,107 @@ class _MyHomePageState extends State<MyHomePage> {
                           });
                         }
 
-                        var placeLists =
-                            context.watch<SavedListsBloc>().myPlaceLists;
-                        if (placeLists.isNotEmpty) {
-                          rows.clear();
-                          rows = [
-                            for (PlaceList placeList in placeLists)
-                              Animate(
-                                  effects: const [SlideEffect()],
-                                  child: CategoryCard(placeList: placeList))
-                          ];
-                          if (placeLists.length < 5) {
-                            for (int i = 0; i < 5 - placeLists.length; i++) {
-                              rows.add(Animate(
-                                  effects: const [SlideEffect()],
-                                  child: SampleCategoryCard(
-                                      placeList: samplePlaceLists[i])));
-                            }
-                          }
-                        } else {
-                          rows.clear();
-                          for (PlaceList placeList in samplePlaceLists) {
-                            rows.add(Animate(
-                                effects: const [SlideEffect()],
-                                child:
-                                    SampleCategoryCard(placeList: placeList)));
-                          }
-                          rows.insert(
-                              0,
-                              Showcase(
-                                descriptionAlignment: TextAlign.center,
-                                targetShapeBorder: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(50.0)),
-                                key: _createListShowcaseKey,
-                                description:
-                                    'Create lists for different categories, locations, etc.',
-                                child: Animate(
-                                    effects: const [SlideEffect()],
-                                    child: const BlankCategoryCard()),
-                              ));
-                        }
-
-                        return CustomScrollView(
-                          cacheExtent: 1500,
-                          controller: mainScrollController,
-                          slivers: [
-                            const MainTopAppBar(),
-                            // Main List View
-                            const SliverToBoxAdapter(
-                              child: SizedBox(height: 12.0),
-                            ),
-                            SliverList(
-                              delegate: SliverChildBuilderDelegate(
-                                  childCount: rows.length, (context, index) {
-                                return rows[index];
-                              }),
-                            )
-                          ],
-                        );
+                        return StreamBuilder<List<PlaceList>>(
+                            stream: state.placeListsStream,
+                            builder: (context, snapshot) {
+                              var data = snapshot.data;
+                              for (PlaceList placeList in samplePlaceLists) {
+                                rows.add(Animate(
+                                    onComplete: (controller) =>
+                                        controller.repeat(),
+                                    effects: const [
+                                      ShimmerEffect(
+                                        duration: Duration(milliseconds: 400),
+                                      )
+                                    ],
+                                    child: SampleCategoryCard(
+                                        placeList: placeList)));
+                              }
+                              if (data == null) {
+                                return CustomScrollView(
+                                  slivers: [
+                                    const MainTopAppBar(),
+                                    SliverList(
+                                      delegate: SliverChildBuilderDelegate(
+                                          childCount: rows.length,
+                                          (context, index) {
+                                        return rows[index];
+                                      }),
+                                    )
+                                  ],
+                                );
+                              }
+                              if (snapshot.hasData) {
+                                var placeLists = data;
+                                if (placeLists.isNotEmpty) {
+                                  rows.clear();
+                                  rows = [
+                                    for (PlaceList placeList in placeLists)
+                                      Animate(
+                                          effects: const [SlideEffect()],
+                                          child: CategoryCard(
+                                              placeList: placeList))
+                                  ];
+                                  if (placeLists.length < 5) {
+                                    for (int i = 0;
+                                        i < 5 - placeLists.length;
+                                        i++) {
+                                      rows.add(Animate(
+                                          effects: const [SlideEffect()],
+                                          child: SampleCategoryCard(
+                                              placeList: samplePlaceLists[i])));
+                                    }
+                                  }
+                                } else {
+                                  rows.clear();
+                                  for (PlaceList placeList
+                                      in samplePlaceLists) {
+                                    rows.add(Animate(
+                                        effects: const [SlideEffect()],
+                                        child: SampleCategoryCard(
+                                            placeList: placeList)));
+                                  }
+                                  rows.insert(
+                                      0,
+                                      Showcase(
+                                        descriptionAlignment: TextAlign.center,
+                                        targetShapeBorder:
+                                            RoundedRectangleBorder(
+                                                borderRadius:
+                                                    BorderRadius.circular(
+                                                        50.0)),
+                                        key: _createListShowcaseKey,
+                                        description:
+                                            'Create lists for different categories, locations, etc.',
+                                        child: Animate(
+                                            effects: const [SlideEffect()],
+                                            child: const BlankCategoryCard()),
+                                      ));
+                                }
+                                return CustomScrollView(
+                                  cacheExtent: 1500,
+                                  controller: mainScrollController,
+                                  slivers: [
+                                    const MainTopAppBar(),
+                                    // Main List View
+                                    const SliverToBoxAdapter(
+                                      child: SizedBox(height: 12.0),
+                                    ),
+                                    SliverList(
+                                      delegate: SliverChildBuilderDelegate(
+                                          childCount: rows.length,
+                                          (context, index) {
+                                        return rows[index];
+                                      }),
+                                    )
+                                  ],
+                                );
+                              } else {
+                                return const Center(
+                                  child: Text('Something Went Wrong...'),
+                                );
+                              }
+                            });
                       } else {
                         return const Center(
                           child: Text('Something Went Wrong...'),

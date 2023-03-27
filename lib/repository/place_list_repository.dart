@@ -62,6 +62,40 @@ class PlaceListRepository {
     }
   }
 
+  // Get users place lists from ids in user placeListIds
+  Stream<List<PlaceList>> getPlaceLists() {
+    try {
+      final auth.User firebaseUser = auth.FirebaseAuth.instance.currentUser!;
+      return _firebaseFirestore
+          .collection('users')
+          .doc(firebaseUser.uid)
+          .snapshots()
+          .map((snap) => User.fromSnapshot(snap))
+          .switchMap((user) {
+        return Rx.combineLatestList(
+          user.placeListIds!.map((placeListId) {
+            return _firebaseFirestore
+                .collection('place_lists')
+                .doc(placeListId)
+                .snapshots()
+                .map((snap) {
+              return PlaceList.fromSnapshot(snap);
+            });
+          }).toList(),
+        );
+      });
+    } on FirebaseException catch (e) {
+      final SnackBar snackBar = SnackBar(
+        content: Text(e.message.toString()),
+        backgroundColor: Colors.redAccent,
+      );
+      snackbarKey.currentState?.showSnackBar(snackBar);
+      (e, stack) =>
+          FirebaseCrashlytics.instance.recordError(e, stack, fatal: true);
+      throw Exception();
+    }
+  }
+
   Future<User?> addContributorToList(String placeListId, String userId) async {
     try {
       User? invitedUser;

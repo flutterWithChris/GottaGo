@@ -11,6 +11,7 @@ import 'package:url_launcher/url_launcher.dart';
 
 class Globals {
   static int currentIndex = 1;
+  Color gottaGoOrange = const Color(0xFFDD520F);
 
   //int get currentIndex => currentIndex;
   set setCurrentIndex(int index) => currentIndex = index;
