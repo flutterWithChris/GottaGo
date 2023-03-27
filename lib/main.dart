@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flex_color_scheme/flex_color_scheme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -48,7 +49,7 @@ void main() async {
       [GoogleProviderConfiguration(clientId: dotenv.get('GOOGLE_CLIENT_ID'))]);
 // TODO: Uncomment this line to set up Crashlytics.
   // Pass all uncaught errors from the framework to Crashlytics.
-  // FlutterError.onError = FirebaseCrashlytics.instance.recordFlutterFatalError;
+  FlutterError.onError = FirebaseCrashlytics.instance.recordFlutterFatalError;
 
   runApp(const MyApp());
 }

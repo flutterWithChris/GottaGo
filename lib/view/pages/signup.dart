@@ -49,8 +49,6 @@ class _SignUpState extends State<SignUp> {
           onboardingState.user?.profilePicture != '' &&
           onboardingState.user?.userName != '' &&
           onboardingState.user?.userName != null) {
-        print('navigate to paywall');
-        print('username: ${onboardingState.user?.userName}');
         await Future.delayed(const Duration(seconds: 1), () async {
           if (pageController.hasClients) {
             await pageController.animateToPage(2,

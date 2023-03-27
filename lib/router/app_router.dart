@@ -29,14 +29,12 @@ final GoRouter router = GoRouter(
       bool isLoggingIn = state.location == '/login';
       bool isOnboarding = state.location == '/signup';
       bool completedOnboarding = initScreen == 1;
-      print('isOnboarding: $isOnboarding');
       if (isOnboarding) {
         return null;
       }
       if (!completedOnboarding) {
         return '/signup';
       }
-      print('loggedIn: $loggedIn');
       if (!loggedIn) {
         return isLoggingIn ? null : '/login';
       }

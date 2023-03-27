@@ -55,8 +55,6 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         : emit(const AuthState.unauthenticated());
 
     event.authUser != null ? router.refresh() : null;
-
-    print('AuthUserChanged: ${event.authUser}');
   }
 
   @override
