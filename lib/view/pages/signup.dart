@@ -61,7 +61,7 @@ class _SignUpState extends State<SignUp> {
 
     return Scaffold(
       body: PageView(
-        physics: const NeverScrollableScrollPhysics(),
+        // physics: const NeverScrollableScrollPhysics(),
         controller: pageController,
         children: const [
           WelcomePage(),

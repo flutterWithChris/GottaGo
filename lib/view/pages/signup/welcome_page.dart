@@ -75,7 +75,11 @@ class _WelcomePageState extends State<WelcomePage> {
                                       .user!
                                       .uid,
                                   userName: '',
-                                  name: context.read<SignUpCubit>().state.name,
+                                  name: context
+                                      .read<SignUpCubit>()
+                                      .state
+                                      .user
+                                      ?.displayName,
                                   email: context
                                           .read<SignUpCubit>()
                                           .state
@@ -118,16 +122,19 @@ class _WelcomePageState extends State<WelcomePage> {
                                       .user!
                                       .uid,
                                   userName: '',
-                                  name: context.read<SignUpCubit>().state.name,
+                                  name: context
+                                      .read<SignUpCubit>()
+                                      .state
+                                      .user!
+                                      .displayName,
                                   email: context
-                                          .read<SignUpCubit>()
-                                          .state
-                                          .user
-                                          ?.email ??
-                                      '',
+                                      .read<SignUpCubit>()
+                                      .state
+                                      .user!
+                                      .email,
                                   profilePicture: '',
                                   placeListIds: []);
-
+                              print('User name: ${user.name}');
                               context
                                   .read<OnboardingBloc>()
                                   .add(StartOnboarding(user: user));
