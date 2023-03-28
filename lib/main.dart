@@ -37,16 +37,17 @@ import 'package:leggo/router/app_router.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  // // * Force onboarding pref
+  // * Force onboarding pref
   // SharedPreferences prefs = await SharedPreferences.getInstance();
-  // prefs.setInt('initScreen', 1);
-
+  // prefs.setInt('initScreen', 0);
   await Future.wait([
     dotenv.load(fileName: '.env'),
     Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform),
   ]);
   FlutterFireUIAuth.configureProviders(
       [GoogleProviderConfiguration(clientId: dotenv.get('GOOGLE_CLIENT_ID'))]);
+  // FirebaseAuth.instance.signOut();
+
 // TODO: Uncomment this line to set up Crashlytics.
   // Pass all uncaught errors from the framework to Crashlytics.
   FlutterError.onError = FirebaseCrashlytics.instance.recordFlutterFatalError;
@@ -62,7 +63,6 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  var bloc;
   @override
   Widget build(BuildContext context) {
     return MultiRepositoryProvider(

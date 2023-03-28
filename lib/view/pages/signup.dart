@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:leggo/bloc/bloc/purchases/purchases_bloc.dart';
 import 'package:leggo/bloc/onboarding/bloc/onboarding_bloc.dart';
 import 'package:leggo/cubit/cubit/signup/sign_up_cubit.dart';
 import 'package:leggo/view/pages/signup/intro_paywall.dart';
@@ -32,7 +31,6 @@ class _SignUpState extends State<SignUp> {
   Widget build(BuildContext context) {
     var signupState = context.watch<SignUpCubit>().state;
     var onboardingState = context.watch<OnboardingBloc>().state;
-    var purchasesState = context.watch<PurchasesBloc>().state;
 
     Future.delayed(Duration.zero, () async {
       if (signupState.status == SignupStatus.success) {
