@@ -18,8 +18,7 @@ class OnboardingBloc extends Bloc<OnboardingEvent, OnboardingState> {
         _storageRepository = storageRepository,
         super(OnboardingLoading()) {
     on<StartOnboarding>((event, emit) async {
-      // TODO: Uncomment this
-      //  await _databaseRepository.createUser(event.user);
+      await _databaseRepository.createUser(event.user);
       emit(OnboardingLoaded(user: event.user));
     });
     on<UpdateUserProfilePicture>((event, emit) async {

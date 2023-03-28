@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flex_color_scheme/flex_color_scheme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -33,13 +34,12 @@ import 'package:leggo/repository/purchases_repository.dart';
 import 'package:leggo/repository/storage/storage_repository.dart';
 import 'package:leggo/repository/user_repository.dart';
 import 'package:leggo/router/app_router.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  // // * Force onboarding pref
-  SharedPreferences prefs = await SharedPreferences.getInstance();
-  prefs.setInt('initScreen', 1);
+  // * Force onboarding pref
+  // SharedPreferences prefs = await SharedPreferences.getInstance();
+  // prefs.setInt('initScreen', 0);
   await Future.wait([
     dotenv.load(fileName: '.env'),
     Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform),
@@ -50,7 +50,7 @@ void main() async {
 
 // TODO: Uncomment this line to set up Crashlytics.
   // Pass all uncaught errors from the framework to Crashlytics.
-  // FlutterError.onError = FirebaseCrashlytics.instance.recordFlutterFatalError;
+  FlutterError.onError = FirebaseCrashlytics.instance.recordFlutterFatalError;
 
   runApp(const MyApp());
 }
@@ -63,7 +63,6 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  var bloc;
   @override
   Widget build(BuildContext context) {
     return MultiRepositoryProvider(

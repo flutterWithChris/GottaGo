@@ -134,7 +134,6 @@ class _WelcomePageState extends State<WelcomePage> {
                                       .email,
                                   profilePicture: '',
                                   placeListIds: []);
-                              print('User name: ${user.name}');
                               context
                                   .read<OnboardingBloc>()
                                   .add(StartOnboarding(user: user));

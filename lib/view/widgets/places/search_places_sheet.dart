@@ -43,7 +43,8 @@ class _SearchPlacesSheetState extends State<SearchPlacesSheet> {
   Widget build(BuildContext context) {
     return DraggableScrollableSheet(
       controller: scrollableController,
-      initialChildSize: 0.75,
+      initialChildSize:
+          context.watch<PlaceBloc>().state is PlaceLoaded ? 0.89 : 0.8,
       maxChildSize: 0.9,
       expand: false,
       builder: (context, scrollController) {
