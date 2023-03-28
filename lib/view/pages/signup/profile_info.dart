@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:leggo/view/pages/signup.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 
@@ -116,71 +115,60 @@ class _ProfileInfoState extends State<ProfileInfo> {
             if (state is OnboardingLoaded) {
               return Padding(
                 padding: const EdgeInsets.all(8.0),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    ElevatedButton(
-                        onPressed: state.user.profilePicture != '' &&
-                                userNameFieldController.value.text != '' &&
-                                userNameFieldController.value.text.length > 2
-                            ? () async {
-                                bool userNameAvailable =
-                                    await DatabaseRepository()
-                                        .checkUsernameAvailability(
-                                            userNameFieldController.value.text);
-                                if (userNameAvailable == true) {
-                                  if (!mounted) return;
-                                  context.read<OnboardingBloc>().add(UpdateUser(
-                                      user: (state).user.copyWith(
-                                          userName: userNameFieldController
-                                              .value.text)));
+                child: ElevatedButton(
+                    onPressed: state.user.profilePicture != '' &&
+                            userNameFieldController.value.text != '' &&
+                            userNameFieldController.value.text.length > 2
+                        ? () async {
+                            bool userNameAvailable = await DatabaseRepository()
+                                .checkUsernameAvailability(
+                                    userNameFieldController.value.text);
+                            if (userNameAvailable == true) {
+                              if (!mounted) return;
+                              context.read<OnboardingBloc>().add(UpdateUser(
+                                  user: (state).user.copyWith(
+                                      userName:
+                                          userNameFieldController.value.text)));
 
-                                  FocusManager.instance.primaryFocus?.unfocus();
-                                } else {
-                                  if (!mounted) return;
-                                  ScaffoldMessenger.of(context)
-                                      .showSnackBar(const SnackBar(
-                                          backgroundColor: Colors.red,
-                                          content: Text(
-                                            'Username already taken!',
-                                            style:
-                                                TextStyle(color: Colors.white),
-                                          )));
-                                }
-                              }
-                            : null,
-                        child: BlocBuilder<OnboardingBloc, OnboardingState>(
-                          builder: (context, state) {
-                            if (state is OnboardingLoading) {
-                              return LoadingAnimationWidget.staggeredDotsWave(
-                                  color: FlexColor.bahamaBlueDarkSecondary,
-                                  size: 20.0);
-                            }
-                            if (state is OnboardingLoaded) {
-                              if (state.user.profilePicture != '' &&
-                                  state.user.userName != '') {
-                                return Animate(
-                                  effects: const [RotateEffect()],
-                                  child: Icon(
-                                    Icons.check_rounded,
-                                    color: Colors.green.shade400,
-                                  ),
-                                );
-                              }
-                              return const Text('Set Username & Photo');
+                              FocusManager.instance.primaryFocus?.unfocus();
                             } else {
-                              return const Center(
-                                child: Text('Something Went Wrong...'),
-                              );
+                              if (!mounted) return;
+                              ScaffoldMessenger.of(context)
+                                  .showSnackBar(const SnackBar(
+                                      backgroundColor: Colors.red,
+                                      content: Text(
+                                        'Username already taken!',
+                                        style: TextStyle(color: Colors.white),
+                                      )));
                             }
-                          },
-                        )),
-                    Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Text('Name: ${state.user.name}'),
-                    ),
-                  ],
-                ),
+                          }
+                        : null,
+                    child: BlocBuilder<OnboardingBloc, OnboardingState>(
+                      builder: (context, state) {
+                        if (state is OnboardingLoading) {
+                          return LoadingAnimationWidget.staggeredDotsWave(
+                              color: FlexColor.bahamaBlueDarkSecondary,
+                              size: 20.0);
+                        }
+                        if (state is OnboardingLoaded) {
+                          if (state.user.profilePicture != '' &&
+                              state.user.userName != '') {
+                            return Animate(
+                              effects: const [RotateEffect()],
+                              child: Icon(
+                                Icons.check_rounded,
+                                color: Colors.green.shade400,
+                              ),
+                            );
+                          }
+                          return const Text('Set Username & Photo');
+                        } else {
+                          return const Center(
+                            child: Text('Something Went Wrong...'),
+                          );
+                        }
+                      },
+                    )),
               );
             } else {
               return const Center(
@@ -201,23 +189,6 @@ class SetProfilePhotoAvatar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Future<void> setUserProfilePicture() async {
-    //   ImagePicker picker = ImagePicker();
-    //   final XFile? image;
-
-    //   image = await picker.pickImage(source: ImageSource.gallery);
-    //   if (image == null) {
-    //     ScaffoldMessenger.of(context).showSnackBar(
-    //         const SnackBar(content: Text('No Image was selected!')));
-    //   }
-
-    //   if (image != null) {
-    //     context
-    //         .read<OnboardingBloc>()
-    //         .add(UpdateUserProfilePicture(image: image));
-    //   }
-    // }
-
     return Stack(
       alignment: Alignment.bottomRight,
       children: [
@@ -267,22 +238,6 @@ class SetProfilePhotoAvatar extends StatelessWidget {
                 return const Center(
                   child: Text('Something Went Wrong...'),
                 );
-                Future<void> setUserProfilePicture() async {
-                  ImagePicker picker = ImagePicker();
-                  final XFile? image;
-
-                  image = await picker.pickImage(source: ImageSource.gallery);
-                  if (image == null) {
-                    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                        content: Text('No Image was selected!')));
-                  }
-
-                  if (image != null) {
-                    context
-                        .read<OnboardingBloc>()
-                        .add(UpdateUserProfilePicture(image: image));
-                  }
-                }
               }
             },
           ),
