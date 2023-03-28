@@ -24,27 +24,6 @@ class _ProfileInfoState extends State<ProfileInfo> {
   var maxLength = 15;
   var textLength = 0;
   var userNameFieldController = TextEditingController();
-  XFile? image;
-
-  @override
-  void initState() {
-    // if (context.read<SignUpCubit>().state.name == '') {
-    //   WidgetsBinding.instance.addPostFrameCallback((timeStamp) async {
-    //     await showDialog(
-    //         barrierDismissible: false,
-    //         context: context,
-    //         builder: (context) {
-    //           final nameFieldKey = GlobalKey<FormState>();
-    //           final nameFieldController = TextEditingController();
-    //           return SetNameDialog(
-    //               nameFieldKey: nameFieldKey,
-    //               nameFieldController: nameFieldController);
-    //         });
-    //   });
-    // }
-
-    super.initState();
-  }
 
   @override
   Widget build(BuildContext context) {
