@@ -122,11 +122,12 @@ class _WelcomePageState extends State<WelcomePage> {
                                       .user!
                                       .uid,
                                   userName: '',
-                                  name: context
-                                      .read<SignUpCubit>()
-                                      .state
-                                      .user!
-                                      .displayName,
+                                  name: '',
+                                  //  context
+                                  //     .read<SignUpCubit>()
+                                  //     .state
+                                  //     .user!
+                                  //     .displayName,
                                   email: context
                                       .read<SignUpCubit>()
                                       .state

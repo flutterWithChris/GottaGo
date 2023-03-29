@@ -1,3 +1,4 @@
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flex_color_scheme/flex_color_scheme.dart';
 import 'package:flutter/material.dart';
 
@@ -5,10 +6,12 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:leggo/bloc/onboarding/bloc/onboarding_bloc.dart';
 import 'package:leggo/cubit/cubit/signup/sign_up_cubit.dart';
+import 'package:leggo/globals.dart';
 import 'package:leggo/view/pages/signup/intro_paywall.dart';
 import 'package:leggo/view/pages/signup/welcome_page.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
+import '../../model/user.dart';
 import 'signup/profile_info.dart';
 
 class SignUp extends StatefulWidget {
@@ -94,17 +97,29 @@ class _SignUpState extends State<SignUp> {
   }
 }
 
-Future<void> setUserProfilePicture(BuildContext context) async {
-  ImagePicker picker = ImagePicker();
-  final XFile? image;
+Future<void> setUserProfilePicture(BuildContext context, User user) async {
+  try {
+    ImagePicker picker = ImagePicker();
+    final XFile? image;
 
-  image = await picker.pickImage(source: ImageSource.gallery);
-  if (image == null) {
-    ScaffoldMessenger.of(context)
-        .showSnackBar(const SnackBar(content: Text('No Image was selected!')));
-  }
+    image = await picker.pickImage(source: ImageSource.gallery);
+    if (image == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('No Image was selected!')));
+    }
 
-  if (image != null) {
-    context.read<OnboardingBloc>().add(UpdateUserProfilePicture(image: image));
+    if (image != null) {
+      context
+          .read<OnboardingBloc>()
+          .add(UpdateUserProfilePicture(image: image, user: user));
+    }
+  } catch (e) {
+    snackbarKey.currentState!.showSnackBar(const SnackBar(
+      content: Text('Something went wrong! Please try again',
+          textAlign: TextAlign.center),
+      backgroundColor: Colors.red,
+    ));
+    (e, stack) =>
+        FirebaseCrashlytics.instance.recordError(e, stack, fatal: false);
   }
 }

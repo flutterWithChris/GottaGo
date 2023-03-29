@@ -70,8 +70,6 @@ dependencies:
   intl: ^0.17.0
   shared_preferences: ^2.0.15
   google_sign_in: ^5.4.2
-  the_apple_sign_in: ^1.1.1
-  flutterfire_ui: ^0.4.3+20
   image_picker: ^0.8.6
   firebase_storage: ^11.0.5
   smooth_page_indicator: ^1.0.0+2
@@ -85,6 +83,12 @@ dependencies:
     git:
       url: https://github.com/flutterWithChris/FlutterIconPicker
   fluttertoast: ^8.2.1
+  firebase_ui_auth: ^1.1.17
+  firebase_ui_oauth_apple: ^1.0.24
+  firebase_ui_oauth_google: ^1.0.21
+  firebase_ui_oauth: ^1.1.17
+  sign_in_with_apple: ^4.3.0
+  permission_handler: ^10.2.0
 
       
 dev_dependencies:

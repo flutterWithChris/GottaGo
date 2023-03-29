@@ -2,11 +2,13 @@ import 'dart:async';
 
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
+import 'package:firebase_ui_auth/firebase_ui_auth.dart';
+import 'package:firebase_ui_oauth_apple/firebase_ui_oauth_apple.dart';
+import 'package:firebase_ui_oauth_google/firebase_ui_oauth_google.dart';
 import 'package:flex_color_scheme/flex_color_scheme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:flutterfire_ui/auth.dart' hide AuthState;
 import 'package:google_fonts/google_fonts.dart';
 import 'package:leggo/bloc/autocomplete/bloc/autocomplete_bloc.dart';
 import 'package:leggo/bloc/bloc/auth/bloc/auth_bloc.dart';
@@ -44,8 +46,10 @@ void main() async {
     dotenv.load(fileName: '.env'),
     Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform),
   ]);
-  FlutterFireUIAuth.configureProviders(
-      [GoogleProviderConfiguration(clientId: dotenv.get('GOOGLE_CLIENT_ID'))]);
+  FirebaseUIAuth.configureProviders([
+    GoogleProvider(clientId: dotenv.get('GOOGLE_CLIENT_ID')),
+    AppleProvider(scopes: {'email', 'fullName'}),
+  ]);
   // FirebaseAuth.instance.signOut();
 
 // TODO: Uncomment this line to set up Crashlytics.

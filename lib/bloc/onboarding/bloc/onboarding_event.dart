@@ -33,10 +33,10 @@ class UpdateUser extends OnboardingEvent {
 }
 
 class UpdateUserProfilePicture extends OnboardingEvent {
-  final User? user;
+  final User user;
   final XFile image;
 
-  const UpdateUserProfilePicture({this.user, required this.image});
+  const UpdateUserProfilePicture({required this.user, required this.image});
 
   @override
   // TODO: implement props
