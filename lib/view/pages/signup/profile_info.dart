@@ -113,6 +113,8 @@ class _ProfileInfoState extends State<ProfileInfo> {
                   color: FlexColor.bahamaBlueDarkSecondary, size: 30.0);
             }
             if (state is OnboardingLoaded) {
+              print('Name: ${state.user.name}');
+
               return Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: ElevatedButton(
@@ -200,7 +202,8 @@ class SetProfilePhotoAvatar extends StatelessWidget {
               if (state is OnboardingLoaded &&
                   (state).user.profilePicture == '') {
                 return InkWell(
-                  onTap: () async => await setUserProfilePicture(context),
+                  onTap: () async => await setUserProfilePicture(
+                      context, context.read<OnboardingBloc>().state.user!),
                   child: CircleAvatar(
                       radius: 60,
                       child: Text(
@@ -220,7 +223,8 @@ class SetProfilePhotoAvatar extends StatelessWidget {
               if (state is OnboardingLoaded &&
                   state.user.profilePicture != '') {
                 return InkWell(
-                  onTap: () async => await setUserProfilePicture(context),
+                  onTap: () async => await setUserProfilePicture(
+                      context, context.read<OnboardingBloc>().state.user!),
                   child: CachedNetworkImage(
                     placeholder: (context, url) => CircleAvatar(
                       radius: 60,
@@ -247,7 +251,8 @@ class SetProfilePhotoAvatar extends StatelessWidget {
           bottom: -4,
           child: IconButton(
             onPressed: () async {
-              await setUserProfilePicture(context);
+              await setUserProfilePicture(
+                  context, context.read<OnboardingBloc>().state.user!);
             },
             icon: Container(
               decoration: BoxDecoration(

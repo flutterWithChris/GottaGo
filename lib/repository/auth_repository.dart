@@ -1,10 +1,9 @@
 import 'package:firebase_auth/firebase_auth.dart' as auth;
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:leggo/globals.dart';
-import 'package:the_apple_sign_in/the_apple_sign_in.dart';
+import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 
 import 'base_auth_repository.dart';
 
@@ -142,90 +141,115 @@ class AuthRepository extends BaseAuthRepository {
     }
   }
 
-  Future<auth.User?> signInWithApple(
-      {List<Scope> scopes = const [Scope.email, Scope.fullName]}) async {
-    // 1. perform the sign-in request
-    final result = await TheAppleSignIn.performRequests(
-        [AppleIdRequest(requestedScopes: scopes)]);
-    // 2. check the result
-    switch (result.status) {
-      case AuthorizationStatus.authorized:
-        final appleIdCredential = result.credential!;
-        final oAuthProvider = auth.OAuthProvider('apple.com');
-        final credential = oAuthProvider.credential(
-          idToken: String.fromCharCodes(appleIdCredential.identityToken!),
-          accessToken:
-              String.fromCharCodes(appleIdCredential.authorizationCode!),
-        );
-        final userCredential =
-            await _firebaseAuth.signInWithCredential(credential);
-        final firebaseUser = userCredential.user!;
-        if (scopes.contains(Scope.fullName)) {
-          final fullName = appleIdCredential.fullName;
-          if (fullName != null &&
-              fullName.givenName != null &&
-              fullName.familyName != null) {
-            final displayName = '${fullName.givenName} ${fullName.familyName}';
-            await firebaseUser.updateDisplayName(displayName);
-          }
-        }
-        return firebaseUser;
+  Future<auth.User?> signInWithApple() async {
+    try {
+      // 1. perform the sign-in request
+      final result = await SignInWithApple.getAppleIDCredential(scopes: [
+        AppleIDAuthorizationScopes.email,
+        AppleIDAuthorizationScopes.fullName,
+      ]);
 
-      case AuthorizationStatus.error:
-        {
-          throw PlatformException(
-            code: 'ERROR_AUTHORIZATION_DENIED',
-            message: result.error.toString(),
-          );
-        }
+      // 2. check the result
 
-      case AuthorizationStatus.cancelled:
-        throw PlatformException(
-          code: 'ERROR_ABORTED_BY_USER',
-          message: 'Sign in aborted by user',
-        );
-      default:
-        throw UnimplementedError();
+      final appleIdCredential = result;
+      final oAuthProvider = auth.OAuthProvider('apple.com');
+      final credential = oAuthProvider.credential(
+        idToken: appleIdCredential.identityToken!,
+        accessToken: appleIdCredential.authorizationCode,
+      );
+      final userCredential =
+          await _firebaseAuth.signInWithCredential(credential);
+      final firebaseUser = userCredential.user!;
+
+      if (appleIdCredential.givenName != null &&
+          appleIdCredential.familyName != null) {
+        final displayName =
+            '${appleIdCredential.givenName} ${appleIdCredential.familyName}';
+        await firebaseUser.updateDisplayName(displayName);
+      }
+
+      return firebaseUser;
+    } on SignInWithAppleException catch (e) {
+      final SnackBar snackBar = SnackBar(
+        content: Text('Error: ${e.toString()}'),
+        backgroundColor: Colors.redAccent,
+      );
+      snackbarKey.currentState?.showSnackBar(snackBar);
+      (e, stack) =>
+          FirebaseCrashlytics.instance.recordError(e, stack, fatal: true);
+      throw Exception();
     }
   }
 
-  Future<auth.UserCredential?> reauthenticateWithApple(
-      {List<Scope> scopes = const [Scope.email, Scope.fullName]}) async {
-    // 1. perform the sign-in request
-    final result = await TheAppleSignIn.performRequests(
-        [AppleIdRequest(requestedScopes: scopes)]);
-    // 2. check the result
-    switch (result.status) {
-      case AuthorizationStatus.authorized:
-        final appleIdCredential = result.credential!;
-        final oAuthProvider = auth.OAuthProvider('apple.com');
-        final credential = oAuthProvider.credential(
-          idToken: String.fromCharCodes(appleIdCredential.identityToken!),
-          accessToken:
-              String.fromCharCodes(appleIdCredential.authorizationCode!),
-        );
-        final userCredential =
-            await _firebaseAuth.signInWithCredential(credential);
+  Future<auth.UserCredential?> reauthenticateWithApple() async {
+    try {
+      // 1. perform the sign-in request
+      final result = await SignInWithApple.getAppleIDCredential(scopes: [
+        AppleIDAuthorizationScopes.email,
+        AppleIDAuthorizationScopes.fullName,
+      ]);
+      // 2. check the result
+      final appleIdCredential = result;
+      final oAuthProvider = auth.OAuthProvider('apple.com');
+      final credential = oAuthProvider.credential(
+        idToken: appleIdCredential.identityToken!,
+        accessToken: appleIdCredential.authorizationCode,
+      );
 
-        return userCredential;
+      final userCredential =
+          await _firebaseAuth.signInWithCredential(credential);
 
-      case AuthorizationStatus.error:
-        {
-          throw PlatformException(
-            code: 'ERROR_AUTHORIZATION_DENIED',
-            message: result.error.toString(),
-          );
-        }
-
-      case AuthorizationStatus.cancelled:
-        throw PlatformException(
-          code: 'ERROR_ABORTED_BY_USER',
-          message: 'Sign in aborted by user',
-        );
-      default:
-        throw UnimplementedError();
+      return userCredential;
+    } on SignInWithAppleException catch (e) {
+      final SnackBar snackBar = SnackBar(
+        content: Text('Error: ${e.toString()}'),
+        backgroundColor: Colors.redAccent,
+      );
+      snackbarKey.currentState?.showSnackBar(snackBar);
+      (e, stack) =>
+          FirebaseCrashlytics.instance.recordError(e, stack, fatal: true);
+      throw Exception();
     }
+    return null;
   }
+
+  // Future<auth.UserCredential?> reauthenticateWithApple(
+  //     {List<Scope> scopes = const [Scope.email, Scope.fullName]}) async {
+  //   // 1. perform the sign-in request
+  //   final result = await TheAppleSignIn.performRequests(
+  //       [AppleIdRequest(requestedScopes: scopes)]);
+  //   // 2. check the result
+  //   switch (result.status) {
+  //     case AuthorizationStatus.authorized:
+  //       final appleIdCredential = result.credential!;
+  //       final oAuthProvider = auth.OAuthProvider('apple.com');
+  //       final credential = oAuthProvider.credential(
+  //         idToken: String.fromCharCodes(appleIdCredential.identityToken!),
+  //         accessToken:
+  //             String.fromCharCodes(appleIdCredential.authorizationCode!),
+  //       );
+  //       final userCredential =
+  //           await _firebaseAuth.signInWithCredential(credential);
+
+  //       return userCredential;
+
+  //     case AuthorizationStatus.error:
+  //       {
+  //         throw PlatformException(
+  //           code: 'ERROR_AUTHORIZATION_DENIED',
+  //           message: result.error.toString(),
+  //         );
+  //       }
+
+  //     case AuthorizationStatus.cancelled:
+  //       throw PlatformException(
+  //         code: 'ERROR_ABORTED_BY_USER',
+  //         message: 'Sign in aborted by user',
+  //       );
+  //     default:
+  //       throw UnimplementedError();
+  //   }
+  // }
 
   Future<void> updateDisplayName(String name) async {
     try {

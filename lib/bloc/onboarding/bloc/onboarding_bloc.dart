@@ -22,7 +22,7 @@ class OnboardingBloc extends Bloc<OnboardingEvent, OnboardingState> {
       emit(OnboardingLoaded(user: event.user));
     });
     on<UpdateUserProfilePicture>((event, emit) async {
-      User user = (state as OnboardingLoaded).user;
+      User user = event.user;
       emit(OnboardingLoading());
       await _storageRepository.uploadImage(user, event.image);
 
