@@ -18,7 +18,6 @@ import '../random_wheel_page.dart';
 import '../view/pages/category_page.dart';
 
 final GoRouter router = GoRouter(
-    debugLogDiagnostics: true,
     observers: [HeroController()],
     initialLocation: '/',
     redirect: (context, state) async {
