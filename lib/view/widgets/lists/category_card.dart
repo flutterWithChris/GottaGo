@@ -9,6 +9,7 @@ import 'package:leggo/bloc/saved_places/bloc/saved_places_bloc.dart';
 import 'package:leggo/globals.dart';
 import 'package:leggo/model/place_list.dart';
 import 'package:leggo/repository/place_list_repository.dart';
+import 'package:leggo/view/widgets/animated_count/animated_count.dart';
 import 'package:leggo/view/widgets/list_page/dialogs.dart';
 import 'package:leggo/view/widgets/lists/delete_list_dialog.dart';
 import 'package:leggo/view/widgets/premium_offer.dart';
@@ -68,7 +69,9 @@ class CategoryCard extends StatelessWidget {
                         children: [
                           ListTile(
                             trailing: Padding(
-                              padding: const EdgeInsets.only(bottom: 8.0),
+                              padding: const EdgeInsets.only(
+                                bottom: 8.0,
+                              ),
                               child: PopupMenuButton(
                                   // elevation: 0,
                                   surfaceTintColor:
@@ -141,21 +144,22 @@ class CategoryCard extends StatelessWidget {
                               context.push('/home/placeList-page');
                             },
                             contentPadding: const EdgeInsets.symmetric(
-                                vertical: 20.0, horizontal: 30.0),
+                                vertical: 20.0, horizontal: 24.0),
                             minLeadingWidth: 20,
                             title: Padding(
-                              padding:
-                                  const EdgeInsets.only(bottom: 4.0, left: 8.0),
+                              padding: const EdgeInsets.only(left: 16.0),
                               child: Text(
                                 placeList.name,
                                 style: Theme.of(context)
                                     .textTheme
                                     .titleMedium!
-                                    .copyWith(fontWeight: FontWeight.bold),
+                                    .copyWith(
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 18),
                               ),
                             ),
                             subtitle: Padding(
-                              padding: const EdgeInsets.only(left: 23.0),
+                              padding: const EdgeInsets.only(left: 16.0),
                               child: Wrap(
                                 children: [
                                   FutureBuilder<int>(
@@ -165,22 +169,13 @@ class CategoryCard extends StatelessWidget {
                                               placeList.placeListId!),
                                       builder: (context, snapshot) {
                                         var data = snapshot.data;
-                                        if (data == null) {
-                                          return const Text('0 Saved Places');
-                                        }
-                                        if (snapshot.hasData) {
-                                          return Text.rich(TextSpan(children: [
-                                            TextSpan(
-                                                text: '$data ',
-                                                style: const TextStyle(
-                                                    fontWeight:
-                                                        FontWeight.bold)),
-                                            const TextSpan(
-                                                text: ' Saved Places'),
-                                          ]));
-                                        } else {
-                                          return const Text('0 Saved Places');
-                                        }
+
+                                        return Wrap(
+                                          children: [
+                                            AnimatedCount(count: data ?? 0),
+                                            const Text(' Places'),
+                                          ],
+                                        );
                                       }),
                                 ],
                               ),

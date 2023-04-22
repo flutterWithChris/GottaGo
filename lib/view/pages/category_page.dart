@@ -19,7 +19,6 @@ import 'package:leggo/view/widgets/places/blank_place_card.dart';
 import 'package:leggo/view/widgets/places/place_card.dart';
 import 'package:leggo/view/widgets/places/search_places_sheet.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
-import 'package:reorderables/reorderables.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:showcaseview/showcaseview.dart';
 
@@ -168,14 +167,22 @@ class _CategoryPageState extends State<CategoryPage> {
                               currentPlaceList: null,
                               controller: controller,
                               places: null),
-                          ReorderableSliverList(
-                            enabled: false,
-                            onReorder: (oldIndex, newIndex) {},
-                            delegate: ReorderableSliverChildBuilderDelegate(
-                                childCount: rows.length, (context, index) {
-                              return rows[index];
-                            }),
-                          )
+                          SliverList(
+                              delegate: SliverChildListDelegate(
+                            rows
+                                .animate(
+                                  interval: 150.ms,
+                                )
+                                .slideY(
+                                    curve: Curves.easeOutSine,
+                                    begin: -1.0,
+                                    duration: 400.ms)
+                                .fadeIn(
+                                  //delay: 100.ms,
+                                  curve: Curves.easeOutSine,
+                                  //  duration: 600.ms,
+                                ),
+                          ))
                         ],
                       );
                     }
@@ -235,7 +242,6 @@ class _CategoryPageState extends State<CategoryPage> {
                                 ShimmerEffect(
                                     duration: Duration(milliseconds: 500),
                                     curve: Curves.easeInOut),
-                                SlideEffect(curve: Curves.easeOutBack)
                               ], child: const BlankPlaceCard()),
                             ));
                           }
@@ -290,6 +296,23 @@ class _CategoryPageState extends State<CategoryPage> {
                           }
                         },
                         builder: (context, state) {
+                          rows = [
+                            for (Place place in places)
+                              Padding(
+                                padding: const EdgeInsets.symmetric(
+                                    vertical: 4.0, horizontal: 8.0),
+                                child: PlaceCard(
+                                    place: place,
+                                    placeList: currentPlaceList,
+                                    imageUrl: place.mainPhoto,
+                                    memoryImage: place.mainPhoto,
+                                    placeName: place.name!,
+                                    ratingsTotal: place.rating,
+                                    placeDescription: place.reviews![0]['text'],
+                                    closingTime: place.hours![0],
+                                    placeLocation: place.city!),
+                              )
+                          ];
                           return Stack(
                             alignment: AlignmentDirectional.bottomCenter,
                             children: [
@@ -313,27 +336,21 @@ class _CategoryPageState extends State<CategoryPage> {
                                       controller: controller,
                                       places: places),
                                   SliverList(
-                                    delegate: SliverChildBuilderDelegate(
-                                        childCount: places.length,
-                                        (context, index) {
-                                      Place place = places[index];
-                                      return Padding(
-                                        padding: const EdgeInsets.symmetric(
-                                            horizontal: 8.0, vertical: 4.0),
-                                        child: PlaceCard(
-                                            place: place,
-                                            placeList: currentPlaceList,
-                                            imageUrl: place.mainPhoto,
-                                            memoryImage: place.mainPhoto,
-                                            placeName: place.name!,
-                                            ratingsTotal: place.rating,
-                                            placeDescription: place.reviews![0]
-                                                ['text'],
-                                            closingTime: place.hours![0],
-                                            placeLocation: place.city!),
-                                      );
-                                    }),
-                                  )
+                                      delegate: SliverChildListDelegate(
+                                    rows
+                                        .animate(
+                                          interval: 150.ms,
+                                        )
+                                        .slideY(
+                                            curve: Curves.easeOutSine,
+                                            begin: -1.0,
+                                            duration: 400.ms)
+                                        .fadeIn(
+                                          //delay: 100.ms,
+                                          curve: Curves.easeOutSine,
+                                          //  duration: 600.ms,
+                                        ),
+                                  ))
                                 ],
                               ),
                               if (state is EditPlacesStarted ||

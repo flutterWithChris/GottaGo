@@ -9,19 +9,30 @@ class BlankCategoryCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.fromLTRB(8.0, 16.0, 8.0, 4.0),
+      padding: const EdgeInsets.fromLTRB(8.0, 8.0, 8.0, 8.0),
       child: SizedBox(
         child: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Padding(
-              padding: const EdgeInsets.all(8.0),
+            SizedBox(
+              height: 125,
+              width: MediaQuery.of(context).size.width,
               child: Card(
-                elevation: 1.618,
-                //color: FlexColor.materialDarkPrimaryContainerHc,
+                //   elevation: 2.0,
+                //  color: FlexColor.deepBlueDarkSecondaryContainer,
                 child: ListTile(
-                  minVerticalPadding: 30.0,
+                  // trailing: SizedBox(
+                  //   width: 40,
+                  //   height: 40,
+                  //   child: Icon(
+                  //     Icons.more_vert_rounded,
+                  //     color: Theme.of(context).brightness == Brightness.light
+                  //         ? Colors.grey[800]
+                  //         : Colors.white,
+                  //   ),
+                  // ),
+                  minVerticalPadding: 24.0,
                   onTap: () async {
                     //context.read<SavedPlacesBloc>().add(LoadPlaces());
                     // context.go('/placeList-page');
@@ -32,37 +43,46 @@ class BlankCategoryCard extends StatelessWidget {
                       },
                     );
                   },
-                  contentPadding: const EdgeInsets.symmetric(
-                      vertical: 12.0, horizontal: 24.0),
+                  contentPadding:
+                      const EdgeInsets.fromLTRB(10.0, 12.0, 16.0, 12.0),
                   minLeadingWidth: 20,
 
                   //tileColor: categoryColor,
-                  title: Center(
-                    child: Padding(
-                      padding: const EdgeInsets.only(right: 8.0),
-                      child: Wrap(
-                        crossAxisAlignment: WrapCrossAlignment.center,
-                        spacing: 10.0,
-                        children: [
-                          const Icon(
-                            Icons.post_add_rounded,
-                            size: 24,
-                          ),
-                          Text(
-                            'Create a List',
-                            style: Theme.of(context)
-                                .textTheme
-                                .titleMedium!
-                                .copyWith(fontWeight: FontWeight.bold),
-                          ),
-                        ],
+                  title: Wrap(
+                    crossAxisAlignment: WrapCrossAlignment.center,
+                    spacing: 10.0,
+                    children: [
+                      // placeList.icon != null
+                      //     ? Icon(
+                      //         placeList.icon,
+                      //         size: 16,
+                      //       )
+                      //     : const SizedBox(),
+                      Text(
+                        'Create your first list!',
+                        style: Theme.of(context)
+                            .textTheme
+                            .titleMedium!
+                            .copyWith(fontWeight: FontWeight.bold),
                       ),
-                    ),
+                    ],
                   ),
-                  // subtitle: const Padding(
-                  //   padding: EdgeInsets.only(left: 24.0),
-                  //   child: Text('0 Saved Places'),
-                  // ),
+                  subtitle: const Text('Add a new list to get started.'),
+                  leading: Padding(
+                    padding: const EdgeInsets.only(
+                        left: 16.0, right: 16.0, top: 8.0),
+                    child: SizedBox(
+                        width: 42,
+                        height: 42,
+                        child: Icon(
+                          Icons.post_add_rounded,
+                          color:
+                              Theme.of(context).brightness == Brightness.light
+                                  ? Colors.grey[800]
+                                  : Colors.white,
+                          size: 30,
+                        )),
+                  ),
                 ),
               ),
             ),

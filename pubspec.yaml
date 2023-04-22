@@ -89,6 +89,7 @@ dependencies:
   firebase_ui_oauth: ^1.1.17
   sign_in_with_apple: ^4.3.0
   permission_handler: ^10.2.0
+  easy_refresh: ^3.3.1
 
       
 dev_dependencies:
