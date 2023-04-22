@@ -65,6 +65,9 @@
 #include "absl/strings/match.h"
 
 namespace nanopb = firebase::firestore::nanopb;
+using firebase::firestore::google_firestore_v1_ArrayValue;
+using firebase::firestore::google_firestore_v1_Value;
+using firebase::firestore::google_firestore_v1_Value_fields;
 using firebase::firestore::api::Firestore;
 using firebase::firestore::api::Query;
 using firebase::firestore::api::QueryListenerRegistration;
@@ -74,18 +77,15 @@ using firebase::firestore::api::SnapshotMetadata;
 using firebase::firestore::api::Source;
 using firebase::firestore::core::AsyncEventListener;
 using firebase::firestore::core::Bound;
+using firebase::firestore::core::CompositeFilter;
 using firebase::firestore::core::Direction;
 using firebase::firestore::core::EventListener;
 using firebase::firestore::core::FieldFilter;
 using firebase::firestore::core::Filter;
-using firebase::firestore::core::CompositeFilter;
 using firebase::firestore::core::ListenOptions;
 using firebase::firestore::core::OrderBy;
 using firebase::firestore::core::QueryListener;
 using firebase::firestore::core::ViewSnapshot;
-using firebase::firestore::google_firestore_v1_ArrayValue;
-using firebase::firestore::google_firestore_v1_Value;
-using firebase::firestore::google_firestore_v1_Value_fields;
 using firebase::firestore::model::DatabaseId;
 using firebase::firestore::model::DeepClone;
 using firebase::firestore::model::Document;
@@ -98,10 +98,10 @@ using firebase::firestore::model::ResourcePath;
 using firebase::firestore::model::TypeOrder;
 using firebase::firestore::nanopb::CheckedSize;
 using firebase::firestore::nanopb::MakeArray;
+using firebase::firestore::nanopb::MakeSharedMessage;
 using firebase::firestore::nanopb::MakeString;
 using firebase::firestore::nanopb::Message;
 using firebase::firestore::nanopb::SharedMessage;
-using firebase::firestore::nanopb::MakeSharedMessage;
 using firebase::firestore::util::MakeNSError;
 using firebase::firestore::util::MakeString;
 using firebase::firestore::util::StatusOr;
@@ -226,6 +226,15 @@ int32_t SaturatedLimitValue(NSInteger limit) {
       initWithRegistration:absl::make_unique<QueryListenerRegistration>(firestore->client(),
                                                                         std::move(async_listener),
                                                                         std::move(query_listener))];
+}
+
+- (FIRQuery *)queryWhereFilter:(FIRFilter *)filter {
+  Filter parsedFilter = [self parseFilter:filter];
+  if (parsedFilter.IsEmpty()) {
+    // Return the existing query if not adding any more filters (e.g. an empty composite filter).
+    return self;
+  }
+  return Wrap(_query.AddNewFilter(std::move(parsedFilter)));
 }
 
 - (FIRQuery *)queryWhereField:(NSString *)field isEqualTo:(id)value {
@@ -666,15 +675,6 @@ int32_t SaturatedLimitValue(NSInteger limit) {
 
 - (const api::Query &)apiQuery {
   return _query;
-}
-
-- (FIRQuery *)queryWhereFilter:(FIRFilter *)filter {
-  Filter parsedFilter = [self parseFilter:filter];
-  if (parsedFilter.IsEmpty()) {
-    // Return the existing query if not adding any more filters (e.g. an empty composite filter).
-    return self;
-  }
-  return Wrap(_query.AddNewFilter(std::move(parsedFilter)));
 }
 
 @end

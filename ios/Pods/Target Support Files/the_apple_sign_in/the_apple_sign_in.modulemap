@@ -1,6 +1,0 @@
-framework module the_apple_sign_in {
-  umbrella header "the_apple_sign_in-umbrella.h"
-
-  export *
-  module * { export * }
-}

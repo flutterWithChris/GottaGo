@@ -36,6 +36,7 @@ target 'Runner' do
   pod 'FirebaseCore'
   pod 'FirebaseAuth'
   pod 'FirebaseCrashlytics'
+  pod 'FirebaseUI'
   flutter_install_all_ios_pods File.dirname(File.realpath(__FILE__))
 end
 
