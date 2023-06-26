@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:leggo/bloc/bloc/auth/bloc/auth_bloc.dart';
 import 'package:leggo/bloc/place/edit_places_bloc.dart';
 import 'package:leggo/repository/place_list_repository.dart';
+import 'package:leggo/view/pages/explore.dart';
 import 'package:leggo/view/pages/homepage.dart';
 import 'package:leggo/view/pages/login.dart';
 import 'package:leggo/view/pages/my_subscription.dart';
@@ -113,4 +114,10 @@ final GoRouter router = GoRouter(
                   )
                 ])
           ]),
+      GoRoute(
+        path: '/explore',
+        name: 'explore',
+        pageBuilder: (context, state) =>
+            const MaterialPage<void>(child: ExplorePage()),
+      )
     ]);

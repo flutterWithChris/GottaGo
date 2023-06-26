@@ -1,5 +1,4 @@
 import 'package:bubble_bottom_bar/bubble_bottom_bar.dart';
-import 'package:flex_color_scheme/flex_color_scheme.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:leggo/globals.dart';
@@ -31,6 +30,9 @@ class _MainBottomNavBarState extends State<MainBottomNavBar>
         context.go('/');
         break;
       case 2:
+        context.goNamed('explore');
+        break;
+      case 3:
         context.goNamed('settings');
         break;
       default:
@@ -53,34 +55,62 @@ class _MainBottomNavBarState extends State<MainBottomNavBar>
       height: 80,
       child: BubbleBottomBar(
           tilesPadding: const EdgeInsets.only(top: 8.0),
-          backgroundColor: FlexColor.materialDarkScaffoldBackground,
+          backgroundColor:
+              Theme.of(context).bottomNavigationBarTheme.backgroundColor,
           hasNotch: true,
           opacity: .2,
           fabLocation: BubbleBottomBarFabLocation.end,
           // showUnselectedLabels: false,
           onTap: changePage,
           currentIndex: Globals.currentIndex,
-          items: const [
+          items: [
             BubbleBottomBarItem(
-                backgroundColor: FlexColor.materialDarkSecondaryHc,
-                icon: Icon(Icons.person,
-                    color: FlexColor.materialDarkTertiaryContainer),
-                activeIcon: Icon(
-                  Icons.person,
-                ),
-                title: Text('Profile')),
+              backgroundColor: Theme.of(context).colorScheme.primaryContainer,
+              icon:
+                  Icon(Icons.person, color: Theme.of(context).iconTheme.color),
+              activeIcon:
+                  Icon(Icons.person, color: Theme.of(context).iconTheme.color),
+              title: Text(
+                'Profile',
+                style: TextStyle(
+                    color: Theme.of(context).textTheme.bodyMedium?.color),
+              ),
+            ),
             BubbleBottomBarItem(
-                backgroundColor: FlexColor.materialDarkSecondaryHc,
-                icon: Icon(Icons.list_alt_rounded,
-                    color: FlexColor.materialDarkTertiaryContainer),
-                activeIcon: Icon(Icons.list_alt_rounded),
-                title: Text('Lists')),
+              backgroundColor: Theme.of(context).colorScheme.primaryContainer,
+              icon: Icon(Icons.list_alt_rounded,
+                  color: Theme.of(context).iconTheme.color),
+              activeIcon: Icon(Icons.list_alt_rounded,
+                  color: Theme.of(context).iconTheme.color),
+              title: Text(
+                'Lists',
+                style: TextStyle(
+                    color: Theme.of(context).textTheme.bodyMedium?.color),
+              ),
+            ),
             BubbleBottomBarItem(
-                backgroundColor: FlexColor.materialDarkSecondaryHc,
+              backgroundColor: Theme.of(context).colorScheme.primaryContainer,
+              icon: Icon(Icons.travel_explore_outlined,
+                  color: Theme.of(context).iconTheme.color),
+              activeIcon: Icon(Icons.travel_explore_outlined,
+                  color: Theme.of(context).iconTheme.color),
+              title: Text(
+                'Explore',
+                style: TextStyle(
+                    color: Theme.of(context).textTheme.bodyMedium?.color),
+              ),
+            ),
+            BubbleBottomBarItem(
+                backgroundColor: Theme.of(context).colorScheme.primaryContainer,
                 icon: Icon(Icons.settings,
-                    color: FlexColor.materialDarkTertiaryContainer),
-                activeIcon: Icon(Icons.settings),
-                title: Text('Settings')),
+                    color: Theme.of(context).iconTheme.color),
+                activeIcon: Icon(Icons.settings,
+                    color: Theme.of(context).iconTheme.color),
+                title: Text(
+                  'Settings',
+                  style: TextStyle(
+                      color: Theme.of(context).textTheme.bodyMedium?.color),
+                )),
           ]),
     );
   }

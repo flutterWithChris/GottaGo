@@ -19,17 +19,26 @@ import 'package:showcaseview/showcaseview.dart';
 
 import '../../../bloc/profile_bloc.dart';
 
-class CategoryCard extends StatelessWidget {
+class CategoryCard extends StatefulWidget {
   final PlaceList placeList;
 
-  CategoryCard({
+  const CategoryCard({
     Key? key,
     required this.placeList,
   }) : super(key: key);
 
+  @override
+  State<CategoryCard> createState() => _CategoryCardState();
+}
+
+class _CategoryCardState extends State<CategoryCard> {
   final GlobalKey _categoryCardShowcase = GlobalKey();
+
   final GlobalKey _iconPickerShowcaseKey = GlobalKey();
+
   BuildContext? buildContext;
+
+  static bool showcaseShowing = false;
 
   @override
   Widget build(BuildContext context) {
@@ -41,12 +50,22 @@ class CategoryCard extends StatelessWidget {
           if (snapshot.connectionState == ConnectionState.done &&
               (snapshot.data == null || snapshot.data == false)) {
             WidgetsBinding.instance.addPostFrameCallback((timeStamp) async {
-              await Future.delayed(const Duration(milliseconds: 400));
-              ShowCaseWidget.of(buildContext!).startShowCase(
-                  [_categoryCardShowcase, _iconPickerShowcaseKey]);
+              if (showcaseShowing == false) {
+                await Future.delayed(const Duration(milliseconds: 400));
+                ShowCaseWidget.of(buildContext!).startShowCase(
+                    [_categoryCardShowcase, _iconPickerShowcaseKey]);
+              }
             });
           }
-          return ShowCaseWidget(onFinish: () async {
+          return ShowCaseWidget(onStart: (p0, p1) {
+            setState(() {
+              showcaseShowing = true;
+            });
+          }, onFinish: () async {
+            setState(() {
+              showcaseShowing = false;
+            });
+            // showcaseShowing = false;
             SharedPreferences prefs = await SharedPreferences.getInstance();
             prefs.setBool('categoryCardShowcaseComplete', true);
           }, builder: Builder(
@@ -93,7 +112,7 @@ class CategoryCard extends StatelessWidget {
                                               context: context,
                                               builder: (context) =>
                                                   EditListDialog(
-                                                placeList: placeList,
+                                                placeList: widget.placeList,
                                               ),
                                             );
                                           }),
@@ -117,7 +136,7 @@ class CategoryCard extends StatelessWidget {
                                                 context: context,
                                                 builder: (context) {
                                                   return DeleteListDialog(
-                                                    placeList: placeList,
+                                                    placeList: widget.placeList,
                                                   );
                                                 },
                                               );
@@ -140,7 +159,7 @@ class CategoryCard extends StatelessWidget {
                             onTap: () {
                               context
                                   .read<SavedPlacesBloc>()
-                                  .add(LoadPlaces(placeList: placeList));
+                                  .add(LoadPlaces(placeList: widget.placeList));
                               context.push('/home/placeList-page');
                             },
                             contentPadding: const EdgeInsets.symmetric(
@@ -149,7 +168,7 @@ class CategoryCard extends StatelessWidget {
                             title: Padding(
                               padding: const EdgeInsets.only(left: 16.0),
                               child: Text(
-                                placeList.name,
+                                widget.placeList.name,
                                 style: Theme.of(context)
                                     .textTheme
                                     .titleMedium!
@@ -166,7 +185,7 @@ class CategoryCard extends StatelessWidget {
                                       future: context
                                           .read<PlaceListRepository>()
                                           .getPlaceListItemCount(
-                                              placeList.placeListId!),
+                                              widget.placeList.placeListId!),
                                       builder: (context, snapshot) {
                                         var data = snapshot.data;
 
@@ -215,14 +234,16 @@ class CategoryCard extends StatelessWidget {
                                         height: 40,
                                         width: 40,
                                         child: Icon(
-                                          deserializeIcon(placeList.icon) ??
+                                          deserializeIcon(
+                                                  widget.placeList.icon) ??
                                               Icons.list_rounded,
                                           color: Theme.of(context).brightness ==
                                                   Brightness.light
                                               ? Colors.grey[800]
                                               : Colors.white,
-                                          size: placeList.icon.containsValue(
-                                                  'fontAwesomeIcons')
+                                          size: widget.placeList.icon
+                                                  .containsValue(
+                                                      'fontAwesomeIcons')
                                               ? 30
                                               : 36,
                                         ),
@@ -242,8 +263,9 @@ class CategoryCard extends StatelessWidget {
                                             serializeIcon(icon);
                                         context.read<SavedListsBloc>().add(
                                             UpdateSavedLists(
-                                                placeList: placeList.copyWith(
-                                                    icon: serializedIcon)));
+                                                placeList: widget.placeList
+                                                    .copyWith(
+                                                        icon: serializedIcon)));
                                       } else {
                                         ScaffoldMessenger.of(context)
                                             .showSnackBar(const SnackBar(
@@ -267,14 +289,16 @@ class CategoryCard extends StatelessWidget {
                                         height: 40,
                                         width: 40,
                                         child: Icon(
-                                          deserializeIcon(placeList.icon) ??
+                                          deserializeIcon(
+                                                  widget.placeList.icon) ??
                                               Icons.list_rounded,
                                           color: Theme.of(context).brightness ==
                                                   Brightness.light
                                               ? Colors.grey[800]
                                               : Colors.white,
-                                          size: placeList.icon.containsValue(
-                                                  'fontAwesomeIcons')
+                                          size: widget.placeList.icon
+                                                  .containsValue(
+                                                      'fontAwesomeIcons')
                                               ? 30
                                               : 36,
                                         ),
@@ -289,13 +313,13 @@ class CategoryCard extends StatelessWidget {
                               },
                             ),
                           ),
-                          placeList.listOwnerId !=
+                          widget.placeList.listOwnerId !=
                                       context
                                           .read<ProfileBloc>()
                                           .state
                                           .user
                                           .id ||
-                                  placeList.contributorIds.isNotEmpty
+                                  widget.placeList.contributorIds.isNotEmpty
                               ? Positioned(
                                   left: 16.0,
                                   top: 10.0,

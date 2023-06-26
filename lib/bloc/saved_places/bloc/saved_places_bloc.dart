@@ -17,9 +17,10 @@ class SavedPlacesBloc extends Bloc<SavedPlacesEvent, SavedPlacesState> {
   final SavedListsBloc _savedListsBloc;
   final UserRepository _userRepository;
   StreamSubscription? _savedListsSubscription;
-  StreamSubscription? _placeListsSubscription;
+  StreamSubscription? placeListsSubscription;
   PlaceList? _currentPlaceList;
   Stream<User>? contributorStream;
+  Stream<List<Place>>? placeStream;
   SavedPlacesBloc({
     required PlaceListRepository placeListRepository,
     required SavedListsBloc savedListsBloc,
@@ -40,7 +41,7 @@ class SavedPlacesBloc extends Bloc<SavedPlacesEvent, SavedPlacesState> {
     });
 
     if (state.placeList != null) {
-      _placeListsSubscription =
+      placeListsSubscription =
           _placeListRepository.getPlaces(state.placeList!).listen((place) {
         add(LoadPlaces(placeList: state.placeList!));
       });
@@ -69,6 +70,8 @@ class SavedPlacesBloc extends Bloc<SavedPlacesEvent, SavedPlacesState> {
           }
         });
 
+        placeStream = _placeListRepository.getPlacesList(event.placeList);
+
         placeListRepository.getListOwner(event.placeList).listen((user) {
           listOwner = user;
         });
@@ -77,7 +80,8 @@ class SavedPlacesBloc extends Bloc<SavedPlacesEvent, SavedPlacesState> {
             listOwner: listOwner!,
             places: savedPlaces,
             placeList: event.placeList,
-            contributors: contributors));
+            contributors: contributors,
+            placeStream: placeStream!));
       }
       if (event is LoadVisitedPlaces) {
         emit(SavedPlacesLoading());
@@ -100,6 +104,9 @@ class SavedPlacesBloc extends Bloc<SavedPlacesEvent, SavedPlacesState> {
           }
         });
 
+        placeStream =
+            _placeListRepository.getVisitedPlacesList(event.placeList);
+
         placeListRepository.getListOwner(event.placeList).listen((user) {
           listOwner = user;
         });
@@ -108,7 +115,8 @@ class SavedPlacesBloc extends Bloc<SavedPlacesEvent, SavedPlacesState> {
             listOwner: listOwner!,
             places: savedPlaces,
             placeList: event.placeList,
-            contributors: contributors));
+            contributors: contributors,
+            placeStream: placeStream!));
       }
       if (event is AddPlace) {
         placeListRepository.addPlaceToList(event.place, event.placeList);
@@ -134,7 +142,7 @@ class SavedPlacesBloc extends Bloc<SavedPlacesEvent, SavedPlacesState> {
   @override
   Future<void> close() {
     // TODO: implement close
-    _placeListsSubscription?.cancel();
+    placeListsSubscription?.cancel();
     _savedListsSubscription?.cancel();
     return super.close();
   }

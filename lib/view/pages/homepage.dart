@@ -53,11 +53,13 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
           if (snapshot.connectionState == ConnectionState.done &&
               (snapshot.data == null || snapshot.data == false)) {
             WidgetsBinding.instance.addPostFrameCallback((timeStamp) async {
-              await Future.delayed(
-                const Duration(seconds: 0),
-                () => ShowCaseWidget.of(buildContext!).startShowCase(
-                    [_createListShowcaseKey, _createListButtonKey]),
-              );
+              if (ShowCaseWidget.of(context).activeWidgetId == null) {
+                await Future.delayed(
+                  const Duration(seconds: 0),
+                  () => ShowCaseWidget.of(buildContext!).startShowCase(
+                      [_createListShowcaseKey, _createListButtonKey]),
+                );
+              }
             });
           }
           return ShowCaseWidget(

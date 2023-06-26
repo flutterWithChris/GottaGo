@@ -406,6 +406,29 @@ class PlaceListRepository {
     }
   }
 
+  // Get Places as list stream
+  Stream<List<Place>> getPlacesList(PlaceList placeList) {
+    try {
+      return _firebaseFirestore
+          .collection('place_lists')
+          .doc(placeList.placeListId)
+          .collection('places')
+          .snapshots()
+          .map((snapshot) {
+        return snapshot.docs.map((doc) => Place.fromSnapshot(doc)).toList();
+      });
+    } on FirebaseException catch (e) {
+      final SnackBar snackBar = SnackBar(
+        content: Text(e.message.toString()),
+        backgroundColor: Colors.redAccent,
+      );
+      snackbarKey.currentState?.showSnackBar(snackBar);
+      (e, stack) =>
+          FirebaseCrashlytics.instance.recordError(e, stack, fatal: true);
+      throw Exception();
+    }
+  }
+
   Stream<Place> getVisitedPlaces(PlaceList placeList) {
     try {
       return _firebaseFirestore
@@ -423,6 +446,29 @@ class PlaceListRepository {
             .snapshots()
             .map((snap) => Place.fromSnapshot(snap))));
       }));
+    } on FirebaseException catch (e) {
+      final SnackBar snackBar = SnackBar(
+        content: Text(e.message.toString()),
+        backgroundColor: Colors.redAccent,
+      );
+      snackbarKey.currentState?.showSnackBar(snackBar);
+      (e, stack) =>
+          FirebaseCrashlytics.instance.recordError(e, stack, fatal: true);
+      throw Exception();
+    }
+  }
+
+  // Get Visited Places as list stream
+  Stream<List<Place>> getVisitedPlacesList(PlaceList placeList) {
+    try {
+      return _firebaseFirestore
+          .collection('place_lists')
+          .doc(placeList.placeListId)
+          .collection('visited_places')
+          .snapshots()
+          .map((snapshot) {
+        return snapshot.docs.map((doc) => Place.fromSnapshot(doc)).toList();
+      });
     } on FirebaseException catch (e) {
       final SnackBar snackBar = SnackBar(
         content: Text(e.message.toString()),

@@ -3,7 +3,9 @@ import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:leggo/bloc/profile_bloc.dart';
+import 'package:leggo/model/place.dart';
 import 'package:leggo/model/place_list.dart';
+import 'package:leggo/model/user.dart';
 import 'package:leggo/repository/place_list_repository.dart';
 import 'package:leggo/repository/user_repository.dart';
 
