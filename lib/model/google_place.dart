@@ -44,7 +44,10 @@ class GooglePlace {
         icon: parsedJson['icon'],
         rating: parsedJson['rating'],
         addressComponents: List.from(parsedJson['address_components']),
-        weekDayText: List.from(parsedJson['opening_hours']['weekday_text']),
+        // Add null check for weekday_text
+        weekDayText: parsedJson['opening_hours'] != null
+            ? List.from(parsedJson['opening_hours']['weekday_text'])
+            : null,
         photos: List.from(parsedJson['photos']),
         url: parsedJson['url'],
         reviews: List.from(parsedJson['reviews']),
