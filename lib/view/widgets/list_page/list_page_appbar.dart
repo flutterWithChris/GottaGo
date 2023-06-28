@@ -37,6 +37,7 @@ class CategoryPageAppBar extends StatefulWidget {
 
 class _CategoryPageAppBarState extends State<CategoryPageAppBar> {
   EdgeInsets avatarStackPadding = const EdgeInsets.only(right: 4.0);
+  EdgeInsets iconPadding = const EdgeInsets.only(right: 4.0, left: 4.0);
 
   @override
   void initState() {
@@ -49,7 +50,7 @@ class _CategoryPageAppBarState extends State<CategoryPageAppBar> {
               Platform.isIOS
                   ? avatarStackPadding =
                       const EdgeInsets.symmetric(horizontal: 28.0)
-                  : avatarStackPadding = const EdgeInsets.only(right: 28.0);
+                  : avatarStackPadding = const EdgeInsets.only(right: 0.0);
             });
           } else if (widget.scrollController.hasClients &&
               widget.scrollController.offset < 65) {
@@ -69,7 +70,7 @@ class _CategoryPageAppBarState extends State<CategoryPageAppBar> {
   Widget build(BuildContext context) {
     return SliverAppBar.medium(
       leadingWidth: 50,
-      expandedHeight: 125,
+      expandedHeight: 120,
       // leading: Padding(
       //   padding: const EdgeInsets.symmetric(horizontal: 8.0),
       //   child: IconButton(
@@ -105,7 +106,8 @@ class _CategoryPageAppBarState extends State<CategoryPageAppBar> {
                         spacing: 16.0,
                         crossAxisAlignment: WrapCrossAlignment.center,
                         children: [
-                          Padding(
+                          AnimatedPadding(
+                            duration: const Duration(milliseconds: 300),
                             padding:
                                 const EdgeInsets.only(right: 4.0, left: 4.0),
                             child: SizedBox(
@@ -247,9 +249,9 @@ class _CategoryPageAppBarState extends State<CategoryPageAppBar> {
                         }
                       });
                     }),
-                    child: Row(
+                    child: const Row(
                       mainAxisSize: MainAxisSize.min,
-                      children: const [
+                      children: [
                         Icon(Icons.edit_note_rounded),
                         SizedBox(
                           width: 4.0,
@@ -272,9 +274,9 @@ class _CategoryPageAppBarState extends State<CategoryPageAppBar> {
                         );
                       });
                     },
-                    child: Row(
+                    child: const Row(
                       mainAxisSize: MainAxisSize.min,
-                      children: const [
+                      children: [
                         Icon(Icons.delete_forever_rounded),
                         SizedBox(
                           width: 4.0,

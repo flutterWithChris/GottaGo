@@ -116,9 +116,9 @@ class _CategoryCardState extends State<CategoryCard> {
                                               ),
                                             );
                                           }),
-                                          child: Row(
+                                          child: const Row(
                                             mainAxisSize: MainAxisSize.min,
-                                            children: const [
+                                            children: [
                                               Icon(Icons.edit_note_rounded),
                                               SizedBox(
                                                 width: 4.0,
@@ -142,9 +142,9 @@ class _CategoryCardState extends State<CategoryCard> {
                                               );
                                             });
                                           },
-                                          child: Row(
+                                          child: const Row(
                                             mainAxisSize: MainAxisSize.min,
-                                            children: const [
+                                            children: [
                                               Icon(
                                                   Icons.delete_forever_rounded),
                                               SizedBox(

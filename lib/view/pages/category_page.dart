@@ -103,88 +103,7 @@ class _CategoryPageState extends State<CategoryPage> {
                   ),
                 ),
                 body: BlocBuilder<SavedPlacesBloc, SavedPlacesState>(
-                  // buildWhen: (previous, current) =>
-                  //     previous.placeList != current.placeList,
                   builder: (context, state) {
-                    // if (state is SavedPlacesLoading ||
-                    //     state is SavedPlacesUpdated) {
-                    //   rows = [
-                    //     for (int i = 0; i < 5; i++)
-                    //       Opacity(
-                    //         opacity: 0.4,
-                    //         child: Animate(
-                    //           onComplete: (controller) {
-                    //             controller.repeat();
-                    //           },
-                    //           effects: const [
-                    //             //FadeEffect(),
-                    //             ShimmerEffect(
-                    //                 duration: Duration(milliseconds: 500),
-                    //                 curve: Curves.easeInOut),
-                    //             // SlideEffect(curve: Curves.easeOutBack)
-                    //           ],
-                    //           child: const BlankPlaceCard(),
-                    //         ),
-                    //       )
-                    //   ];
-
-                    //   return CustomScrollView(
-                    //     controller: mainScrollController,
-                    //     slivers: [
-                    //       SliverAppBar.medium(
-                    //         expandedHeight: 125,
-                    //         // leading: Padding(
-                    //         //   padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                    //         //   child: IconButton(
-                    //         //     onPressed: () {},
-                    //         //     icon: const Icon(Icons.menu),
-                    //         //   ),
-                    //         // ),
-                    //         title: Row(
-                    //           mainAxisSize: MainAxisSize.min,
-                    //           children: [
-                    //             LoadingAnimationWidget.beat(
-                    //                 color: Theme.of(context)
-                    //                     .primaryIconTheme
-                    //                     .color!,
-                    //                 size: 20.0),
-                    //           ],
-                    //         ),
-                    //         actions: [
-                    //           IconButton(
-                    //               onPressed: () {},
-                    //               icon: const Icon(Icons.more_vert)),
-                    //         ],
-                    //       ),
-                    //       RandomPlaceBar(
-                    //           keys: [
-                    //             _visitedFilterShowcase,
-                    //             _inviteCollaboratorShowcase,
-                    //             _randomWheelShowcase,
-                    //             _checklistShowcase
-                    //           ],
-                    //           currentPlaceList: null,
-                    //           controller: controller,
-                    //           places: null),
-                    //       SliverList(
-                    //           delegate: SliverChildListDelegate(
-                    //         rows
-                    //             .animate(
-                    //               interval: 150.ms,
-                    //             )
-                    //             .slideY(
-                    //                 curve: Curves.easeOutSine,
-                    //                 begin: -1.0,
-                    //                 duration: 400.ms)
-                    //             .fadeIn(
-                    //               //delay: 100.ms,
-                    //               curve: Curves.easeOutSine,
-                    //               //  duration: 600.ms,
-                    //             ),
-                    //       ))
-                    //     ],
-                    //   );
-                    // }
                     if (state is SavedPlacesFailed) {
                       return const Center(
                         child: Text('Error Loading List!'),
@@ -325,32 +244,6 @@ class _CategoryPageState extends State<CategoryPage> {
                                                 snapshot.data == null) {
                                               return const SliverToBoxAdapter();
                                             }
-                                            // if (state is SavedPlacesLoading) {
-                                            //   return SliverList(
-                                            //       delegate: SliverChildListDelegate(
-                                            //     [
-                                            //       for (int i = 0; i < 5; i++)
-                                            //         Opacity(
-                                            //           opacity: 0.4,
-                                            //           child: Animate(
-                                            //               effects: const [
-                                            //                 ShimmerEffect(
-                                            //                     duration: Duration(
-                                            //                         milliseconds:
-                                            //                             500),
-                                            //                     curve:
-                                            //                         Curves.easeInOut),
-                                            //                 SlideEffect(
-                                            //                   curve:
-                                            //                       Curves.easeOutBack,
-                                            //                 )
-                                            //               ],
-                                            //               child:
-                                            //                   const BlankPlaceCard()),
-                                            //         )
-                                            //     ],
-                                            //   ));
-                                            // }
 
                                             if (snapshot.hasData &&
                                                 snapshot.data != null) {

@@ -97,7 +97,7 @@ class _PlaceCardState extends State<PlaceCard>
               buildContext = context;
               return ConstrainedBox(
                   constraints:
-                      const BoxConstraints(minHeight: 170, maxHeight: 235),
+                      const BoxConstraints(minHeight: 170, maxHeight: 440),
                   child: BlocBuilder<EditPlacesBloc, EditPlacesState>(
                     builder: (context, state) {
                       return InkWell(
@@ -146,289 +146,297 @@ class _PlaceCardState extends State<PlaceCard>
                           child: Card(
                             clipBehavior: Clip.antiAlias,
                             //color: FlexColor.deepBlueDarkSecondaryContainer.withOpacity(0.10),
-                            child: Flex(
-                              direction: Axis.horizontal,
-                              children: [
-                                Flexible(
-                                    child: Stack(
-                                  alignment: AlignmentDirectional.topEnd,
-                                  children: [
-                                    ConstrainedBox(
-                                        constraints: const BoxConstraints(
-                                            minHeight: 235,
-                                            maxHeight: 235,
-                                            minWidth: 120,
-                                            maxWidth: 120),
-                                        child: CachedNetworkImage(
-                                          imageUrl:
-                                              'https://maps.googleapis.com/maps/api/place/photo?maxwidth=1080&maxheight=1920&photo_reference=${widget.place.mainPhoto}&key=${dotenv.get('GOOGLE_PLACES_API_KEY')}',
-                                          fit: BoxFit.cover,
-                                          errorWidget:
-                                              (context, error, stackTrace) {
-                                            return Container(
-                                              child: const SizedBox(
-                                                  child: Text('Error')),
-                                            );
-                                          },
-                                        )),
-                                    Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.end,
-                                      children: [
-                                        Container(
-                                          decoration: BoxDecoration(
-                                            color:
-                                                Colors.white.withOpacity(0.9),
+                            child: Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Column(
+                                // direction: Axis.vertical,
+                                children: [
+                                  Stack(
+                                    alignment: AlignmentDirectional.topEnd,
+                                    children: [
+                                      AspectRatio(
+                                          aspectRatio: 4 / 3,
+                                          child: Container(
+                                            decoration: BoxDecoration(
+                                              borderRadius:
+                                                  BorderRadius.circular(16.0),
+                                              image: DecorationImage(
+                                                image:
+                                                    CachedNetworkImageProvider(
+                                                  'https://maps.googleapis.com/maps/api/place/photo?maxwidth=1080&maxheight=1920&photo_reference=${widget.place.mainPhoto}&key=${dotenv.get('GOOGLE_PLACES_API_KEY')}',
+                                                ),
+                                                fit: BoxFit.cover,
+                                              ),
+                                            ),
+                                          )),
+                                      Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.end,
+                                        children: [
+                                          Container(
+                                            decoration: BoxDecoration(
+                                              borderRadius:
+                                                  const BorderRadius.only(
+                                                      bottomLeft:
+                                                          Radius.circular(
+                                                              12.0)),
+                                              color:
+                                                  Theme.of(context).cardColor,
+                                            ),
+                                            alignment:
+                                                AlignmentDirectional.center,
+                                            height: 24.0,
+                                            width: 120.0,
+                                            child: Padding(
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                horizontal: 10.0,
+                                              ),
+                                              child: FittedBox(
+                                                child: Row(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment.center,
+                                                  children: [
+                                                    todaysHours != null
+                                                        ? todaysHours !=
+                                                                'Closed'
+                                                            ? todaysHours.contains(
+                                                                    '24 hours')
+                                                                ? Text(
+                                                                    'Open 24 Hours',
+                                                                    style: Theme.of(
+                                                                            context)
+                                                                        .textTheme
+                                                                        .bodySmall!
+                                                                        .copyWith(
+                                                                          fontWeight:
+                                                                              FontWeight.bold,
+                                                                        ),
+                                                                  )
+                                                                : Text(
+                                                                    'Open \'til: ${todaysHours.split('–')[1].trim()}',
+                                                                    style: Theme.of(
+                                                                            context)
+                                                                        .textTheme
+                                                                        .bodySmall!
+                                                                        .copyWith(
+                                                                          fontWeight:
+                                                                              FontWeight.bold,
+                                                                        ),
+                                                                  )
+                                                            : const Text(
+                                                                'Closed Today!')
+                                                        : const SizedBox(),
+                                                  ],
+                                                ),
+                                              ),
+                                            ),
                                           ),
-                                          alignment:
-                                              AlignmentDirectional.center,
-                                          height: 24.0,
-                                          width: 120.0,
-                                          child: Padding(
-                                            padding: const EdgeInsets.symmetric(
-                                                horizontal: 10.0),
-                                            child: FittedBox(
-                                              child: Row(
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment.center,
-                                                children: [
-                                                  todaysHours != null
-                                                      ? todaysHours != 'Closed'
-                                                          ? todaysHours.contains(
-                                                                  '24 hours')
-                                                              ? Text(
-                                                                  'Open 24 Hours',
-                                                                  style: Theme.of(
-                                                                          context)
-                                                                      .textTheme
-                                                                      .bodySmall!
-                                                                      .copyWith(
-                                                                          fontWeight: FontWeight
-                                                                              .bold,
-                                                                          color:
-                                                                              Colors.black54),
-                                                                )
-                                                              : Text(
-                                                                  'Open \'til: ${todaysHours.split('–')[1].trim()}',
-                                                                  style: Theme.of(
-                                                                          context)
-                                                                      .textTheme
-                                                                      .bodySmall!
-                                                                      .copyWith(
-                                                                          fontWeight: FontWeight
-                                                                              .bold,
-                                                                          color:
-                                                                              Colors.black54),
-                                                                )
-                                                          : const Text(
-                                                              'Closed Today!')
-                                                      : const SizedBox(),
+                                          Container(
+                                            decoration: BoxDecoration(
+                                                color:
+                                                    Theme.of(context).cardColor,
+                                                borderRadius:
+                                                    const BorderRadius.only(
+                                                        bottomLeft:
+                                                            Radius.circular(
+                                                                12.0))),
+                                            height: 24,
+                                            width: 48,
+                                            child: Padding(
+                                              padding: const EdgeInsets.only(
+                                                  top: 2.0),
+                                              child: Wrap(
+                                                  alignment:
+                                                      WrapAlignment.center,
+                                                  crossAxisAlignment:
+                                                      WrapCrossAlignment.center,
+                                                  spacing: 4.0,
+                                                  children: [
+                                                    RatingBar.builder(
+                                                        itemCount: 1,
+                                                        itemSize: 12.0,
+                                                        initialRating: 1,
+                                                        ignoreGestures: true,
+                                                        itemBuilder:
+                                                            (context, index) {
+                                                          return const Icon(
+                                                            Icons.star,
+                                                            size: 12.0,
+                                                            color: Colors.amber,
+                                                          );
+                                                        },
+                                                        onRatingUpdate:
+                                                            (rating) {}),
+                                                    Text(
+                                                        widget.ratingsTotal
+                                                            .toString(),
+                                                        textAlign:
+                                                            TextAlign.center,
+                                                        style: const TextStyle(
+                                                          fontSize: 12,
+                                                          fontWeight:
+                                                              FontWeight.bold,
+                                                        ))
+                                                  ]),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                      BlocBuilder<EditPlacesBloc,
+                                          EditPlacesState>(
+                                        builder: (context, state) {
+                                          if (state is EditPlacesStarted) {
+                                            return Positioned(
+                                              left: 8.0,
+                                              top: 8.0,
+                                              child: Animate(
+                                                effects: const [
+                                                  SlideEffect(
+                                                      curve: Curves.easeOutSine,
+                                                      begin: Offset(0.0, -1.0),
+                                                      duration: Duration(
+                                                          milliseconds: 50))
                                                 ],
+                                                child: RoundCheckBox(
+                                                  checkedColor: FlexColor
+                                                      .bahamaBlueDarkPrimaryContainer,
+                                                  uncheckedColor:
+                                                      Colors.white54,
+                                                  size: 30,
+                                                  isChecked: isSelected,
+                                                  onTap: (p0) {
+                                                    setState(() {
+                                                      isSelected = p0!;
+                                                    });
+                                                    if (p0 == true) {
+                                                      context
+                                                          .read<
+                                                              EditPlacesBloc>()
+                                                          .add(SelectPlace(
+                                                              place: widget
+                                                                  .place));
+                                                    }
+                                                    if (p0 == false) {
+                                                      context
+                                                          .read<
+                                                              EditPlacesBloc>()
+                                                          .add(UnselectPlace(
+                                                              place: widget
+                                                                  .place));
+                                                    }
+                                                  },
+                                                ),
                                               ),
-                                            ),
-                                          ),
-                                        ),
-                                        Container(
-                                          decoration: const BoxDecoration(
-                                              color: Colors.black87,
-                                              borderRadius: BorderRadius.only(
-                                                  bottomLeft:
-                                                      Radius.circular(12.0))),
-                                          //color: Colors.black,
-                                          height: 20,
-                                          width: 45,
-                                          child: Padding(
-                                            padding:
-                                                const EdgeInsets.only(top: 2.0),
-                                            child: Wrap(
-                                                alignment: WrapAlignment.center,
-                                                crossAxisAlignment:
-                                                    WrapCrossAlignment.center,
-                                                spacing: 4.0,
-                                                children: [
-                                                  RatingBar.builder(
-                                                      itemCount: 1,
-                                                      itemSize: 12.0,
-                                                      initialRating: 1,
-                                                      // initialRating:
-                                                      //     widget.place.rating!,
-                                                      // allowHalfRating: true,
-                                                      ignoreGestures: true,
-                                                      itemBuilder:
-                                                          (context, index) {
-                                                        return const Icon(
-                                                          Icons.star,
-                                                          size: 12.0,
-                                                          color: Colors.amber,
-                                                        );
-                                                      },
-                                                      onRatingUpdate:
-                                                          (rating) {}),
-                                                  Text(
-                                                      widget.ratingsTotal
-                                                          .toString(),
-                                                      textAlign:
-                                                          TextAlign.center,
-                                                      style: const TextStyle(
-                                                        fontSize: 10,
-                                                        fontWeight:
-                                                            FontWeight.bold,
-                                                        color: Colors
-                                                            .white, //data.result?.openingHours?.openNow == true
-
-                                                        // : Colors.black87),
-                                                      ))
-                                                ]),
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                    BlocBuilder<EditPlacesBloc,
-                                        EditPlacesState>(
-                                      builder: (context, state) {
-                                        if (state is EditPlacesStarted) {
-                                          return Positioned(
-                                            left: 8.0,
-                                            top: 8.0,
-                                            child: Animate(
-                                              effects: const [
-                                                SlideEffect(
-                                                    curve: Curves.easeOutSine,
-                                                    begin: Offset(0.0, -1.0),
-                                                    duration: Duration(
-                                                        milliseconds: 50))
-                                              ],
-                                              child: RoundCheckBox(
-                                                checkedColor: FlexColor
-                                                    .bahamaBlueDarkPrimaryContainer,
-                                                uncheckedColor: Colors.white54,
-                                                size: 30,
-                                                isChecked: isSelected,
-                                                onTap: (p0) {
-                                                  setState(() {
-                                                    isSelected = p0!;
-                                                  });
-                                                  if (p0 == true) {
-                                                    context
-                                                        .read<EditPlacesBloc>()
-                                                        .add(SelectPlace(
-                                                            place:
-                                                                widget.place));
-                                                  }
-                                                  if (p0 == false) {
-                                                    context
-                                                        .read<EditPlacesBloc>()
-                                                        .add(UnselectPlace(
-                                                            place:
-                                                                widget.place));
-                                                  }
-                                                },
-                                              ),
-                                            ),
-                                          );
-                                        } else {
-                                          return const SizedBox();
-                                        }
-                                      },
-                                    )
-                                  ],
-                                )),
-                                Flexible(
-                                  flex: 2,
-                                  child: Padding(
+                                            );
+                                          } else {
+                                            return const SizedBox();
+                                          }
+                                        },
+                                      )
+                                    ],
+                                  ),
+                                  Padding(
                                     padding: const EdgeInsets.symmetric(
-                                        vertical: 8.0),
+                                        vertical: 8.0, horizontal: 8.0),
                                     child: Column(
                                       mainAxisSize: MainAxisSize.min,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
                                       children: [
-                                        Stack(
-                                          clipBehavior: Clip.none,
-                                          alignment:
-                                              AlignmentDirectional.topEnd,
-                                          children: [
-                                            ListTile(
-                                              dense: true,
-                                              visualDensity:
-                                                  VisualDensity.compact,
-                                              shape: RoundedRectangleBorder(
-                                                  borderRadius:
-                                                      BorderRadius.circular(
-                                                          12.0)),
-                                              title: Padding(
-                                                padding:
-                                                    const EdgeInsets.symmetric(
-                                                        vertical: 4.0),
+                                        Padding(
+                                          padding: const EdgeInsets.symmetric(
+                                              vertical: 4.0),
+                                          child: Wrap(
+                                            spacing: 12.0,
+                                            crossAxisAlignment:
+                                                WrapCrossAlignment.center,
+                                            children: [
+                                              Flexible(
+                                                flex: 5,
+                                                child: Text(
+                                                  titleCase(widget.placeName),
+                                                  style: Theme.of(context)
+                                                      .textTheme
+                                                      .bodyLarge!
+                                                      .copyWith(
+                                                        fontWeight:
+                                                            FontWeight.bold,
+                                                      ),
+                                                  maxLines: 1,
+                                                  overflow:
+                                                      TextOverflow.ellipsis,
+                                                ),
+                                              ),
+
+                                              // Middle Dot
+                                              // const Flexible(
+                                              //   child: Text(
+                                              //     '·',
+                                              //     style: TextStyle(
+                                              //       fontSize: 22,
+                                              //       fontWeight: FontWeight.bold,
+                                              //     ),
+                                              //   ),
+                                              // ),
+
+                                              // Place Type
+                                              if (widget.place.type != null)
+                                                Flexible(
+                                                  flex: 3,
+                                                  child: Chip(
+                                                      side: BorderSide.none,
+                                                      visualDensity:
+                                                          VisualDensity.compact,
+                                                      label: Text(titleCase(
+                                                          widget.place.type!
+                                                              .replaceAll(
+                                                                  '_', ' '))),
+                                                      backgroundColor: Colors
+                                                          .grey[200],
+                                                      labelPadding:
+                                                          const EdgeInsets
+                                                                  .symmetric(
+                                                              horizontal: 4.0),
+                                                      avatar: const Icon(
+                                                        Icons
+                                                            .local_cafe_outlined,
+                                                        size: 14.0,
+                                                      ),
+                                                      labelStyle: Theme.of(context)
+                                                          .textTheme
+                                                          .bodySmall
+                                                          ?.copyWith(
+                                                              color:
+                                                                  Colors.black)),
+                                                ),
+                                              Flexible(
+                                                flex: 4,
                                                 child: Wrap(
-                                                  alignment: WrapAlignment
-                                                      .spaceBetween,
+                                                  spacing: 5.0,
+                                                  crossAxisAlignment:
+                                                      WrapCrossAlignment.center,
                                                   children: [
+                                                    const Icon(
+                                                      Icons.location_pin,
+                                                      size: 13,
+                                                    ),
                                                     Text(
-                                                      titleCase(
-                                                          widget.placeName),
+                                                      '${widget.place.city!}, ${widget.place.state}',
                                                       style: Theme.of(context)
                                                           .textTheme
-                                                          .titleMedium!
-                                                          .copyWith(
-                                                              fontWeight:
-                                                                  FontWeight
-                                                                      .bold,
-                                                              fontSize: 22),
-                                                      maxLines: 1,
-                                                      overflow:
-                                                          TextOverflow.ellipsis,
+                                                          .bodyMedium!
+                                                          .copyWith(),
                                                     ),
                                                   ],
                                                 ),
                                               ),
-                                              subtitle: Wrap(
-                                                alignment:
-                                                    WrapAlignment.spaceBetween,
-                                                crossAxisAlignment:
-                                                    WrapCrossAlignment.center,
-                                                children: [
-                                                  Wrap(
-                                                    spacing: 5.0,
-                                                    crossAxisAlignment:
-                                                        WrapCrossAlignment
-                                                            .center,
-                                                    children: [
-                                                      const Icon(
-                                                        Icons.location_pin,
-                                                        size: 13,
-                                                      ),
-                                                      Text(
-                                                        '${widget.place.city!}, ${widget.place.state}',
-                                                        style: Theme.of(context)
-                                                            .textTheme
-                                                            .bodySmall!
-                                                            .copyWith(),
-                                                      ),
-                                                    ],
-                                                  ),
-
-                                                  Padding(
-                                                    padding:
-                                                        const EdgeInsets.only(
-                                                            top: 8.0),
-                                                    child: Text(
-                                                      '"${widget.place.reviews?[0]['text']}!"',
-                                                      style: Theme.of(context)
-                                                          .textTheme
-                                                          .bodyMedium,
-                                                      overflow:
-                                                          TextOverflow.ellipsis,
-                                                      maxLines: 3,
-                                                    ),
-                                                  )
-                                                  //     : Container()
-                                                ],
-                                              ),
-                                            ),
-                                          ],
+                                            ],
+                                          ),
                                         ),
                                         Padding(
-                                          padding: const EdgeInsets.symmetric(
-                                              vertical: 8.0, horizontal: 12.0),
+                                          padding: const EdgeInsets.only(
+                                              top: 12.0, bottom: 0.0),
                                           child: Row(
                                             mainAxisAlignment:
                                                 MainAxisAlignment.spaceBetween,
@@ -583,8 +591,8 @@ class _PlaceCardState extends State<PlaceCard>
                                       ],
                                     ),
                                   ),
-                                ),
-                              ],
+                                ],
+                              ),
                             ),
                           ),
                         ),
