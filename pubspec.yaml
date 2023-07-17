@@ -65,7 +65,9 @@ dependencies:
   cached_memory_image: ^1.3.1
   avatar_stack: ^1.1.2
   confetti: ^0.7.0
-  material_floating_search_bar: ^0.3.7
+  material_floating_search_bar: 
+    git:
+      url: https://github.com/Railway-Engineering-Solutions/material_floating_search_bar
   url_launcher: ^6.1.6
   intl: ^0.18.0
   shared_preferences: ^2.0.15
