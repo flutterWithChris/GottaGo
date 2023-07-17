@@ -50,7 +50,9 @@ class GooglePlace {
             : null,
         photos: List.from(parsedJson['photos']),
         url: parsedJson['url'],
-        reviews: List.from(parsedJson['reviews']),
+        reviews: parsedJson['reviews'] != null
+            ? List.from(parsedJson['reviews'])
+            : null,
         website: parsedJson['website']);
   }
 }

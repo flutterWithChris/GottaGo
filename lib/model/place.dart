@@ -15,6 +15,7 @@ class Place {
   final String? type;
   final String? mainPhoto;
   final List<dynamic>? hours;
+  final List<dynamic>? photos;
 
   Place({
     this.placeId,
@@ -31,6 +32,7 @@ class Place {
     this.mapsUrl,
     this.mainPhoto,
     this.hours,
+    this.photos,
   });
 
   Place copyWith({
@@ -48,6 +50,7 @@ class Place {
     String? icon,
     String? mapsUrl,
     List<dynamic>? hours,
+    List<dynamic>? photos,
   }) {
     return Place(
       placeId: placeId ?? this.placeId,
@@ -64,25 +67,29 @@ class Place {
       phoneNumber: phoneNumber ?? this.phoneNumber,
       icon: icon ?? this.icon,
       mapsUrl: mapsUrl ?? this.mapsUrl,
+      photos: photos ?? this.photos,
     );
   }
 
   factory Place.fromSnapshot(DocumentSnapshot snap) {
+    var data = snap.data() as Map<String, dynamic>;
+
     return Place(
       placeId: snap['placeId'],
       state: snap['state'],
       name: snap['name'],
       address: snap['address'],
       city: snap['city'],
-      reviews: snap['reviews'] ?? snap['reviews'],
-      rating: snap['rating'],
-      website: snap['website'] ?? snap['website'],
+      reviews: data.containsKey('reviews') ? snap['reviews'] : null,
+      rating: data.containsKey('rating') ? snap['rating'] : null,
+      website: data.containsKey('website') ? snap['website'] : null,
       type: snap['type'],
       mainPhoto: snap['mainPhoto'],
-      hours: snap['hours'] ?? snap['hours'],
+      hours: data.containsKey('hours') ? snap['hours'] : null,
       mapsUrl: snap['mapsUrl'],
-      phoneNumber: snap['phoneNumber'] ?? snap['phoneNumber'],
+      phoneNumber: data.containsKey('phoneNumber') ? snap['phoneNumber'] : null,
       icon: snap['icon'],
+      photos: data.containsKey('photos') ? snap['photos'] : null,
     );
   }
 
@@ -102,6 +109,7 @@ class Place {
       'mapsUrl': mapsUrl,
       'phoneNumber': phoneNumber,
       'icon': icon,
+      'photos': photos,
     };
   }
 }

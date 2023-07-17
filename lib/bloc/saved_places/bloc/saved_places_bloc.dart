@@ -61,8 +61,9 @@ class SavedPlacesBloc extends Bloc<SavedPlacesEvent, SavedPlacesState> {
             savedPlaces.add(place);
           });
 
-          if (placeList.contributorIds.isNotEmpty) {
-            for (String userId in placeList.contributorIds) {
+          if (placeList.contributorIds != null &&
+              placeList.contributorIds!.isNotEmpty) {
+            for (String userId in placeList.contributorIds!) {
               _userRepository.getUser(userId).listen((user) {
                 contributors.add(user);
               });
@@ -95,8 +96,9 @@ class SavedPlacesBloc extends Bloc<SavedPlacesEvent, SavedPlacesState> {
             savedPlaces.add(place);
           });
 
-          if (placeList.contributorIds.isNotEmpty) {
-            for (String userId in placeList.contributorIds) {
+          if (placeList.contributorIds != null &&
+              placeList.contributorIds!.isNotEmpty) {
+            for (String userId in placeList.contributorIds!) {
               _userRepository.getUser(userId).listen((user) {
                 contributors.add(user);
               });

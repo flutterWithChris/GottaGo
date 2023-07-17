@@ -51,6 +51,7 @@ void main() async {
     GoogleProvider(clientId: dotenv.get('GOOGLE_CLIENT_ID')),
     AppleProvider(scopes: {'email', 'fullName'}),
   ]);
+  // await FirebaseFirestore.instance.clearPersistence();
   // FirebaseAuth.instance.signOut();
 
 // TODO: Uncomment this line to set up Crashlytics.

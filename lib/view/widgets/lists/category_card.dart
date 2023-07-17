@@ -319,7 +319,9 @@ class _CategoryCardState extends State<CategoryCard> {
                                           .state
                                           .user
                                           .id ||
-                                  widget.placeList.contributorIds.isNotEmpty
+                                  (widget.placeList.contributorIds != null &&
+                                      widget
+                                          .placeList.contributorIds!.isNotEmpty)
                               ? Positioned(
                                   left: 16.0,
                                   top: 10.0,

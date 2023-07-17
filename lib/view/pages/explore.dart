@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_gutter/flutter_gutter.dart';
+import 'package:go_router/go_router.dart';
 import 'package:leggo/bloc/explore/explore_bloc.dart';
 import 'package:leggo/globals.dart';
 import 'package:leggo/model/google_place.dart';
@@ -12,9 +13,18 @@ import 'package:leggo/view/widgets/main_top_app_bar.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
-class ExplorePage extends StatelessWidget {
+final TextEditingController _cityController = TextEditingController();
+final TextEditingController _stateController = TextEditingController();
+
+class ExplorePage extends StatefulWidget {
   const ExplorePage({super.key});
 
+  @override
+  State<ExplorePage> createState() => _ExplorePageState();
+}
+
+class _ExplorePageState extends State<ExplorePage> {
+  final TextEditingController _searchController = TextEditingController();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -36,52 +46,108 @@ class ExplorePage extends StatelessWidget {
                   child: Padding(
                     padding: const EdgeInsets.all(16.0),
                     child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        const Text('Explore'),
-                        const SizedBox(height: 16.0),
                         Padding(
                           padding: const EdgeInsets.symmetric(
                               horizontal: 10.0, vertical: 16.0),
-                          child: Wrap(
-                            spacing: 4.0,
-                            crossAxisAlignment: WrapCrossAlignment.center,
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              Text(
-                                'I\'m looking for a ',
-                                style: Theme.of(context).textTheme.titleLarge,
+                              Row(
+                                children: [
+                                  Flexible(
+                                    flex: 2,
+                                    child: TextField(
+                                      controller: _searchController,
+                                      textCapitalization:
+                                          TextCapitalization.sentences,
+                                      onChanged: (value) {
+                                        context
+                                            .read<ExploreBloc>()
+                                            .add(SetQuery(value));
+                                      },
+                                      decoration: const InputDecoration(
+                                        label: Text('I\'m looking for...'),
+                                        floatingLabelBehavior:
+                                            FloatingLabelBehavior.always,
+                                        hintText: 'Cafe, Restaurant, etc.',
+                                      ),
+                                    ),
+                                  ),
+                                  const Gutter(),
+                                  Flexible(
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        const Wrap(
+                                          spacing: 4.0,
+                                          crossAxisAlignment:
+                                              WrapCrossAlignment.center,
+                                          children: [
+                                            Icon(Icons.location_on, size: 16.0),
+                                            Text('Near'),
+                                          ],
+                                        ),
+                                        const SizedBox(height: 2.0),
+                                        InkWell(
+                                          onTap: () async {
+                                            await showDialog(
+                                                context: context,
+                                                builder: (context) {
+                                                  return const SetExploreLocationDialog();
+                                                });
+                                          },
+                                          child: context
+                                                      .watch<ExploreBloc>()
+                                                      .location !=
+                                                  null
+                                              ? Chip(
+                                                  side: BorderSide.none,
+                                                  label: Text(context
+                                                      .watch<ExploreBloc>()
+                                                      .location!),
+                                                  visualDensity:
+                                                      VisualDensity.compact,
+                                                )
+                                              : const Chip(
+                                                  side: BorderSide.none,
+                                                  label: Text('Set Location'),
+                                                  visualDensity:
+                                                      VisualDensity.compact,
+                                                ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ],
                               ),
-                              const Chip(
-                                label: Text(
-                                  'Place Type',
-                                ),
-                                visualDensity: VisualDensity.compact,
-                              ),
-                              Text(
-                                ' near ',
-                                style: Theme.of(context).textTheme.titleLarge,
-                              ),
-                              const Chip(
-                                label: Text('City'),
-                                visualDensity: VisualDensity.compact,
-                              ),
-                              const Text(','),
-                              const Chip(
-                                label: Text('State'),
-                                visualDensity: VisualDensity.compact,
+                              const Gutter(),
+                              // Location filter chip
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  const Gutter(),
+                                  ElevatedButton.icon(
+                                      onPressed: () {
+                                        context.read<ExploreBloc>().add(
+                                            LoadExplore(
+                                                placeType: context
+                                                    .read<ExploreBloc>()
+                                                    .searchQuery!,
+                                                city: state.city));
+                                      },
+                                      label: const Text('Explore'),
+                                      icon: const Icon(Icons.explore)),
+                                ],
                               ),
                             ],
                           ),
                         ),
-                        const Gutter(),
-                        ElevatedButton.icon(
-                            onPressed: () {
-                              context.read<ExploreBloc>().add(const LoadExplore(
-                                  placeType: 'restaurant',
-                                  city: 'San Francisco',
-                                  state: 'CA'));
-                            },
-                            label: const Text('Explore'),
-                            icon: const Icon(Icons.explore)),
+                        // const GutterTiny(),
                       ],
                     ),
                   ),
@@ -109,10 +175,10 @@ class ExplorePage extends StatelessWidget {
                       const Gutter(),
                       ElevatedButton.icon(
                           onPressed: () {
-                            context.read<ExploreBloc>().add(const LoadExplore(
-                                placeType: 'sushi',
-                                city: 'Wading River',
-                                state: 'NY'));
+                            context.read<ExploreBloc>().add(LoadExplore(
+                                placeType:
+                                    context.read<ExploreBloc>().searchQuery!,
+                                city: 'Wading River'));
                           },
                           label: const Text('Explore'),
                           icon: const Icon(Icons.explore)),
@@ -127,6 +193,75 @@ class ExplorePage extends StatelessWidget {
             },
           ),
         ],
+      ),
+    );
+  }
+}
+
+class SetExploreLocationDialog extends StatefulWidget {
+  const SetExploreLocationDialog({
+    super.key,
+  });
+
+  @override
+  State<SetExploreLocationDialog> createState() =>
+      _SetExploreLocationDialogState();
+}
+
+class _SetExploreLocationDialogState extends State<SetExploreLocationDialog> {
+  @override
+  void initState() {
+    super.initState();
+    _cityController.text =
+        context.read<ExploreBloc>().location?.split(',')[0] ?? '';
+    _stateController.text =
+        context.read<ExploreBloc>().location?.split(',')[1] ?? '';
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Dialog(
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 24.0),
+        child: Column(mainAxisSize: MainAxisSize.min, children: [
+          Text('Set Location',
+              style: Theme.of(context).textTheme.headlineLarge),
+          const Gutter(),
+          TextField(
+            controller: _cityController,
+            textCapitalization: TextCapitalization.words,
+            autofocus: true,
+            decoration: const InputDecoration(
+              label: Text('City'),
+            ),
+          ),
+          const Gutter(),
+          TextField(
+            controller: _stateController,
+            textCapitalization: TextCapitalization.words,
+            decoration: const InputDecoration(
+              label: Text('State'),
+            ),
+          ),
+          const Gutter(),
+          ElevatedButton.icon(
+              onPressed: () {
+                if (_cityController.text.isNotEmpty &&
+                    _stateController.text.isNotEmpty) {
+                  context.read<ExploreBloc>().add(SetLocation(
+                      '${_cityController.text.trim()}, ${_stateController.text.trim()}'));
+                  setState(() {});
+                  context.pop();
+                } else {
+                  ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                    content: Text('Please enter a city and state!'),
+                    backgroundColor: Colors.red,
+                  ));
+                }
+              },
+              icon: const Icon(Icons.my_location),
+              label: const Text('Set Location')),
+        ]),
       ),
     );
   }

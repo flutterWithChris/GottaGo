@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:flutter_gutter/flutter_gutter.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:leggo/bloc/autocomplete/bloc/autocomplete_bloc.dart';
 import 'package:leggo/bloc/place/place_bloc.dart';
@@ -15,6 +16,7 @@ import 'package:leggo/model/google_place.dart';
 import 'package:leggo/model/place.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:material_floating_search_bar/material_floating_search_bar.dart';
+import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
 import '../dialogs/review_card_dialog.dart';
 import '../tweens/custom_rect_tween.dart';
@@ -73,6 +75,7 @@ class _SearchPlacesSheetState extends State<SearchPlacesSheet> {
                     return const SizedBox();
                   }
                   if (state is PlaceLoaded) {
+                    PageController pageController = PageController();
                     GooglePlace googlePlace = state.googlePlace;
                     return Padding(
                         padding: const EdgeInsets.symmetric(vertical: 8.0),
@@ -87,89 +90,79 @@ class _SearchPlacesSheetState extends State<SearchPlacesSheet> {
                                       children: [
                                         AspectRatio(
                                           aspectRatio: 16 / 9,
-                                          child: CachedNetworkImage(
-                                            placeholder: (context, url) {
-                                              return AspectRatio(
-                                                aspectRatio: 16 / 9,
-                                                child: Center(
-                                                  child: Animate(
-                                                    onPlay: (controller) {
-                                                      controller.repeat();
-                                                    },
-                                                    effects: const [
-                                                      ShimmerEffect(
-                                                          duration: Duration(
-                                                              seconds: 2))
-                                                    ],
-                                                    child: Container(
-                                                      height: 300,
-                                                      width:
-                                                          MediaQuery.of(context)
-                                                              .size
-                                                              .width,
-                                                      color: Theme.of(context)
-                                                          .primaryColor,
-                                                    ),
-                                                  ),
+                                          child: PageView(
+                                            //  shrinkWrap: true,
+                                            controller: pageController,
+                                            physics:
+                                                const BouncingScrollPhysics(),
+                                            scrollDirection: Axis.horizontal,
+                                            // padding: EdgeInsets.zero,
+                                            children: [
+                                              for (dynamic image
+                                                  in googlePlace.photos!)
+                                                CachedNetworkImage(
+                                                  placeholder: (context, url) {
+                                                    return AspectRatio(
+                                                      aspectRatio: 16 / 9,
+                                                      child: Center(
+                                                        child: Animate(
+                                                          onPlay: (controller) {
+                                                            controller.repeat();
+                                                          },
+                                                          effects: const [
+                                                            ShimmerEffect(
+                                                                duration:
+                                                                    Duration(
+                                                                        seconds:
+                                                                            2))
+                                                          ],
+                                                          child: Container(
+                                                            height: 300,
+                                                            width:
+                                                                MediaQuery.of(
+                                                                        context)
+                                                                    .size
+                                                                    .width,
+                                                            color: Theme.of(
+                                                                    context)
+                                                                .primaryColor,
+                                                          ),
+                                                        ),
+                                                      ),
+                                                    );
+                                                  },
+                                                  imageUrl:
+                                                      'https://maps.googleapis.com/maps/api/place/photo?maxwidth=1080&maxheight=1920&photo_reference=${image['photo_reference']}&key=${dotenv.get('GOOGLE_PLACES_API_KEY')}',
+                                                  fit: BoxFit.cover,
                                                 ),
-                                              );
-                                            },
-                                            imageUrl:
-                                                'https://maps.googleapis.com/maps/api/place/photo?maxwidth=1080&maxheight=1920&photo_reference=${state.googlePlace.photos![0]['photo_reference']}&key=${dotenv.get('GOOGLE_PLACES_API_KEY')}',
-                                            fit: BoxFit.cover,
+                                            ],
                                           ),
                                         ),
                                         Positioned(
+                                            bottom: 32.0,
+                                            child: SmoothPageIndicator(
+                                              controller: pageController,
+                                              count: googlePlace.photos!.length,
+                                              effect: WormEffect(
+                                                dotHeight: 10.0,
+                                                dotWidth: 10.0,
+                                                dotColor: Theme.of(context)
+                                                    .colorScheme
+                                                    .tertiaryContainer,
+                                                activeDotColor:
+                                                    Theme.of(context)
+                                                        .colorScheme
+                                                        .secondary,
+                                              ),
+                                            )),
+                                        const Positioned(
                                           right: 8.0,
                                           top: 8.0,
                                           child: Wrap(
                                             crossAxisAlignment:
                                                 WrapCrossAlignment.center,
                                             spacing: 12.0,
-                                            children: [
-                                              googlePlace.website != null
-                                                  ? CircleAvatar(
-                                                      radius: 18,
-                                                      backgroundColor:
-                                                          Theme.of(context)
-                                                              .colorScheme
-                                                              .secondary,
-                                                      child: IconButton(
-                                                        onPressed: () {
-                                                          launchWebView(Uri
-                                                              .https(googlePlace
-                                                                  .website!));
-                                                        },
-                                                        icon: const Icon(
-                                                            Icons.web_rounded,
-                                                            color: Colors.white,
-                                                            size: 16),
-                                                      ),
-                                                    )
-                                                  : const SizedBox(),
-                                              googlePlace.formattedPhoneNumber !=
-                                                      null
-                                                  ? CircleAvatar(
-                                                      radius: 18,
-                                                      backgroundColor:
-                                                          Theme.of(context)
-                                                              .colorScheme
-                                                              .secondary,
-                                                      child: IconButton(
-                                                        onPressed: () {
-                                                          launchCall(Uri(
-                                                              scheme: 'tel',
-                                                              path: googlePlace
-                                                                  .formattedPhoneNumber));
-                                                        },
-                                                        icon: const Icon(
-                                                            Icons.phone,
-                                                            color: Colors.white,
-                                                            size: 16),
-                                                      ),
-                                                    )
-                                                  : const SizedBox(),
-                                            ],
+                                            children: [],
                                           ),
                                         ),
                                         googlePlace.formattedAddress != null
@@ -206,121 +199,6 @@ class _SearchPlacesSheetState extends State<SearchPlacesSheet> {
                                                 ),
                                               )
                                             : const SizedBox(),
-                                        Positioned(
-                                          width: 350,
-                                          bottom: 20.0,
-                                          child: Padding(
-                                            padding: const EdgeInsets.symmetric(
-                                                horizontal: 8.0, vertical: 4.0),
-                                            child: Row(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment
-                                                      .spaceBetween,
-                                              children: [
-                                                googlePlace.rating != null
-                                                    ? Opacity(
-                                                        opacity: 0.85,
-                                                        child: SizedBox(
-                                                          height: 40,
-                                                          child: FittedBox(
-                                                            child: Chip(
-                                                              shape: RoundedRectangleBorder(
-                                                                  borderRadius:
-                                                                      BorderRadius
-                                                                          .circular(
-                                                                              16)),
-                                                              label: Wrap(
-                                                                spacing: 6.0,
-                                                                crossAxisAlignment:
-                                                                    WrapCrossAlignment
-                                                                        .center,
-                                                                children: [
-                                                                  RatingBar
-                                                                      .builder(
-                                                                    onRatingUpdate:
-                                                                        (value) =>
-                                                                            null,
-                                                                    ignoreGestures:
-                                                                        true,
-                                                                    itemSize:
-                                                                        16.0,
-                                                                    allowHalfRating:
-                                                                        true,
-                                                                    initialRating: state
-                                                                        .googlePlace
-                                                                        .rating!,
-                                                                    itemBuilder:
-                                                                        (context,
-                                                                            index) {
-                                                                      return const Icon(
-                                                                        Icons
-                                                                            .star,
-                                                                        size:
-                                                                            12.0,
-                                                                        color: Colors
-                                                                            .amber,
-                                                                      );
-                                                                    },
-                                                                  ),
-                                                                  Text(state
-                                                                      .googlePlace
-                                                                      .rating
-                                                                      .toString()),
-                                                                ],
-                                                              ),
-                                                            ),
-                                                          ),
-                                                        ),
-                                                      )
-                                                    : const SizedBox(),
-                                                googlePlace.type != null &&
-                                                        googlePlace.icon != null
-                                                    ? Opacity(
-                                                        opacity: 0.85,
-                                                        child: SizedBox(
-                                                          height: 40,
-                                                          child: FittedBox(
-                                                            child: Chip(
-                                                              shape: RoundedRectangleBorder(
-                                                                  borderRadius:
-                                                                      BorderRadius
-                                                                          .circular(
-                                                                              16)),
-                                                              label: Text(
-                                                                capitalizeAllWord(state
-                                                                    .googlePlace
-                                                                    .type!
-                                                                    .replaceAll(
-                                                                        '_',
-                                                                        ' ')),
-                                                                style: Theme.of(
-                                                                        context)
-                                                                    .textTheme
-                                                                    .titleSmall,
-                                                              ),
-                                                              avatar:
-                                                                  Image.network(
-                                                                state
-                                                                    .googlePlace
-                                                                    .icon!,
-                                                                color: Theme.of(context)
-                                                                            .brightness ==
-                                                                        Brightness
-                                                                            .light
-                                                                    ? null
-                                                                    : Colors
-                                                                        .white,
-                                                                height: 18,
-                                                              ),
-                                                            ),
-                                                          ),
-                                                        ),
-                                                      )
-                                                    : const SizedBox(),
-                                              ],
-                                            ),
-                                          ),
-                                        ),
                                       ],
                                     ),
                                     Padding(
@@ -338,6 +216,167 @@ class _SearchPlacesSheetState extends State<SearchPlacesSheet> {
                                               .copyWith(
                                                   fontWeight: FontWeight.bold),
                                         ),
+                                      ),
+                                    ),
+                                    Padding(
+                                      padding: const EdgeInsets.only(
+                                          left: 16.0, right: 16.0, bottom: 8.0),
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          Row(
+                                            children: [
+                                              googlePlace.type != null &&
+                                                      googlePlace.icon != null
+                                                  ? Opacity(
+                                                      opacity: 0.85,
+                                                      child: SizedBox(
+                                                        height: 40,
+                                                        child: FittedBox(
+                                                          child: Chip(
+                                                            shape: RoundedRectangleBorder(
+                                                                borderRadius:
+                                                                    BorderRadius
+                                                                        .circular(
+                                                                            16)),
+                                                            label: Text(
+                                                              capitalizeAllWord(
+                                                                  state
+                                                                      .googlePlace
+                                                                      .type!
+                                                                      .replaceAll(
+                                                                          '_',
+                                                                          ' ')),
+                                                              style: Theme.of(
+                                                                      context)
+                                                                  .textTheme
+                                                                  .titleSmall,
+                                                            ),
+                                                            avatar:
+                                                                Image.network(
+                                                              state.googlePlace
+                                                                  .icon!,
+                                                              color: Theme.of(context)
+                                                                          .brightness ==
+                                                                      Brightness
+                                                                          .light
+                                                                  ? null
+                                                                  : Colors
+                                                                      .white,
+                                                              height: 18,
+                                                            ),
+                                                          ),
+                                                        ),
+                                                      ),
+                                                    )
+                                                  : const SizedBox(),
+                                              const Gutter(),
+                                              googlePlace.rating != null
+                                                  ? Opacity(
+                                                      opacity: 0.85,
+                                                      child: SizedBox(
+                                                        height: 40,
+                                                        child: FittedBox(
+                                                          child: Chip(
+                                                            shape: RoundedRectangleBorder(
+                                                                borderRadius:
+                                                                    BorderRadius
+                                                                        .circular(
+                                                                            16)),
+                                                            label: Wrap(
+                                                              spacing: 6.0,
+                                                              crossAxisAlignment:
+                                                                  WrapCrossAlignment
+                                                                      .center,
+                                                              children: [
+                                                                RatingBar
+                                                                    .builder(
+                                                                  onRatingUpdate:
+                                                                      (value) {},
+                                                                  ignoreGestures:
+                                                                      true,
+                                                                  itemSize:
+                                                                      16.0,
+                                                                  allowHalfRating:
+                                                                      true,
+                                                                  initialRating: state
+                                                                      .googlePlace
+                                                                      .rating!,
+                                                                  itemBuilder:
+                                                                      (context,
+                                                                          index) {
+                                                                    return const Icon(
+                                                                      Icons
+                                                                          .star,
+                                                                      size:
+                                                                          12.0,
+                                                                      color: Colors
+                                                                          .amber,
+                                                                    );
+                                                                  },
+                                                                ),
+                                                                Text(state
+                                                                    .googlePlace
+                                                                    .rating
+                                                                    .toString()),
+                                                              ],
+                                                            ),
+                                                          ),
+                                                        ),
+                                                      ),
+                                                    )
+                                                  : const SizedBox(),
+                                            ],
+                                          ),
+                                          Row(
+                                            children: [
+                                              googlePlace.website != null
+                                                  ? CircleAvatar(
+                                                      radius: 20,
+                                                      backgroundColor:
+                                                          Theme.of(context)
+                                                              .colorScheme
+                                                              .secondary,
+                                                      child: IconButton(
+                                                        onPressed: () {
+                                                          launchWebView(Uri
+                                                              .https(googlePlace
+                                                                  .website!));
+                                                        },
+                                                        icon: const Icon(
+                                                            Icons.web_rounded,
+                                                            color: Colors.white,
+                                                            size: 16),
+                                                      ),
+                                                    )
+                                                  : const SizedBox(),
+                                              const GutterSmall(),
+                                              googlePlace.formattedPhoneNumber !=
+                                                      null
+                                                  ? CircleAvatar(
+                                                      radius: 20,
+                                                      backgroundColor:
+                                                          Theme.of(context)
+                                                              .colorScheme
+                                                              .secondary,
+                                                      child: IconButton(
+                                                        onPressed: () {
+                                                          launchCall(Uri(
+                                                              scheme: 'tel',
+                                                              path: googlePlace
+                                                                  .formattedPhoneNumber));
+                                                        },
+                                                        icon: const Icon(
+                                                            Icons.phone,
+                                                            color: Colors.white,
+                                                            size: 16),
+                                                      ),
+                                                    )
+                                                  : const SizedBox(),
+                                            ],
+                                          ),
+                                        ],
                                       ),
                                     ),
                                     Padding(
@@ -557,6 +596,8 @@ class _SearchPlacesSheetState extends State<SearchPlacesSheet> {
                                                           .weekDayText,
                                                       reviews:
                                                           googlePlace.reviews,
+                                                      photos:
+                                                          googlePlace.photos,
                                                     ),
                                                   ),
                                                 );

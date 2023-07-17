@@ -173,7 +173,6 @@ class PlaceListRepository {
       // userRepository.getUser(firebaseUser.uid).listen((user) {
       //   invitedUser = user;
       // });
-      Future.delayed(const Duration(milliseconds: 500));
 
       // List<dynamic> contributorIds =  _firebaseFirestore
       //     .collection('place_lists')
@@ -181,8 +180,9 @@ class PlaceListRepository {
       //     .get()
       //     .then((value) => value.get('contributorIds') as List);
 
-      if (placeList.contributorIds.isNotEmpty) {
-        for (String id in placeList.contributorIds) {
+      if (placeList.contributorIds != null &&
+          placeList.contributorIds!.isNotEmpty) {
+        for (String id in placeList.contributorIds!) {
           return _firebaseFirestore
               .collection('users')
               .doc(id)
@@ -553,7 +553,7 @@ class PlaceListRepository {
       snackbarKey.currentState?.showSnackBar(snackBar);
       (e, stack) =>
           FirebaseCrashlytics.instance.recordError(e, stack, fatal: true);
-      throw Exception();
+      return 0;
     }
   }
 

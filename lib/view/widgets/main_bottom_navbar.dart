@@ -29,10 +29,10 @@ class _MainBottomNavBarState extends State<MainBottomNavBar>
       case 1:
         context.go('/');
         break;
+      // case 2:
+      //   context.goNamed('explore');
+      //   break;
       case 2:
-        context.goNamed('explore');
-        break;
-      case 3:
         context.goNamed('settings');
         break;
       default:
@@ -88,18 +88,18 @@ class _MainBottomNavBarState extends State<MainBottomNavBar>
                     color: Theme.of(context).textTheme.bodyMedium?.color),
               ),
             ),
-            BubbleBottomBarItem(
-              backgroundColor: Theme.of(context).colorScheme.primaryContainer,
-              icon: Icon(Icons.travel_explore_outlined,
-                  color: Theme.of(context).iconTheme.color),
-              activeIcon: Icon(Icons.travel_explore_outlined,
-                  color: Theme.of(context).iconTheme.color),
-              title: Text(
-                'Explore',
-                style: TextStyle(
-                    color: Theme.of(context).textTheme.bodyMedium?.color),
-              ),
-            ),
+            // BubbleBottomBarItem(
+            //   backgroundColor: Theme.of(context).colorScheme.primaryContainer,
+            //   icon: Icon(Icons.travel_explore_outlined,
+            //       color: Theme.of(context).iconTheme.color),
+            //   activeIcon: Icon(Icons.travel_explore_outlined,
+            //       color: Theme.of(context).iconTheme.color),
+            //   title: Text(
+            //     'Explore',
+            //     style: TextStyle(
+            //         color: Theme.of(context).textTheme.bodyMedium?.color),
+            //   ),
+            // ),
             BubbleBottomBarItem(
                 backgroundColor: Theme.of(context).colorScheme.primaryContainer,
                 icon: Icon(Icons.settings,
