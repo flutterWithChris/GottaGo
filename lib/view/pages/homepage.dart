@@ -53,7 +53,7 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
           if (snapshot.connectionState == ConnectionState.done &&
               (snapshot.data == null || snapshot.data == false)) {
             WidgetsBinding.instance.addPostFrameCallback((timeStamp) async {
-              if (ShowCaseWidget.of(context).activeWidgetId == null) {
+              if (ShowCaseWidget.of(context).mounted == false) {
                 await Future.delayed(
                   const Duration(seconds: 0),
                   () => ShowCaseWidget.of(buildContext!).startShowCase(
@@ -364,11 +364,11 @@ class _IncompleteProfileDialogState extends State<IncompleteProfileDialog> {
                               textAlign: TextAlign.center,
                             ),
                           ),
-                          Padding(
-                            padding: const EdgeInsets.all(8.0),
+                          const Padding(
+                            padding: EdgeInsets.all(8.0),
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.center,
-                              children: const [
+                              children: [
                                 ResetProfilePhotoAvatar(),
                               ],
                             ),

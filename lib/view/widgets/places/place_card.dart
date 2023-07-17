@@ -85,11 +85,13 @@ class _PlaceCardState extends State<PlaceCard>
               (snapshot.data == null || snapshot.data == false)) {
             WidgetsBinding.instance.addPostFrameCallback((timeStamp) async {
               await Future.delayed(const Duration(milliseconds: 400));
-              ShowCaseWidget.of(buildContext!).startShowCase([
-                _placeCardShowcase,
-                _goButtonShowcase,
-                _editButtonsShowcase
-              ]);
+              if (ShowCaseWidget.of(context).mounted == false) {
+                ShowCaseWidget.of(buildContext!).startShowCase([
+                  _placeCardShowcase,
+                  _goButtonShowcase,
+                  _editButtonsShowcase
+                ]);
+              }
             });
           }
           return ShowCaseWidget(onFinish: () async {

@@ -61,13 +61,15 @@ class _CategoryPageState extends State<CategoryPage> {
               (snapshot.data == null || snapshot.data == false)) {
             WidgetsBinding.instance.addPostFrameCallback((timeStamp) async {
               await Future.delayed(const Duration(milliseconds: 400));
-              ShowCaseWidget.of(buildContext!).startShowCase([
-                _addPlaceShowcase,
-                _visitedFilterShowcase,
-                _inviteCollaboratorShowcase,
-                _randomWheelShowcase,
-                _checklistShowcase
-              ]);
+              if (ShowCaseWidget.of(context).mounted == false) {
+                ShowCaseWidget.of(buildContext!).startShowCase([
+                  _addPlaceShowcase,
+                  _visitedFilterShowcase,
+                  _inviteCollaboratorShowcase,
+                  _randomWheelShowcase,
+                  _checklistShowcase
+                ]);
+              }
             });
           }
           return ShowCaseWidget(onFinish: () async {
