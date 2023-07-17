@@ -1,6 +1,6 @@
 {
   "name": "cloud_firestore",
-  "version": "4.1.0",
+  "version": "4.5.2",
   "summary": "Flutter plugin for Cloud Firestore, a cloud-hosted, noSQL database with live synchronization and offline support on Android and iOS.",
   "description": "Flutter plugin for Cloud Firestore, a cloud-hosted, noSQL database with live synchronization and offline support on Android and iOS.",
   "homepage": "https://firebase.google.com/docs/firestore",
@@ -25,7 +25,7 @@
 
     ],
     "Firebase/Firestore": [
-      "10.2.0"
+      "10.7.0"
     ],
     "nanopb": [
       ">= 2.30908.0",
@@ -34,7 +34,7 @@
   },
   "static_framework": true,
   "pod_target_xcconfig": {
-    "GCC_PREPROCESSOR_DEFINITIONS": "LIBRARY_VERSION=\\@\\\"4.1.0\\\" LIBRARY_NAME=\\@\\\"flutter-fire-fst\\\"",
+    "GCC_PREPROCESSOR_DEFINITIONS": "LIBRARY_VERSION=\\@\\\"4.5.2\\\" LIBRARY_NAME=\\@\\\"flutter-fire-fst\\\"",
     "DEFINES_MODULE": "YES"
   }
 }

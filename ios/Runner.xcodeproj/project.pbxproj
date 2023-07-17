@@ -149,7 +149,6 @@
 				3B06AD1E1E4923F5004D2608 /* Thin Binary */,
 				306982F52368E189691A6681 /* [firebase_crashlytics] Crashlytics Upload Symbols */,
 				EB1C351716AFDE6FB7FB65E3 /* [CP] Embed Pods Frameworks */,
-				082B989EB293A2F22DEF6075 /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -209,23 +208,6 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
-		082B989EB293A2F22DEF6075 /* [CP] Copy Pods Resources */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-Runner/Pods-Runner-resources-${CONFIGURATION}-input-files.xcfilelist",
-			);
-			name = "[CP] Copy Pods Resources";
-			outputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-Runner/Pods-Runner-resources-${CONFIGURATION}-output-files.xcfilelist",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-Runner/Pods-Runner-resources.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
 		306982F52368E189691A6681 /* [firebase_crashlytics] Crashlytics Upload Symbols */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
