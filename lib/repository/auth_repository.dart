@@ -83,16 +83,17 @@ class AuthRepository extends BaseAuthRepository {
     try {
       final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
 
-      final GoogleSignInAuthentication? googleAuth =
-          await googleUser?.authentication;
+      // final GoogleSignInAuthentication? googleAuth =
+      //     await googleUser?.authentication;
 
-      final credential = auth.GoogleAuthProvider.credential(
-        accessToken: googleAuth?.accessToken,
-        idToken: googleAuth?.idToken,
-      );
-
-      var googleCredentials =
-          await auth.FirebaseAuth.instance.signInWithCredential(credential);
+      // final credential = auth.GoogleAuthProvider.credential(
+      //   accessToken: googleAuth?.accessToken,
+      //   idToken: googleAuth?.idToken,
+      // );
+      final credential = await auth.FirebaseAuth.instance
+          .signInWithProvider(auth.GoogleAuthProvider());
+      var googleCredentials = await auth.FirebaseAuth.instance
+          .signInWithCredential(credential.credential!);
       final user = googleCredentials.user;
       return user;
 

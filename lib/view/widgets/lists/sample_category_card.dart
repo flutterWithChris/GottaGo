@@ -75,12 +75,10 @@ class SampleCategoryCard extends StatelessWidget {
                         ),
                       ],
                     ),
-                    subtitle: Padding(
-                      padding: const EdgeInsets.only(left: 24.0),
-                      child: Text('${Random().nextInt(14) + 1} Saved Places'),
-                    ),
+                    subtitle: Text('${Random().nextInt(14) + 1} Saved Places'),
                     leading: Padding(
-                      padding: const EdgeInsets.only(left: 16.0, top: 8.0),
+                      padding: const EdgeInsets.only(
+                          left: 16.0, top: 8.0, right: 16.0),
                       child: SizedBox(
                           width: 40,
                           height: 40,

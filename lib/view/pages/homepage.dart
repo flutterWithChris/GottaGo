@@ -13,13 +13,14 @@ import 'package:leggo/model/place_list.dart';
 import 'package:leggo/view/widgets/lists/blank_category_card.dart';
 import 'package:leggo/view/widgets/lists/category_card.dart';
 import 'package:leggo/view/widgets/lists/create_list_dialog.dart';
+import 'package:leggo/view/widgets/lists/sample_category_card.dart';
 import 'package:leggo/view/widgets/main_bottom_navbar.dart';
 import 'package:leggo/view/widgets/main_top_app_bar.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:showcaseview/showcaseview.dart';
 
-import '../widgets/lists/sample_category_card.dart';
+import '../../consts.dart';
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key, required this.title});
@@ -30,59 +31,35 @@ class MyHomePage extends StatefulWidget {
   State<MyHomePage> createState() => _MyHomePageState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
+class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
   final GlobalKey _createListShowcaseKey = GlobalKey();
   final GlobalKey _createListButtonKey = GlobalKey();
   final ScrollController mainScrollController = ScrollController();
   BuildContext? buildContext;
   List<Widget> rows = [];
+  @override
+  void initState() {
+    for (PlaceList placeList in samplePlaceLists!) {
+      rows.add(SampleCategoryCard(placeList: placeList));
+    }
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
-    List<PlaceList>? samplePlaceLists = [
-      PlaceList(
-          name: 'Breakfast Ideas',
-          listOwnerId: '12345',
-          placeCount: 5,
-          contributorIds: [],
-          icon: {'pack': 'material', 'key': 'egg_alt_outlined'}),
-      PlaceList(
-          name: 'Iceland Trip',
-          listOwnerId: '12345',
-          placeCount: 12,
-          contributorIds: [],
-          icon: {'pack': 'fontAwesomeIcons', 'key': 'earthAmericas'}),
-      PlaceList(
-          name: 'Lunch Spots',
-          listOwnerId: '12345',
-          placeCount: 7,
-          contributorIds: [],
-          icon: {'pack': 'fontAwesomeIcons', 'key': 'bowlFood'}),
-      PlaceList(
-          name: 'Experiences',
-          listOwnerId: '12345',
-          placeCount: 9,
-          contributorIds: [],
-          icon: {'pack': 'material', 'key': 'airplane_ticket_rounded'}),
-      PlaceList(
-        name: 'Local Spots',
-        listOwnerId: '12345',
-        placeCount: 10,
-        contributorIds: [],
-        icon: {'pack': 'material', 'key': 'local_dining'},
-      ),
-    ];
     return FutureBuilder<bool?>(
         future: getShowcaseStatus('createListShowcaseComplete'),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.done &&
               (snapshot.data == null || snapshot.data == false)) {
             WidgetsBinding.instance.addPostFrameCallback((timeStamp) async {
-              await Future.delayed(
-                const Duration(seconds: 0),
-                () => ShowCaseWidget.of(buildContext!).startShowCase(
-                    [_createListShowcaseKey, _createListButtonKey]),
-              );
+              if (ShowCaseWidget.of(context).activeWidgetId == null) {
+                await Future.delayed(
+                  const Duration(seconds: 0),
+                  () => ShowCaseWidget.of(buildContext!).startShowCase(
+                      [_createListShowcaseKey, _createListButtonKey]),
+                );
+              }
             });
           }
           return ShowCaseWidget(
@@ -99,53 +76,47 @@ class _MyHomePageState extends State<MyHomePage> {
                   bottomNavigationBar: MainBottomNavBar(),
                   body: BlocBuilder<SavedListsBloc, SavedListsState>(
                     builder: (context, state) {
-                      if (state is SavedListsLoading ||
-                          state is SavedListsInitial ||
-                          state is SavedListsUpdated) {
-                        for (PlaceList placeList in samplePlaceLists) {
-                          rows.add(Animate(
-                              onComplete: (controller) => controller.repeat(),
-                              effects: const [
-                                ShimmerEffect(
-                                  duration: Duration(milliseconds: 400),
-                                )
-                              ],
-                              child: SampleCategoryCard(placeList: placeList)));
-                        }
-                        // rows.insert(
-                        //     0,
-                        //     Showcase(
-                        //       descriptionAlignment: TextAlign.center,
-                        //       targetShapeBorder: RoundedRectangleBorder(
-                        //           borderRadius: BorderRadius.circular(50.0)),
-                        //       key: _createListShowcaseKey,
-                        //       description:
-                        //           'Create lists for different categories, locations, etc.',
-                        //       child: Animate(
-                        //           effects: const [SlideEffect()],
-                        //           child: const BlankCategoryCard()),
-                        //     ));
-                        return CustomScrollView(
-                          controller: mainScrollController,
-                          slivers: [
-                            const MainTopAppBar(),
-                            // Main List View
-                            SliverList(
-                              delegate: SliverChildBuilderDelegate(
-                                  childCount: rows.length, (context, index) {
-                                return rows[index];
-                              }),
-                            )
-                          ],
-                        );
-                      }
+                      // rows.insert(
+                      //     0,
+                      //     Showcase(
+                      //       descriptionAlignment: TextAlign.center,
+                      //       targetShapeBorder: RoundedRectangleBorder(
+                      //           borderRadius: BorderRadius.circular(50.0)),
+                      //       key: _createListShowcaseKey,
+                      //       description:
+                      //           'Create lists for different categories, locations, etc.',
+                      //       child: Animate(
+                      //           effects: const [SlideEffect()],
+                      //           child: const BlankCategoryCard()),
+                      //     ));
+                      // if (state is SavedListsLoading ||
+                      //     state is SavedListsInitial ||
+                      //     state is SavedListsUpdated) {
+
+                      //   return CustomScrollView(
+                      //     controller: mainScrollController,
+                      //     slivers: [
+                      //       const MainTopAppBar(),
+                      //       // Main List View
+                      //       SliverList(
+                      //         delegate: SliverChildBuilderDelegate(
+                      //             childCount: rows.length, (context, index) {
+                      //           return rows[index];
+                      //         }),
+                      //       )
+                      //     ],
+                      //   );
+                      // }
                       if (state is SavedListsFailed) {
                         return const Center(
                           child: Text('Error Loading Lists!'),
                         );
                       }
-                      if (state is SavedListsLoaded) {
-                        if (context.watch<ProfileBloc>().state
+                      if (state is SavedListsLoaded ||
+                          state is SavedListsLoading ||
+                          state is SavedListsInitial ||
+                          state is SavedListsUpdated) {
+                        if (context.read<ProfileBloc>().state
                                 is ProfileIncomplete &&
                             ModalRoute.of(context)!.isCurrent) {
                           WidgetsBinding.instance
@@ -159,127 +130,144 @@ class _MyHomePageState extends State<MyHomePage> {
                                     const IncompleteProfileDialog());
                           });
                         }
-                        void _onReorder(int oldIndex, int newIndex) {
-                          PlaceList placeList =
-                              state.placeLists!.removeAt(oldIndex);
-                          state.placeLists!.insert(newIndex, placeList);
-                          if (!mounted) return;
-                          setState(() {
-                            Widget row = rows.removeAt(oldIndex);
-                            rows.insert(newIndex, row);
-                          });
-                        }
-
-                        void _onReorderSampleItem(int oldIndex, int newIndex) {
-                          PlaceList placeList =
-                              samplePlaceLists.removeAt(oldIndex);
-                          samplePlaceLists.insert(newIndex, placeList);
-                          setState(() {
-                            Widget row = rows.removeAt(oldIndex);
-                            rows.insert(newIndex, row);
-                          });
-                        }
 
                         return StreamBuilder<List<PlaceList>>(
-                            stream: state.placeListsStream,
+                            stream: context
+                                .read<SavedListsBloc>()
+                                .state
+                                .placeListsStream,
                             builder: (context, snapshot) {
                               var data = snapshot.data;
-                              for (PlaceList placeList in samplePlaceLists) {
-                                rows.add(Animate(
-                                    onComplete: (controller) =>
-                                        controller.repeat(),
-                                    effects: const [
-                                      ShimmerEffect(
-                                        duration: Duration(milliseconds: 400),
-                                      )
-                                    ],
-                                    child: SampleCategoryCard(
-                                        placeList: placeList)));
-                              }
-                              if (data == null) {
-                                return CustomScrollView(
-                                  slivers: [
-                                    const MainTopAppBar(),
-                                    SliverList(
-                                      delegate: SliverChildBuilderDelegate(
-                                          childCount: rows.length,
-                                          (context, index) {
-                                        return rows[index];
-                                      }),
-                                    )
-                                  ],
-                                );
-                              }
-                              if (snapshot.hasData) {
-                                var placeLists = data;
+                              var placeLists = [];
+                              // for (PlaceList placeList in samplePlaceLists) {
+                              //   rows.add(Animate(
+                              //       onComplete: (controller) =>
+                              //           controller.repeat(),
+                              //       effects: const [
+                              //         ShimmerEffect(
+                              //           duration: Duration(milliseconds: 400),
+                              //         )
+                              //       ],
+                              //       child: SampleCategoryCard(
+                              //           placeList: placeList)));
+                              // }
+                              // if (data == null) {
+                              //   return CustomScrollView(
+                              //     slivers: [
+                              //       const MainTopAppBar(),
+                              //       SliverList(
+                              //           delegate: SliverChildListDelegate(rows
+                              //               .animate(interval: 100.ms)
+                              //               .slideX(
+                              //                   curve: Curves.easeOutSine,
+                              //                   begin: 1.0,
+                              //                   duration: 400.ms)))
+                              //     ],
+                              //   );
+                              // }
+                              if (snapshot.hasData && data != null) {
+                                placeLists = data;
+
                                 if (placeLists.isNotEmpty) {
-                                  rows.clear();
-                                  rows = [
+                                  // rows.clear();
+                                  List<CategoryCard> categoryCards = [
                                     for (PlaceList placeList in placeLists)
-                                      Animate(
-                                          effects: const [SlideEffect()],
-                                          child: CategoryCard(
-                                              placeList: placeList))
+                                      CategoryCard(placeList: placeList)
                                   ];
-                                  if (placeLists.length < 5) {
-                                    for (int i = 0;
-                                        i < 5 - placeLists.length;
-                                        i++) {
-                                      rows.add(Animate(
-                                          effects: const [SlideEffect()],
-                                          child: SampleCategoryCard(
-                                              placeList: samplePlaceLists[i])));
+                                  if (rows != categoryCards) {
+                                    rows.clear();
+                                    if (placeLists.length < 5) {
+                                      for (int i = 0;
+                                          i < 5 - placeLists.length;
+                                          i++) {
+                                        rows.add(
+                                          SampleCategoryCard(
+                                              placeList: samplePlaceLists![i]),
+                                        );
+                                      }
                                     }
+                                    rows.insertAll(0, categoryCards);
                                   }
-                                } else {
-                                  rows.clear();
-                                  for (PlaceList placeList
-                                      in samplePlaceLists) {
-                                    rows.add(Animate(
-                                        effects: const [SlideEffect()],
-                                        child: SampleCategoryCard(
-                                            placeList: placeList)));
-                                  }
-                                  rows.insert(
-                                      0,
-                                      Showcase(
-                                        descriptionAlignment: TextAlign.center,
-                                        targetShapeBorder:
-                                            RoundedRectangleBorder(
-                                                borderRadius:
-                                                    BorderRadius.circular(
-                                                        50.0)),
-                                        key: _createListShowcaseKey,
-                                        description:
-                                            'Create lists for different categories, locations, etc.',
-                                        child: Animate(
-                                            effects: const [SlideEffect()],
-                                            child: const BlankCategoryCard()),
-                                      ));
+                                  // rows.insertAll(0, categoryCards);
+                                  // if (placeLists.length < 5) {
+                                  //   for (int i = 0;
+                                  //       i < 5 - placeLists.length;
+                                  //       i++) {
+                                  //     rows.add(SampleCategoryCard(
+                                  //         placeList: samplePlaceLists[i]));
+                                  //   }
+                                  // }
                                 }
-                                return CustomScrollView(
-                                  cacheExtent: 1500,
-                                  controller: mainScrollController,
-                                  slivers: [
-                                    const MainTopAppBar(),
-                                    // Main List View
-                                    const SliverToBoxAdapter(
-                                      child: SizedBox(height: 12.0),
-                                    ),
-                                    SliverList(
-                                      delegate: SliverChildBuilderDelegate(
-                                          childCount: rows.length,
-                                          (context, index) {
-                                        return rows[index];
-                                      }),
-                                    )
-                                  ],
-                                );
-                              } else {
-                                return const Center(
-                                  child: Text('Something Went Wrong...'),
-                                );
                               }
+                              if (placeLists.isEmpty &&
+                                  rows[0] is! BlankCategoryCard) {
+                                rows.clear();
+                                for (PlaceList placeList in samplePlaceLists!) {
+                                  rows.add(
+                                      SampleCategoryCard(placeList: placeList));
+                                }
+                                rows.insert(0, const BlankCategoryCard());
+                              }
+                              // else {
+                              //   //rows.clear();
+                              //   for (PlaceList placeList
+                              //       in samplePlaceLists) {
+                              //     rows.add(SampleCategoryCard(
+                              //         placeList: placeList));
+                              //   }
+                              //   rows.insert(
+                              //       0,
+                              //       Showcase(
+                              //         descriptionAlignment: TextAlign.center,
+                              //         targetShapeBorder:
+                              //             RoundedRectangleBorder(
+                              //                 borderRadius:
+                              //                     BorderRadius.circular(
+                              //                         50.0)),
+                              //         key: _createListShowcaseKey,
+                              //         description:
+                              //             'Create lists for different categories, locations, etc.',
+                              //         child: const BlankCategoryCard(),
+                              //       ));
+                              // }
+                              return CustomScrollView(
+                                //cacheExtent: 1500,
+                                controller: mainScrollController,
+                                slivers: [
+                                  const MainTopAppBar(),
+                                  // Main List View
+                                  const SliverToBoxAdapter(
+                                    child: SizedBox(height: 12.0),
+                                  ),
+                                  SliverList(
+                                      delegate: SliverChildListDelegate(
+                                    rows
+                                        .animate(
+                                          interval: 100.ms,
+                                        )
+                                        .slideY(
+                                            curve: Curves.easeOutSine,
+                                            begin: -1.0,
+                                            duration: 400.ms)
+                                        .fadeIn(
+                                          //delay: 100.ms,
+                                          curve: Curves.easeOutSine,
+                                          //  duration: 600.ms,
+                                        ),
+                                  )
+                                      // SliverChildBuilderDelegate(
+                                      //     childCount: rows.length,
+                                      //     (context, index) {
+                                      //   return rows[index];
+                                      // }),
+                                      )
+                                ],
+                              );
+                              //  else {
+                              //   return const Center(
+                              //     child: Text('Something Went Wrong...'),
+                              //   );
+                              // }
                             });
                       } else {
                         return const Center(

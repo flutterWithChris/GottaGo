@@ -6,7 +6,7 @@ class PlaceList {
   final String listOwnerId;
   final Map<String, dynamic> icon;
   // final List<Place>? places;
-  final List<String> contributorIds;
+  final List<String>? contributorIds;
   final int placeCount;
   PlaceList({
     this.placeListId,
@@ -15,7 +15,7 @@ class PlaceList {
     required this.icon,
     required this.placeCount,
     //  this.places,
-    required this.contributorIds,
+    this.contributorIds,
   });
 
   factory PlaceList.fromSnapshot(DocumentSnapshot snap) {
@@ -35,7 +35,7 @@ class PlaceList {
       'listOwnerId': listOwnerId,
       'icon': icon,
       // 'places': places ?? places!,
-      'contributorIds': contributorIds,
+      'contributorIds': contributorIds ?? contributorIds!,
     };
   }
 

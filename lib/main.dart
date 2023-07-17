@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:firebase_core/firebase_core.dart';
-import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:firebase_ui_auth/firebase_ui_auth.dart';
 import 'package:firebase_ui_oauth_apple/firebase_ui_oauth_apple.dart';
 import 'package:firebase_ui_oauth_google/firebase_ui_oauth_google.dart';
@@ -15,6 +14,7 @@ import 'package:leggo/bloc/bloc/auth/bloc/auth_bloc.dart';
 import 'package:leggo/bloc/bloc/invite/bloc/invite_bloc.dart';
 import 'package:leggo/bloc/bloc/invite_inbox/invite_inbox_bloc.dart';
 import 'package:leggo/bloc/bloc/purchases/purchases_bloc.dart';
+import 'package:leggo/bloc/explore/explore_bloc.dart';
 import 'package:leggo/bloc/onboarding/bloc/onboarding_bloc.dart';
 import 'package:leggo/bloc/place/place_bloc.dart';
 import 'package:leggo/bloc/profile_bloc.dart';
@@ -28,6 +28,7 @@ import 'package:leggo/cubit/cubit/signup/sign_up_cubit.dart';
 import 'package:leggo/firebase_options.dart';
 import 'package:leggo/globals.dart';
 import 'package:leggo/repository/auth_repository.dart';
+import 'package:leggo/repository/chat_gpt/chat_gpt_repository.dart';
 import 'package:leggo/repository/database/database_repository.dart';
 import 'package:leggo/repository/invite_repository.dart';
 import 'package:leggo/repository/place_list_repository.dart';
@@ -50,11 +51,12 @@ void main() async {
     GoogleProvider(clientId: dotenv.get('GOOGLE_CLIENT_ID')),
     AppleProvider(scopes: {'email', 'fullName'}),
   ]);
+  // await FirebaseFirestore.instance.clearPersistence();
   // FirebaseAuth.instance.signOut();
 
 // TODO: Uncomment this line to set up Crashlytics.
   // Pass all uncaught errors from the framework to Crashlytics.
-  FlutterError.onError = FirebaseCrashlytics.instance.recordFlutterFatalError;
+  //  FlutterError.onError = FirebaseCrashlytics.instance.recordFlutterFatalError;
 
   runApp(const MyApp());
 }
@@ -95,6 +97,7 @@ class _MyAppState extends State<MyApp> {
         RepositoryProvider(
           create: (context) => InviteRepository(),
         ),
+        RepositoryProvider(create: (context) => ChatGPTRepository()),
       ],
       child: MultiBlocProvider(
         providers: [
@@ -173,6 +176,12 @@ class _MyAppState extends State<MyApp> {
                 authRepository: context.read<AuthRepository>(),
                 databaseRepository: context.read<DatabaseRepository>()),
           ),
+          BlocProvider(
+            create: (context) => ExploreBloc(
+                chatGPTRepository: context.read<ChatGPTRepository>(),
+                placesRepository: context.read<PlacesRepository>()),
+            child: Container(),
+          )
         ],
         child: MaterialApp.router(
           debugShowCheckedModeBanner: false,

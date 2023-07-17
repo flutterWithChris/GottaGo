@@ -18,8 +18,6 @@ import 'package:leggo/view/widgets/places/add_place_card.dart';
 import 'package:leggo/view/widgets/places/blank_place_card.dart';
 import 'package:leggo/view/widgets/places/place_card.dart';
 import 'package:leggo/view/widgets/places/search_places_sheet.dart';
-import 'package:loading_animation_widget/loading_animation_widget.dart';
-import 'package:reorderables/reorderables.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:showcaseview/showcaseview.dart';
 
@@ -105,173 +103,96 @@ class _CategoryPageState extends State<CategoryPage> {
                   ),
                 ),
                 body: BlocBuilder<SavedPlacesBloc, SavedPlacesState>(
-                  // buildWhen: (previous, current) =>
-                  //     previous.placeList != current.placeList,
                   builder: (context, state) {
-                    if (state is SavedPlacesLoading ||
-                        state is SavedPlacesUpdated) {
-                      rows = [
-                        for (int i = 0; i < 5; i++)
-                          Opacity(
-                            opacity: 0.4,
-                            child: Animate(
-                              onComplete: (controller) {
-                                controller.repeat();
-                              },
-                              effects: const [
-                                //FadeEffect(),
-                                ShimmerEffect(
-                                    duration: Duration(milliseconds: 500),
-                                    curve: Curves.easeInOut),
-                                // SlideEffect(curve: Curves.easeOutBack)
-                              ],
-                              child: const BlankPlaceCard(),
-                            ),
-                          )
-                      ];
-
-                      return CustomScrollView(
-                        controller: mainScrollController,
-                        slivers: [
-                          SliverAppBar.medium(
-                            expandedHeight: 125,
-                            // leading: Padding(
-                            //   padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                            //   child: IconButton(
-                            //     onPressed: () {},
-                            //     icon: const Icon(Icons.menu),
-                            //   ),
-                            // ),
-                            title: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                LoadingAnimationWidget.beat(
-                                    color: Theme.of(context)
-                                        .primaryIconTheme
-                                        .color!,
-                                    size: 20.0),
-                              ],
-                            ),
-                            actions: [
-                              IconButton(
-                                  onPressed: () {},
-                                  icon: const Icon(Icons.more_vert)),
-                            ],
-                          ),
-                          RandomPlaceBar(
-                              keys: [
-                                _visitedFilterShowcase,
-                                _inviteCollaboratorShowcase,
-                                _randomWheelShowcase,
-                                _checklistShowcase
-                              ],
-                              currentPlaceList: null,
-                              controller: controller,
-                              places: null),
-                          ReorderableSliverList(
-                            enabled: false,
-                            onReorder: (oldIndex, newIndex) {},
-                            delegate: ReorderableSliverChildBuilderDelegate(
-                                childCount: rows.length, (context, index) {
-                              return rows[index];
-                            }),
-                          )
-                        ],
-                      );
-                    }
                     if (state is SavedPlacesFailed) {
                       return const Center(
                         child: Text('Error Loading List!'),
                       );
                     }
 
-                    if (state is SavedPlacesLoaded) {
-                      User listOwner = state.listOwner;
-                      PlaceList currentPlaceList = state.placeList;
+                    if (state is SavedPlacesLoaded ||
+                        state is SavedPlacesUpdated ||
+                        state is SavedPlacesLoading) {
+                      User? listOwner =
+                          context.watch<SavedListsBloc>().state.listOwner;
+                      PlaceList? currentPlaceList =
+                          context.watch<SavedListsBloc>().state.placeList;
                       List<User>? contributors =
                           context.watch<SavedPlacesBloc>().state.contributors;
                       List<String> contributorAvatars = [];
-                      List<Place> places = state.places;
-
-                      contributorAvatars.add(state.listOwner.profilePicture!);
-                      if (contributors != null) {
-                        for (User user in contributors) {
-                          contributorAvatars.add(user.profilePicture!);
-                        }
-                      }
-
-                      void _onReorder(int oldIndex, int newIndex) {
-                        Place place = state.places.removeAt(oldIndex);
-                        state.places.insert(newIndex, place);
-                        setState(() {
-                          Widget row = rows.removeAt(oldIndex);
-                          rows.insert(newIndex, row);
-                        });
-                      }
-
-                      if (places.isNotEmpty) {
-                        // rows = [
-                        //   for (Place place in places)
-                        //     Padding(
-                        //       padding: const EdgeInsets.symmetric(
-                        //           vertical: 4.0, horizontal: 8.0),
-                        //       child: PlaceCard(
-                        //           place: place,
-                        //           placeList: currentPlaceList,
-                        //           imageUrl: place.mainPhoto,
-                        //           memoryImage: place.mainPhoto,
-                        //           placeName: place.name!,
-                        //           ratingsTotal: place.rating,
-                        //           placeDescription: place.reviews![0]['text'],
-                        //           closingTime: place.hours![0],
-                        //           placeLocation: place.city!),
-                        //     )
-                        // ];
-                        if (state.places.length < 5) {
-                          for (int i = 0; i < 5 - state.places.length; i++) {
-                            rows.add(Opacity(
-                              opacity: 0.4,
-                              child: Animate(effects: const [
-                                ShimmerEffect(
-                                    duration: Duration(milliseconds: 500),
-                                    curve: Curves.easeInOut),
-                                SlideEffect(curve: Curves.easeOutBack)
-                              ], child: const BlankPlaceCard()),
-                            ));
+                      List<Place>? places =
+                          context.watch<SavedListsBloc>().state.places;
+                      if (state is SavedPlacesLoaded && listOwner != null) {
+                        contributorAvatars.add(listOwner.profilePicture!);
+                        if (contributors != null) {
+                          for (User user in contributors) {
+                            contributorAvatars.add(user.profilePicture!);
                           }
                         }
-                      } else {
-                        rows = [
-                          for (int i = 0; i < 5; i++)
-                            Opacity(
-                              opacity: 0.4,
-                              child: Animate(effects: const [
-                                ShimmerEffect(
-                                    duration: Duration(milliseconds: 500),
-                                    curve: Curves.easeInOut),
-                                SlideEffect(
-                                  curve: Curves.easeOutBack,
-                                )
-                              ], child: const BlankPlaceCard()),
-                            )
-                        ];
-                        rows.insert(
-                          0,
-                          Padding(
-                            padding: const EdgeInsets.only(top: 8.0),
-                            child: Animate(
-                              effects: const [
-                                SlideEffect(
-                                  curve: Curves.easeOutBack,
-                                ),
-                                ShimmerEffect(
-                                    duration: Duration(milliseconds: 500),
-                                    curve: Curves.easeInOut)
-                              ],
-                              child: const AddPlaceCard(),
+
+                        if (state.places.isNotEmpty) {
+                          rows = [
+                            for (Place place in state.places)
+                              Padding(
+                                padding: const EdgeInsets.symmetric(
+                                    vertical: 4.0, horizontal: 8.0),
+                                child: PlaceCard(
+                                    place: place,
+                                    placeList: currentPlaceList!,
+                                    imageUrl: place.mainPhoto,
+                                    memoryImage: place.mainPhoto,
+                                    placeName: place.name!,
+                                    ratingsTotal: place.rating,
+                                    placeDescription: place.reviews![0]['text'],
+                                    closingTime: place.hours![0],
+                                    placeLocation: place.city!),
+                              )
+                          ];
+                          if (state.places.length < 5) {
+                            for (int i = 0; i < 5 - state.places.length; i++) {
+                              rows.add(Opacity(
+                                opacity: 0.4,
+                                child: Animate(effects: const [
+                                  ShimmerEffect(
+                                      duration: Duration(milliseconds: 500),
+                                      curve: Curves.easeInOut),
+                                ], child: const BlankPlaceCard()),
+                              ));
+                            }
+                          }
+                        } else {
+                          rows = [
+                            for (int i = 0; i < 5; i++)
+                              Opacity(
+                                opacity: 0.4,
+                                child: Animate(effects: const [
+                                  ShimmerEffect(
+                                      duration: Duration(milliseconds: 500),
+                                      curve: Curves.easeInOut),
+                                  SlideEffect(
+                                    curve: Curves.easeOutBack,
+                                  )
+                                ], child: const BlankPlaceCard()),
+                              )
+                          ];
+                          rows.insert(
+                            0,
+                            Padding(
+                              padding: const EdgeInsets.only(top: 8.0),
+                              child: Animate(
+                                effects: const [
+                                  SlideEffect(
+                                    curve: Curves.easeOutBack,
+                                  ),
+                                  ShimmerEffect(
+                                      duration: Duration(milliseconds: 500),
+                                      curve: Curves.easeInOut)
+                                ],
+                                child: const AddPlaceCard(),
+                              ),
                             ),
-                          ),
-                        );
+                          );
+                        }
                       }
 
                       return BlocConsumer<EditPlacesBloc, EditPlacesState>(
@@ -281,9 +202,9 @@ class _CategoryPageState extends State<CategoryPage> {
                                     'Visited'
                                 ? context.read<SavedPlacesBloc>().add(
                                     LoadVisitedPlaces(
-                                        placeList: currentPlaceList))
+                                        placeList: currentPlaceList!))
                                 : context.read<SavedPlacesBloc>().add(
-                                    LoadPlaces(placeList: currentPlaceList));
+                                    LoadPlaces(placeList: currentPlaceList!));
                             context
                                 .read<SavedListsBloc>()
                                 .add(LoadSavedLists());
@@ -294,7 +215,6 @@ class _CategoryPageState extends State<CategoryPage> {
                             alignment: AlignmentDirectional.bottomCenter,
                             children: [
                               CustomScrollView(
-                                cacheExtent: 1000,
                                 controller: mainScrollController,
                                 slivers: [
                                   CategoryPageAppBar(
@@ -312,28 +232,173 @@ class _CategoryPageState extends State<CategoryPage> {
                                       currentPlaceList: currentPlaceList,
                                       controller: controller,
                                       places: places),
-                                  SliverList(
-                                    delegate: SliverChildBuilderDelegate(
-                                        childCount: places.length,
-                                        (context, index) {
-                                      Place place = places[index];
-                                      return Padding(
-                                        padding: const EdgeInsets.symmetric(
-                                            horizontal: 8.0, vertical: 4.0),
-                                        child: PlaceCard(
-                                            place: place,
-                                            placeList: currentPlaceList,
-                                            imageUrl: place.mainPhoto,
-                                            memoryImage: place.mainPhoto,
-                                            placeName: place.name!,
-                                            ratingsTotal: place.rating,
-                                            placeDescription: place.reviews![0]
-                                                ['text'],
-                                            closingTime: place.hours![0],
-                                            placeLocation: place.city!),
-                                      );
-                                    }),
-                                  )
+                                  context.watch<SavedPlacesBloc>().state
+                                          is SavedPlacesLoaded
+                                      ? StreamBuilder<List<Place>>(
+                                          stream: context
+                                              .watch<SavedPlacesBloc>()
+                                              .state
+                                              .placeStream,
+                                          builder: (context, snapshot) {
+                                            if (snapshot.hasData == false ||
+                                                snapshot.data == null) {
+                                              return const SliverToBoxAdapter();
+                                            }
+
+                                            if (snapshot.hasData &&
+                                                snapshot.data != null) {
+                                              List<Widget> placeCards = [];
+                                              print(
+                                                  'snapshot has data ${snapshot.data}');
+                                              //rows.clear();
+                                              List<Place> places =
+                                                  snapshot.data!;
+                                              if (places.isNotEmpty &&
+                                                  context
+                                                          .watch<SavedPlacesBloc>()
+                                                          .state
+                                                      is SavedPlacesLoaded) {
+                                                placeCards = [
+                                                  for (Place place in places)
+                                                    Padding(
+                                                      padding: const EdgeInsets
+                                                              .symmetric(
+                                                          vertical: 4.0,
+                                                          horizontal: 8.0),
+                                                      child: PlaceCard(
+                                                          place: place,
+                                                          placeList: context
+                                                              .read<
+                                                                  SavedPlacesBloc>()
+                                                              .state
+                                                              .placeList!,
+                                                          imageUrl:
+                                                              place.mainPhoto,
+                                                          memoryImage:
+                                                              place.mainPhoto,
+                                                          placeName:
+                                                              place.name!,
+                                                          ratingsTotal:
+                                                              place.rating,
+                                                          placeDescription:
+                                                              place.reviews![0]
+                                                                  ['text'],
+                                                          closingTime:
+                                                              place.hours![0],
+                                                          placeLocation:
+                                                              place.city!),
+                                                    )
+                                                ]
+                                                    .animate()
+                                                    .slideY(
+                                                        curve:
+                                                            Curves.easeOutSine,
+                                                        begin: -1.0,
+                                                        duration: 400.ms)
+                                                    .fadeIn(
+                                                      //delay: 100.ms,
+                                                      curve: Curves.easeOutSine,
+                                                      //  duration: 600.ms,
+                                                    );
+                                              }
+
+                                              for (int i = 0; i < 5; i++) {
+                                                rows.add(Opacity(
+                                                  opacity: 0.4,
+                                                  child: Animate(
+                                                      effects: const [
+                                                        ShimmerEffect(
+                                                            duration: Duration(
+                                                                milliseconds:
+                                                                    500),
+                                                            curve: Curves
+                                                                .easeInOut),
+                                                        SlideEffect(
+                                                          curve: Curves
+                                                              .easeOutBack,
+                                                        )
+                                                      ],
+                                                      child:
+                                                          const BlankPlaceCard()),
+                                                ));
+                                              }
+                                              rows.insertAll(0, placeCards);
+                                            } else {
+                                              rows = [
+                                                for (int i = 0; i < 5; i++)
+                                                  Opacity(
+                                                    opacity: 0.4,
+                                                    child: Animate(
+                                                        effects: const [
+                                                          ShimmerEffect(
+                                                              duration: Duration(
+                                                                  milliseconds:
+                                                                      500),
+                                                              curve: Curves
+                                                                  .easeInOut),
+                                                          SlideEffect(
+                                                            curve: Curves
+                                                                .easeOutBack,
+                                                          )
+                                                        ],
+                                                        child:
+                                                            const BlankPlaceCard()),
+                                                  )
+                                              ];
+                                            }
+                                            return SliverList(
+                                                delegate:
+                                                    SliverChildBuilderDelegate(
+                                                        (context, index) =>
+                                                            rows[index],
+                                                        childCount:
+                                                            rows.length));
+
+                                            //     SliverChildListDelegate(
+                                            //   rows
+                                            //       .animate(
+                                            //         interval: 150.ms,
+                                            //       )
+                                            //       .slideY(
+                                            //           curve: Curves.easeOutSine,
+                                            //           begin: -1.0,
+                                            //           duration: 400.ms)
+                                            //       .fadeIn(
+                                            //         //delay: 100.ms,
+                                            //         curve: Curves.easeOutSine,
+                                            //         //  duration: 600.ms,
+                                            //       ),
+                                            // ));
+
+                                            return SliverList(
+                                                delegate:
+                                                    SliverChildListDelegate(
+                                              [
+                                                for (int i = 0; i < 5; i++)
+                                                  Opacity(
+                                                    opacity: 0.4,
+                                                    child: Animate(
+                                                        effects: const [
+                                                          ShimmerEffect(
+                                                              duration: Duration(
+                                                                  milliseconds:
+                                                                      500),
+                                                              curve: Curves
+                                                                  .easeInOut),
+                                                          SlideEffect(
+                                                            curve: Curves
+                                                                .easeOutBack,
+                                                          )
+                                                        ],
+                                                        child:
+                                                            const BlankPlaceCard()),
+                                                  )
+                                              ],
+                                            ));
+                                          },
+                                        )
+                                      : const SliverToBoxAdapter(
+                                          child: SizedBox()),
                                 ],
                               ),
                               if (state is EditPlacesStarted ||
@@ -376,13 +441,13 @@ class _CategoryPageState extends State<CategoryPage> {
                                                                   EditPlacesBloc>()
                                                               .add(DeleteVisitedPlaces(
                                                                   placeList:
-                                                                      currentPlaceList))
+                                                                      currentPlaceList!))
                                                           : context
                                                               .read<
                                                                   EditPlacesBloc>()
                                                               .add(DeletePlaces(
                                                                   placeList:
-                                                                      currentPlaceList));
+                                                                      currentPlaceList!));
                                                       // context.read<EditPlacesBloc>().add(
                                                       //     FinishEditing(places: places, placeList: placeList));
                                                     },
@@ -414,7 +479,7 @@ class _CategoryPageState extends State<CategoryPage> {
                                                               EditPlacesBloc>()
                                                           .add(MarkVisitedPlaces(
                                                               placeList:
-                                                                  currentPlaceList));
+                                                                  currentPlaceList!));
                                                       // context.read<EditPlacesBloc>().add(
                                                       //     FinishEditing(places: places, placeList: placeList));
                                                     },

@@ -128,8 +128,8 @@ class ProfilePage extends StatelessWidget {
                                 mainAxisAlignment:
                                     MainAxisAlignment.spaceBetween,
                                 children: [
-                                  Column(
-                                    children: const [
+                                  const Column(
+                                    children: [
                                       Icon(
                                         Icons.list_alt_rounded,
                                         size: 40,
@@ -162,8 +162,11 @@ class ProfilePage extends StatelessWidget {
                                         context
                                             .read<SavedListsBloc>()
                                             .myPlaceLists
-                                            .where((element) => element
-                                                .contributorIds.isNotEmpty)
+                                            .where((element) =>
+                                                element.contributorIds !=
+                                                    null &&
+                                                element
+                                                    .contributorIds!.isNotEmpty)
                                             .length
                                             .toString(),
                                         style: Theme.of(context)
@@ -190,8 +193,8 @@ class ProfilePage extends StatelessWidget {
                                 mainAxisAlignment:
                                     MainAxisAlignment.spaceBetween,
                                 children: [
-                                  Column(
-                                    children: const [
+                                  const Column(
+                                    children: [
                                       Icon(
                                         Icons.location_pin,
                                         size: 30,

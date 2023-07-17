@@ -9,6 +9,7 @@ import 'package:leggo/bloc/saved_places/bloc/saved_places_bloc.dart';
 import 'package:leggo/globals.dart';
 import 'package:leggo/model/place_list.dart';
 import 'package:leggo/repository/place_list_repository.dart';
+import 'package:leggo/view/widgets/animated_count/animated_count.dart';
 import 'package:leggo/view/widgets/list_page/dialogs.dart';
 import 'package:leggo/view/widgets/lists/delete_list_dialog.dart';
 import 'package:leggo/view/widgets/premium_offer.dart';
@@ -18,17 +19,26 @@ import 'package:showcaseview/showcaseview.dart';
 
 import '../../../bloc/profile_bloc.dart';
 
-class CategoryCard extends StatelessWidget {
+class CategoryCard extends StatefulWidget {
   final PlaceList placeList;
 
-  CategoryCard({
+  const CategoryCard({
     Key? key,
     required this.placeList,
   }) : super(key: key);
 
+  @override
+  State<CategoryCard> createState() => _CategoryCardState();
+}
+
+class _CategoryCardState extends State<CategoryCard> {
   final GlobalKey _categoryCardShowcase = GlobalKey();
+
   final GlobalKey _iconPickerShowcaseKey = GlobalKey();
+
   BuildContext? buildContext;
+
+  static bool showcaseShowing = false;
 
   @override
   Widget build(BuildContext context) {
@@ -40,12 +50,22 @@ class CategoryCard extends StatelessWidget {
           if (snapshot.connectionState == ConnectionState.done &&
               (snapshot.data == null || snapshot.data == false)) {
             WidgetsBinding.instance.addPostFrameCallback((timeStamp) async {
-              await Future.delayed(const Duration(milliseconds: 400));
-              ShowCaseWidget.of(buildContext!).startShowCase(
-                  [_categoryCardShowcase, _iconPickerShowcaseKey]);
+              if (showcaseShowing == false) {
+                await Future.delayed(const Duration(milliseconds: 400));
+                ShowCaseWidget.of(buildContext!).startShowCase(
+                    [_categoryCardShowcase, _iconPickerShowcaseKey]);
+              }
             });
           }
-          return ShowCaseWidget(onFinish: () async {
+          return ShowCaseWidget(onStart: (p0, p1) {
+            setState(() {
+              showcaseShowing = true;
+            });
+          }, onFinish: () async {
+            setState(() {
+              showcaseShowing = false;
+            });
+            // showcaseShowing = false;
             SharedPreferences prefs = await SharedPreferences.getInstance();
             prefs.setBool('categoryCardShowcaseComplete', true);
           }, builder: Builder(
@@ -68,7 +88,9 @@ class CategoryCard extends StatelessWidget {
                         children: [
                           ListTile(
                             trailing: Padding(
-                              padding: const EdgeInsets.only(bottom: 8.0),
+                              padding: const EdgeInsets.only(
+                                bottom: 8.0,
+                              ),
                               child: PopupMenuButton(
                                   // elevation: 0,
                                   surfaceTintColor:
@@ -90,13 +112,13 @@ class CategoryCard extends StatelessWidget {
                                               context: context,
                                               builder: (context) =>
                                                   EditListDialog(
-                                                placeList: placeList,
+                                                placeList: widget.placeList,
                                               ),
                                             );
                                           }),
-                                          child: Row(
+                                          child: const Row(
                                             mainAxisSize: MainAxisSize.min,
-                                            children: const [
+                                            children: [
                                               Icon(Icons.edit_note_rounded),
                                               SizedBox(
                                                 width: 4.0,
@@ -114,15 +136,15 @@ class CategoryCard extends StatelessWidget {
                                                 context: context,
                                                 builder: (context) {
                                                   return DeleteListDialog(
-                                                    placeList: placeList,
+                                                    placeList: widget.placeList,
                                                   );
                                                 },
                                               );
                                             });
                                           },
-                                          child: Row(
+                                          child: const Row(
                                             mainAxisSize: MainAxisSize.min,
-                                            children: const [
+                                            children: [
                                               Icon(
                                                   Icons.delete_forever_rounded),
                                               SizedBox(
@@ -137,50 +159,42 @@ class CategoryCard extends StatelessWidget {
                             onTap: () {
                               context
                                   .read<SavedPlacesBloc>()
-                                  .add(LoadPlaces(placeList: placeList));
+                                  .add(LoadPlaces(placeList: widget.placeList));
                               context.push('/home/placeList-page');
                             },
                             contentPadding: const EdgeInsets.symmetric(
-                                vertical: 20.0, horizontal: 30.0),
+                                vertical: 20.0, horizontal: 24.0),
                             minLeadingWidth: 20,
                             title: Padding(
-                              padding:
-                                  const EdgeInsets.only(bottom: 4.0, left: 8.0),
+                              padding: const EdgeInsets.only(left: 16.0),
                               child: Text(
-                                placeList.name,
+                                widget.placeList.name,
                                 style: Theme.of(context)
                                     .textTheme
                                     .titleMedium!
-                                    .copyWith(fontWeight: FontWeight.bold),
+                                    .copyWith(
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 18),
                               ),
                             ),
                             subtitle: Padding(
-                              padding: const EdgeInsets.only(left: 23.0),
+                              padding: const EdgeInsets.only(left: 16.0),
                               child: Wrap(
                                 children: [
                                   FutureBuilder<int>(
                                       future: context
                                           .read<PlaceListRepository>()
                                           .getPlaceListItemCount(
-                                              placeList.placeListId!),
+                                              widget.placeList.placeListId!),
                                       builder: (context, snapshot) {
                                         var data = snapshot.data;
-                                        if (data == null) {
-                                          return const Text('0 Saved Places');
-                                        }
-                                        if (snapshot.hasData) {
-                                          return Text.rich(TextSpan(children: [
-                                            TextSpan(
-                                                text: '$data ',
-                                                style: const TextStyle(
-                                                    fontWeight:
-                                                        FontWeight.bold)),
-                                            const TextSpan(
-                                                text: ' Saved Places'),
-                                          ]));
-                                        } else {
-                                          return const Text('0 Saved Places');
-                                        }
+
+                                        return Wrap(
+                                          children: [
+                                            AnimatedCount(count: data ?? 0),
+                                            const Text(' Places'),
+                                          ],
+                                        );
                                       }),
                                 ],
                               ),
@@ -220,14 +234,16 @@ class CategoryCard extends StatelessWidget {
                                         height: 40,
                                         width: 40,
                                         child: Icon(
-                                          deserializeIcon(placeList.icon) ??
+                                          deserializeIcon(
+                                                  widget.placeList.icon) ??
                                               Icons.list_rounded,
                                           color: Theme.of(context).brightness ==
                                                   Brightness.light
                                               ? Colors.grey[800]
                                               : Colors.white,
-                                          size: placeList.icon.containsValue(
-                                                  'fontAwesomeIcons')
+                                          size: widget.placeList.icon
+                                                  .containsValue(
+                                                      'fontAwesomeIcons')
                                               ? 30
                                               : 36,
                                         ),
@@ -247,8 +263,9 @@ class CategoryCard extends StatelessWidget {
                                             serializeIcon(icon);
                                         context.read<SavedListsBloc>().add(
                                             UpdateSavedLists(
-                                                placeList: placeList.copyWith(
-                                                    icon: serializedIcon)));
+                                                placeList: widget.placeList
+                                                    .copyWith(
+                                                        icon: serializedIcon)));
                                       } else {
                                         ScaffoldMessenger.of(context)
                                             .showSnackBar(const SnackBar(
@@ -272,14 +289,16 @@ class CategoryCard extends StatelessWidget {
                                         height: 40,
                                         width: 40,
                                         child: Icon(
-                                          deserializeIcon(placeList.icon) ??
+                                          deserializeIcon(
+                                                  widget.placeList.icon) ??
                                               Icons.list_rounded,
                                           color: Theme.of(context).brightness ==
                                                   Brightness.light
                                               ? Colors.grey[800]
                                               : Colors.white,
-                                          size: placeList.icon.containsValue(
-                                                  'fontAwesomeIcons')
+                                          size: widget.placeList.icon
+                                                  .containsValue(
+                                                      'fontAwesomeIcons')
                                               ? 30
                                               : 36,
                                         ),
@@ -294,13 +313,15 @@ class CategoryCard extends StatelessWidget {
                               },
                             ),
                           ),
-                          placeList.listOwnerId !=
+                          widget.placeList.listOwnerId !=
                                       context
                                           .read<ProfileBloc>()
                                           .state
                                           .user
                                           .id ||
-                                  placeList.contributorIds.isNotEmpty
+                                  (widget.placeList.contributorIds != null &&
+                                      widget
+                                          .placeList.contributorIds!.isNotEmpty)
                               ? Positioned(
                                   left: 16.0,
                                   top: 10.0,

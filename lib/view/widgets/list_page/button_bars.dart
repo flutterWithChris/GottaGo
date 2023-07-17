@@ -149,120 +149,167 @@ class _PlaceListButtonBarState extends State<PlaceListButtonBar> {
     return SliverToBoxAdapter(
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16.0),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          mainAxisSize: MainAxisSize.min,
+        child: Column(
           children: [
-            Flexible(
-              child: Showcase(
-                targetPadding: const EdgeInsets.all(12.0),
-                targetBorderRadius: BorderRadius.circular(24.0),
-                description:
-                    'Filter between places you have or haven\'t visited!',
-                key: widget.keys[0],
-                child: DropdownButton<String>(
-                  borderRadius: BorderRadius.circular(24),
-                  isDense: true,
-                  underline: const SizedBox(),
-                  value: dropdownValue,
-                  items: const [
-                    DropdownMenuItem(
-                      value: 'Not Visited',
-                      child: Text('Not Visited'),
-                    ),
-                    DropdownMenuItem(
-                      value: 'Visited',
-                      child: Text('Visited'),
-                    ),
-                  ],
-                  onChanged: placeListLoaded == false
-                      ? (value) {}
-                      : (value) {
-                          if (value != dropdownValue) {
-                            setState(() {
-                              dropdownValue = value!;
-                            });
-                            switch (value) {
-                              case 'Visited':
-                                context
-                                    .read<ListSortCubit>()
-                                    .sortByVisitedStatus('Visited');
-                                context.read<SavedPlacesBloc>().add(
-                                    LoadVisitedPlaces(
-                                        placeList: widget.currentPlaceList!));
-                                break;
-
-                              case 'Not Visited':
-                                context
-                                    .read<ListSortCubit>()
-                                    .sortByVisitedStatus('Not Visited');
-                                context.read<SavedPlacesBloc>().add(LoadPlaces(
-                                    placeList: widget.currentPlaceList!));
-                                break;
-                            }
-                          }
-                        },
-                ),
+            Padding(
+              padding: const EdgeInsets.only(left: 8.0, right: 8.0, top: 24.0),
+              child: Theme(
+                data: ThemeData(
+                    inputDecorationTheme: const InputDecorationTheme()),
+                child: SearchBar(
+                    leading: const Icon(Icons.search),
+                    elevation: const MaterialStatePropertyAll(0.0),
+                    overlayColor:
+                        const MaterialStatePropertyAll(Colors.transparent),
+                    backgroundColor:
+                        MaterialStatePropertyAll(Theme.of(context).cardColor),
+                    surfaceTintColor:
+                        const MaterialStatePropertyAll(Colors.transparent),
+                    shape: const MaterialStatePropertyAll(
+                        RoundedRectangleBorder(
+                            borderRadius:
+                                BorderRadius.all(Radius.circular(24.0)),
+                            side: BorderSide.none)),
+                    side: const MaterialStatePropertyAll(
+                      BorderSide(color: Colors.transparent),
+                    )),
               ),
             ),
-            Flexible(
-              flex: 2,
-              child: Row(
+            Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                mainAxisSize: MainAxisSize.min,
                 children: [
-                  Showcase(
-                    key: widget.keys[3],
-                    descriptionAlignment: TextAlign.center,
-                    targetBorderRadius: BorderRadius.circular(24.0),
-                    targetPadding: const EdgeInsets.only(
-                        top: -20, bottom: -12, left: 8.0, right: 8.0),
-                    description:
-                        'Select multiple places to mark visited, delete, etc.',
-                    child: EditButton(
-                        places: widget.places,
-                        placeList: widget.currentPlaceList),
-                  ),
-                  // const SizedBox(
-                  //   width: 8.0,
-                  // ),
-                  Showcase(
-                    key: widget.keys[2],
-                    descriptionAlignment: TextAlign.center,
-                    targetBorderRadius: BorderRadius.circular(24.0),
-                    targetPadding: const EdgeInsets.only(
-                        top: -20, bottom: -12, left: 8.0, right: 8.0),
-                    description: context
-                                .watch<PurchasesBloc>()
-                                .state
-                                .isSubscribed ==
-                            true
-                        ? 'Use the random wheel to easily choose a place.'
-                        : 'Use the random wheel to easily choose a place.\n(Requires Premium)',
-                    child: GoButton(
-                      places: widget.places,
+                  Flexible(
+                    child: Showcase(
+                      targetPadding: const EdgeInsets.all(12.0),
+                      targetBorderRadius: BorderRadius.circular(24.0),
+                      description:
+                          'Filter between places you have or haven\'t visited!',
+                      key: widget.keys[0],
+                      child: DropdownButton<String>(
+                        borderRadius: BorderRadius.circular(24),
+                        isDense: true,
+                        underline: const SizedBox(),
+                        value: dropdownValue,
+                        items: const [
+                          DropdownMenuItem(
+                            value: 'Not Visited',
+                            child: Text('Not Visited'),
+                          ),
+                          DropdownMenuItem(
+                            value: 'Visited',
+                            child: Text('Visited'),
+                          ),
+                        ],
+                        onChanged: placeListLoaded == false
+                            ? (value) {}
+                            : (value) {
+                                if (value != dropdownValue) {
+                                  setState(() {
+                                    dropdownValue = value!;
+                                  });
+                                  switch (value) {
+                                    case 'Visited':
+                                      context
+                                          .read<ListSortCubit>()
+                                          .sortByVisitedStatus('Visited');
+                                      context.read<SavedPlacesBloc>().add(
+                                          LoadVisitedPlaces(
+                                              placeList:
+                                                  widget.currentPlaceList!));
+                                      break;
+
+                                    case 'Not Visited':
+                                      context
+                                          .read<ListSortCubit>()
+                                          .sortByVisitedStatus('Not Visited');
+                                      context.read<SavedPlacesBloc>().add(
+                                          LoadPlaces(
+                                              placeList:
+                                                  widget.currentPlaceList!));
+                                      break;
+                                  }
+                                }
+                              },
+                      )
+                          .animate()
+                          .slideX(
+                              begin: -1.0,
+                              curve: Curves.easeOutSine,
+                              duration: 400.ms)
+                          .fadeIn(curve: Curves.easeOutSine),
                     ),
                   ),
-                  // const SizedBox(q
-                  //   width: 8.0,
-                  // ),
-                  Showcase(
-                    key: widget.keys[1],
-                    descriptionAlignment: TextAlign.center,
-                    targetBorderRadius: BorderRadius.circular(24.0),
-                    targetPadding: const EdgeInsets.only(
-                        top: -20, bottom: -12, left: 8.0, right: 8.0),
-                    description: context
-                                .watch<PurchasesBloc>()
-                                .state
-                                .isSubscribed ==
-                            true
-                        ? 'Invite friends to join your list & help adding places!'
-                        : 'Invite friends to join your list & help adding places!\n(Requires Premium)',
-                    child: InviteButton(placeList: widget.currentPlaceList),
-                  ),
-                ],
-              ),
-            )
+                  Flexible(
+                    flex: 2,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        Showcase(
+                          key: widget.keys[3],
+                          descriptionAlignment: TextAlign.center,
+                          targetBorderRadius: BorderRadius.circular(24.0),
+                          targetPadding: const EdgeInsets.only(
+                              top: -20, bottom: -12, left: 8.0, right: 8.0),
+                          description:
+                              'Select multiple places to mark visited, delete, etc.',
+                          child: EditButton(
+                              places: widget.places,
+                              placeList: widget.currentPlaceList),
+                        ),
+                        // const SizedBox(
+                        //   width: 8.0,
+                        // ),
+                        Showcase(
+                          key: widget.keys[2],
+                          descriptionAlignment: TextAlign.center,
+                          targetBorderRadius: BorderRadius.circular(24.0),
+                          targetPadding: const EdgeInsets.only(
+                              top: -20, bottom: -12, left: 8.0, right: 8.0),
+                          description: context
+                                      .watch<PurchasesBloc>()
+                                      .state
+                                      .isSubscribed ==
+                                  true
+                              ? 'Use the random wheel to easily choose a place.'
+                              : 'Use the random wheel to easily choose a place.\n(Requires Premium)',
+                          child: GoButton(
+                            places: widget.places,
+                          ),
+                        ),
+                        // const SizedBox(q
+                        //   width: 8.0,
+                        // ),
+                        Showcase(
+                          key: widget.keys[1],
+                          descriptionAlignment: TextAlign.center,
+                          targetBorderRadius: BorderRadius.circular(24.0),
+                          targetPadding: const EdgeInsets.only(
+                              top: -20, bottom: -12, left: 8.0, right: 8.0),
+                          description: context
+                                      .watch<PurchasesBloc>()
+                                      .state
+                                      .isSubscribed ==
+                                  true
+                              ? 'Invite friends to join your list & help adding places!'
+                              : 'Invite friends to join your list & help adding places!\n(Requires Premium)',
+                          child:
+                              InviteButton(placeList: widget.currentPlaceList),
+                        ),
+                      ]
+                          .animate(interval: 200.ms)
+                          .slideX(
+                              begin: 1.618,
+                              curve: Curves.easeOutSine,
+                              duration: 400.ms)
+                          .fadeIn(curve: Curves.easeOutSine),
+                    ),
+                  )
+                ]
+                // .animate(interval: 200.ms)
+                // .slideX(begin: 1.0, curve: Curves.easeOutSine, duration: 600.ms)
+                // .fadeIn(curve: Curves.easeOutSine),
+                ),
           ],
         ),
       ),

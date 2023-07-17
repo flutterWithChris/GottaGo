@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:flutter_gutter/flutter_gutter.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 
 import 'package:leggo/cubit/cubit/cubit/view_place_cubit.dart';
@@ -10,6 +11,7 @@ import 'package:leggo/globals.dart';
 import 'package:leggo/model/place.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:showcaseview/showcaseview.dart';
+import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../dialogs/review_card_dialog.dart';
@@ -60,6 +62,7 @@ class _ViewPlaceSheetState extends State<ViewPlaceSheet> {
               return BlocBuilder<ViewPlaceCubit, ViewPlaceState>(
                 builder: (context, state) {
                   if (state is ViewPlaceLoaded) {
+                    final PageController pageController = PageController();
                     String? todaysHours = getTodaysHours(widget.place);
                     Place selectedPlace = state.place;
                     Uri? placeWebsite;
@@ -83,81 +86,99 @@ class _ViewPlaceSheetState extends State<ViewPlaceSheet> {
                             SizedBox(
                               height: 250,
                               width: MediaQuery.of(context).size.width,
-                              child: CachedNetworkImage(
-                                imageUrl:
-                                    'https://maps.googleapis.com/maps/api/place/photo?maxwidth=1080&maxheight=1920&photo_reference=${widget.place.mainPhoto}&key=${dotenv.get('GOOGLE_PLACES_API_KEY')}',
-                                placeholder: (context, url) {
-                                  return AspectRatio(
-                                    aspectRatio: 16 / 9,
-                                    child: Center(
-                                      child: Animate(
-                                        onPlay: (controller) {
-                                          controller.repeat();
-                                        },
-                                        effects: const [
-                                          ShimmerEffect(
-                                              duration: Duration(seconds: 2))
+                              child: widget.place.photos != null &&
+                                      widget.place.photos!.isNotEmpty
+                                  ? AspectRatio(
+                                      aspectRatio: 4 / 3,
+                                      child: PageView(
+                                        //  shrinkWrap: true,
+                                        controller: pageController,
+                                        physics: const BouncingScrollPhysics(),
+                                        scrollDirection: Axis.horizontal,
+                                        // padding: EdgeInsets.zero,
+                                        children: [
+                                          for (dynamic image
+                                              in widget.place.photos!)
+                                            CachedNetworkImage(
+                                              placeholder: (context, url) {
+                                                return AspectRatio(
+                                                  aspectRatio: 16 / 9,
+                                                  child: Center(
+                                                    child: Animate(
+                                                      onPlay: (controller) {
+                                                        controller.repeat();
+                                                      },
+                                                      effects: const [
+                                                        ShimmerEffect(
+                                                            duration: Duration(
+                                                                seconds: 2))
+                                                      ],
+                                                      child: Container(
+                                                        height: 300,
+                                                        width: MediaQuery.of(
+                                                                context)
+                                                            .size
+                                                            .width,
+                                                        color: Theme.of(context)
+                                                            .primaryColor,
+                                                      ),
+                                                    ),
+                                                  ),
+                                                );
+                                              },
+                                              imageUrl:
+                                                  'https://maps.googleapis.com/maps/api/place/photo?maxwidth=1080&maxheight=1920&photo_reference=${image['photo_reference']}&key=${dotenv.get('GOOGLE_PLACES_API_KEY')}',
+                                              fit: BoxFit.cover,
+                                            ),
                                         ],
                                       ),
-                                    ),
-                                  );
-                                },
-                                fit: BoxFit.cover,
-                              ),
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 8.0, vertical: 6.0),
-                              child: Opacity(
-                                opacity: 0.9,
-                                child: Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    Chip(
-                                        shape: RoundedRectangleBorder(
-                                            borderRadius:
-                                                BorderRadius.circular(14)),
-                                        label: Wrap(
-                                            crossAxisAlignment:
-                                                WrapCrossAlignment.center,
-                                            spacing: 8.0,
-                                            children: [
-                                              RatingBar.builder(
-                                                  allowHalfRating: true,
-                                                  itemSize: 14,
-                                                  itemCount: 5,
-                                                  ignoreGestures: true,
-                                                  initialRating:
-                                                      widget.place.rating!,
-                                                  itemBuilder:
-                                                      (context, index) {
-                                                    return const Icon(
-                                                      Icons.star,
-                                                      color: Colors.amber,
-                                                    );
-                                                  },
-                                                  onRatingUpdate: (value) {}),
-                                              Text(widget.place.rating
-                                                  .toString())
-                                            ])),
-                                    widget.place.icon != null
-                                        ? Chip(
-                                            shape: RoundedRectangleBorder(
-                                                borderRadius:
-                                                    BorderRadius.circular(14)),
-                                            avatar: CachedNetworkImage(
-                                              imageUrl: widget.place.icon!,
-                                              height: 16,
+                                    )
+                                  : CachedNetworkImage(
+                                      imageUrl:
+                                          'https://maps.googleapis.com/maps/api/place/photo?maxwidth=1080&maxheight=1920&photo_reference=${widget.place.mainPhoto}&key=${dotenv.get('GOOGLE_PLACES_API_KEY')}',
+                                      placeholder: (context, url) {
+                                        return AspectRatio(
+                                          aspectRatio: 16 / 9,
+                                          child: Center(
+                                            child: Animate(
+                                              onPlay: (controller) {
+                                                controller.repeat();
+                                              },
+                                              effects: const [
+                                                ShimmerEffect(
+                                                    duration:
+                                                        Duration(seconds: 2))
+                                              ],
                                             ),
-                                            label: Text(capitalizeAllWord(widget
-                                                .place.type!
-                                                .replaceAll('_', ' '))))
-                                        : const SizedBox(),
-                                  ],
-                                ),
-                              ),
+                                          ),
+                                        );
+                                      },
+                                      fit: BoxFit.cover,
+                                    ),
                             ),
+                            widget.place.photos != null &&
+                                    widget.place.photos!.isNotEmpty
+                                ? Positioned(
+                                    bottom: 16.0,
+                                    left: 0,
+                                    right: 0,
+                                    child: Center(
+                                      child: SmoothPageIndicator(
+                                        controller: pageController,
+                                        count: widget.place.photos!.length,
+                                        effect: WormEffect(
+                                          dotHeight: 10.0,
+                                          dotWidth: 10.0,
+                                          dotColor: Theme.of(context)
+                                              .colorScheme
+                                              .tertiaryContainer,
+                                          activeDotColor: Theme.of(context)
+                                              .colorScheme
+                                              .secondary,
+                                        ),
+                                      ),
+                                    ))
+                                : const SizedBox(),
                           ],
                         ),
                         Padding(
@@ -297,6 +318,61 @@ class _ViewPlaceSheetState extends State<ViewPlaceSheet> {
                                       ),
                                     ),
                             ],
+                          ),
+                        ),
+                        Positioned(
+                          top: 0,
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 16.0, vertical: 6.0),
+                            child: Opacity(
+                              opacity: 0.9,
+                              child: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Chip(
+                                      shape: RoundedRectangleBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(14)),
+                                      label: Wrap(
+                                          crossAxisAlignment:
+                                              WrapCrossAlignment.center,
+                                          spacing: 8.0,
+                                          children: [
+                                            RatingBar.builder(
+                                                allowHalfRating: true,
+                                                itemSize: 14,
+                                                itemCount: 5,
+                                                ignoreGestures: true,
+                                                initialRating:
+                                                    widget.place.rating!,
+                                                itemBuilder: (context, index) {
+                                                  return const Icon(
+                                                    Icons.star,
+                                                    color: Colors.amber,
+                                                  );
+                                                },
+                                                onRatingUpdate: (value) {}),
+                                            Text(widget.place.rating.toString())
+                                          ])),
+                                  const GutterSmall(),
+                                  widget.place.icon != null
+                                      ? Chip(
+                                          shape: RoundedRectangleBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(14)),
+                                          avatar: CachedNetworkImage(
+                                            imageUrl: widget.place.icon!,
+                                            height: 16,
+                                          ),
+                                          label: Text(capitalizeAllWord(widget
+                                              .place.type!
+                                              .replaceAll('_', ' '))))
+                                      : const SizedBox(),
+                                ],
+                              ),
+                            ),
                           ),
                         ),
                         Padding(
