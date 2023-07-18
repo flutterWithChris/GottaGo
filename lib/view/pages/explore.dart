@@ -5,6 +5,7 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_gutter/flutter_gutter.dart';
+import 'package:flutter_iconpicker/flutter_iconpicker.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:go_router/go_router.dart';
 import 'package:leggo/bloc/explore/explore_bloc.dart';
@@ -16,6 +17,7 @@ import 'package:leggo/model/gpt_place.dart';
 import 'package:leggo/model/place.dart';
 import 'package:leggo/model/place_list.dart';
 import 'package:leggo/view/widgets/dialogs/review_card_dialog.dart';
+import 'package:leggo/view/widgets/lists/create_list_dialog.dart';
 import 'package:leggo/view/widgets/main_bottom_navbar.dart';
 import 'package:leggo/view/widgets/main_top_app_bar.dart';
 import 'package:leggo/view/widgets/tweens/custom_rect_tween.dart';
@@ -466,7 +468,9 @@ class _ExploreCardState extends State<ExploreCard> {
         return Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
           child: OpenContainer(
+            middleColor: Colors.transparent,
             closedColor: Colors.transparent,
+            openElevation: 0,
             closedElevation: 0.0,
             openBuilder: (context, action) {
               String? todaysHours =
@@ -1162,22 +1166,20 @@ class _AddToListDialogState extends State<AddToListDialog> {
       padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 16.0),
       child: Column(mainAxisSize: MainAxisSize.min, children: [
         const Gutter(),
-        Text('Add ${widget.place.name} to a list',
+        Text('Add to List',
             textAlign: TextAlign.center,
             style: Theme.of(context).textTheme.headlineLarge),
         const Gutter(),
         Text.rich(
           TextSpan(children: [
-            //  const TextSpan(text: 'You can add '),
-            const TextSpan(text: 'Add '),
+            const TextSpan(text: 'You can add '),
             TextSpan(
                 text: widget.place.name,
                 style: Theme.of(context)
                     .textTheme
                     .bodyMedium
                     ?.copyWith(fontWeight: FontWeight.bold)),
-            // const TextSpan(text: ' to one of your lists, or create a new one')
-            const TextSpan(text: ' to one of your lists:')
+            const TextSpan(text: ' to one of your lists, or create a new one:')
           ], style: Theme.of(context).textTheme.bodyMedium),
           textAlign: TextAlign.center,
         ),
@@ -1196,6 +1198,13 @@ class _AddToListDialogState extends State<AddToListDialog> {
                       itemBuilder: (context, index) {
                         return ListTile(
                           // tileColor: Colors.grey[200]!,
+                          leading: Icon(
+                            deserializeIcon(context
+                                .read<SavedListsBloc>()
+                                .allPlaceLists[index]
+                                .icon),
+                            size: 18.0,
+                          ),
                           shape: selectedList ==
                                   context
                                       .read<SavedListsBloc>()
@@ -1227,19 +1236,7 @@ class _AddToListDialogState extends State<AddToListDialog> {
                       }),
                 ),
               )
-            : ElevatedButton.icon(
-                onPressed: () async {
-                  await showDialog(
-                      context: context,
-                      builder: (context) {
-                        return const Dialog(
-                            //child: CreateListDialog(),
-                            // TODO: Create List Dialog & Fix bottom nav bar not awworking when explor container expanded
-                            );
-                      });
-                },
-                icon: const Icon(Icons.add),
-                label: const Text('Create New List')),
+            : const SizedBox(),
         const Gutter(),
         context.read<SavedListsBloc>().allPlaceLists.isNotEmpty
             ? BlocBuilder<SavedPlacesBloc, SavedPlacesState>(
@@ -1276,6 +1273,31 @@ class _AddToListDialogState extends State<AddToListDialog> {
                 },
               )
             : const SizedBox(),
+        const GutterSmall(),
+        context.read<SavedListsBloc>().allPlaceLists.isNotEmpty
+            ? TextButton(
+                onPressed: () async {
+                  await showDialog(
+                      context: context,
+                      builder: (context) {
+                        return const Dialog(
+                          child: CreateListDialog(),
+                          // TODO: Create List Dialog & Fix bottom nav bar not awworking when explor container expanded
+                        );
+                      });
+                },
+                // icon: const Icon(Icons.add),
+                child: const Text('Create New List'))
+            : ElevatedButton.icon(
+                onPressed: () async {
+                  await showDialog(
+                      context: context,
+                      builder: (context) {
+                        return const CreateListDialog();
+                      });
+                },
+                icon: const Icon(Icons.add),
+                label: const Text('Create New List')),
       ]),
     );
   }

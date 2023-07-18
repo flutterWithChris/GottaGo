@@ -36,8 +36,8 @@ class CategoryPageAppBar extends StatefulWidget {
 }
 
 class _CategoryPageAppBarState extends State<CategoryPageAppBar> {
-  EdgeInsets avatarStackPadding = const EdgeInsets.only(right: 4.0);
-  EdgeInsets iconPadding = const EdgeInsets.only(right: 4.0, left: 4.0);
+  EdgeInsets avatarStackPadding = const EdgeInsets.only(right: 0.0);
+  EdgeInsets iconPadding = const EdgeInsets.only(right: 4.0, left: 0.0);
 
   @override
   void initState() {
@@ -51,6 +51,9 @@ class _CategoryPageAppBarState extends State<CategoryPageAppBar> {
                   ? avatarStackPadding =
                       const EdgeInsets.symmetric(horizontal: 28.0)
                   : avatarStackPadding = const EdgeInsets.only(right: 0.0);
+              Platform.isIOS
+                  ? iconPadding = const EdgeInsets.only(left: 0.0)
+                  : iconPadding = const EdgeInsets.only(left: 30.0);
             });
           } else if (widget.scrollController.hasClients &&
               widget.scrollController.offset < 65) {
@@ -78,6 +81,7 @@ class _CategoryPageAppBarState extends State<CategoryPageAppBar> {
       //     icon: const Icon(Icons.menu),
       //   ),
       // ),
+
       actionsIconTheme: IconThemeData(
           color: Theme.of(context).brightness == Brightness.dark
               ? Colors.white
@@ -108,8 +112,7 @@ class _CategoryPageAppBarState extends State<CategoryPageAppBar> {
                         children: [
                           AnimatedPadding(
                             duration: const Duration(milliseconds: 300),
-                            padding:
-                                const EdgeInsets.only(right: 4.0, left: 4.0),
+                            padding: iconPadding,
                             child: SizedBox(
                               width: 30,
                               height: 30,
@@ -222,70 +225,74 @@ class _CategoryPageAppBarState extends State<CategoryPageAppBar> {
         ),
       ),
       actions: [
-        PopupMenuButton(
-            position: PopupMenuPosition.under,
-            icon: Icon(
-              Icons.more_vert_rounded,
-              color: Theme.of(context).brightness == Brightness.light
-                  ? Colors.grey[800]
-                  : Colors.white,
-            ),
-            itemBuilder: (context) => <PopupMenuEntry>[
-                  PopupMenuItem(
-                    onTap: () => WidgetsBinding.instance
-                        .addPostFrameCallback((timeStamp) async {
-                      await showDialog(
-                        context: context,
-                        builder: (context) => EditListDialog(
-                          placeList: widget.placeList!,
-                        ),
-                      ).then((value) async {
-                        if (value == true) {
-                          await showModalBottomSheet(
-                            isScrollControlled: true,
-                            context: context,
-                            builder: (context) => const PremiumOffer(),
-                          );
-                        }
-                      });
-                    }),
-                    child: const Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Icon(Icons.edit_note_rounded),
-                        SizedBox(
-                          width: 4.0,
-                        ),
-                        Text('Edit List'),
-                      ],
-                    ),
-                  ),
-                  PopupMenuItem(
-                    onTap: () {
-                      WidgetsBinding.instance
+        Padding(
+          padding: const EdgeInsets.only(right: 8.0),
+          child: PopupMenuButton(
+              padding: const EdgeInsets.only(left: 0),
+              position: PopupMenuPosition.under,
+              icon: Icon(
+                Icons.more_vert_rounded,
+                color: Theme.of(context).brightness == Brightness.light
+                    ? Colors.grey[800]
+                    : Colors.white,
+              ),
+              itemBuilder: (context) => <PopupMenuEntry>[
+                    PopupMenuItem(
+                      onTap: () => WidgetsBinding.instance
                           .addPostFrameCallback((timeStamp) async {
                         await showDialog(
                           context: context,
-                          builder: (context) {
-                            return DeleteListDialog(
-                              placeList: widget.placeList!,
+                          builder: (context) => EditListDialog(
+                            placeList: widget.placeList!,
+                          ),
+                        ).then((value) async {
+                          if (value == true) {
+                            await showModalBottomSheet(
+                              isScrollControlled: true,
+                              context: context,
+                              builder: (context) => const PremiumOffer(),
                             );
-                          },
-                        );
-                      });
-                    },
-                    child: const Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Icon(Icons.delete_forever_rounded),
-                        SizedBox(
-                          width: 4.0,
-                        ),
-                        Text('Delete List'),
-                      ],
+                          }
+                        });
+                      }),
+                      child: const Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(Icons.edit_note_rounded),
+                          SizedBox(
+                            width: 4.0,
+                          ),
+                          Text('Edit List'),
+                        ],
+                      ),
                     ),
-                  )
-                ]),
+                    PopupMenuItem(
+                      onTap: () {
+                        WidgetsBinding.instance
+                            .addPostFrameCallback((timeStamp) async {
+                          await showDialog(
+                            context: context,
+                            builder: (context) {
+                              return DeleteListDialog(
+                                placeList: widget.placeList!,
+                              );
+                            },
+                          );
+                        });
+                      },
+                      child: const Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(Icons.delete_forever_rounded),
+                          SizedBox(
+                            width: 4.0,
+                          ),
+                          Text('Delete List'),
+                        ],
+                      ),
+                    )
+                  ]),
+        ),
       ],
     );
   }
