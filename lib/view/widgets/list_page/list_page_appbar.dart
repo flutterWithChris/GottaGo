@@ -49,14 +49,13 @@ class _CategoryPageAppBarState extends State<CategoryPageAppBar> {
             if (!mounted) return;
             setState(() {
               Platform.isIOS
-                  ? iconPadding = const EdgeInsets.only(left: 4.0)
+                  ? iconPadding = const EdgeInsets.only(left: 24.0)
                   : iconPadding = const EdgeInsets.only(left: 30.0);
             });
           } else if (widget.scrollController.hasClients &&
               widget.scrollController.offset < 65) {
             if (!mounted) return;
             setState(() {
-              avatarStackPadding = const EdgeInsets.only(right: 4.0);
               iconPadding = const EdgeInsets.only(right: 4.0, left: 4.0);
             });
           }
