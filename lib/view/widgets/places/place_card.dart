@@ -168,40 +168,48 @@ class _PlaceCardState extends State<PlaceCard>
                                             children: [
                                               for (dynamic image
                                                   in widget.place.photos!)
-                                                CachedNetworkImage(
-                                                  placeholder: (context, url) {
-                                                    return AspectRatio(
-                                                      aspectRatio: 16 / 9,
-                                                      child: Center(
-                                                        child: Animate(
-                                                          onPlay: (controller) {
-                                                            controller.repeat();
-                                                          },
-                                                          effects: const [
-                                                            ShimmerEffect(
-                                                                duration:
-                                                                    Duration(
-                                                                        seconds:
-                                                                            2))
-                                                          ],
-                                                          child: Container(
-                                                            height: 300,
-                                                            width:
-                                                                MediaQuery.of(
-                                                                        context)
-                                                                    .size
-                                                                    .width,
-                                                            color: Theme.of(
-                                                                    context)
-                                                                .primaryColor,
+                                                ClipRRect(
+                                                  borderRadius:
+                                                      BorderRadius.circular(
+                                                          16.0),
+                                                  child: CachedNetworkImage(
+                                                    placeholder:
+                                                        (context, url) {
+                                                      return AspectRatio(
+                                                        aspectRatio: 16 / 9,
+                                                        child: Center(
+                                                          child: Animate(
+                                                            onPlay:
+                                                                (controller) {
+                                                              controller
+                                                                  .repeat();
+                                                            },
+                                                            effects: const [
+                                                              ShimmerEffect(
+                                                                  duration:
+                                                                      Duration(
+                                                                          seconds:
+                                                                              2))
+                                                            ],
+                                                            child: Container(
+                                                              height: 300,
+                                                              width:
+                                                                  MediaQuery.of(
+                                                                          context)
+                                                                      .size
+                                                                      .width,
+                                                              color: Theme.of(
+                                                                      context)
+                                                                  .primaryColor,
+                                                            ),
                                                           ),
                                                         ),
-                                                      ),
-                                                    );
-                                                  },
-                                                  imageUrl:
-                                                      'https://maps.googleapis.com/maps/api/place/photo?maxwidth=1080&maxheight=1920&photo_reference=${image['photo_reference']}&key=${dotenv.get('GOOGLE_PLACES_API_KEY')}',
-                                                  fit: BoxFit.cover,
+                                                      );
+                                                    },
+                                                    imageUrl:
+                                                        'https://maps.googleapis.com/maps/api/place/photo?maxwidth=1080&maxheight=1920&photo_reference=${image['photo_reference']}&key=${dotenv.get('GOOGLE_PLACES_API_KEY')}',
+                                                    fit: BoxFit.cover,
+                                                  ),
                                                 ),
                                             ],
                                           ),
