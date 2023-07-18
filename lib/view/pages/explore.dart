@@ -59,19 +59,123 @@ class _ExplorePageState extends State<ExplorePage> {
                 return SliverFillRemaining(
                   child: Center(
                       child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.start,
                     children: [
-                      const Text('Error Exploring...'),
+                      Padding(
+                        padding: const EdgeInsets.all(16.0),
+                        child: Row(
+                          children: [
+                            Flexible(
+                              flex: 2,
+                              child: TextField(
+                                onChanged: (value) {
+                                  context
+                                      .read<ExploreBloc>()
+                                      .add(SetQuery(value));
+                                },
+                                controller: _searchController,
+                                textCapitalization:
+                                    TextCapitalization.sentences,
+                                decoration: const InputDecoration(
+                                  label: Text('I\'m looking for...'),
+                                  floatingLabelBehavior:
+                                      FloatingLabelBehavior.always,
+                                  hintText: 'Coffee, Sushi, etc.',
+                                ),
+                              ),
+                            ),
+                            const Gutter(),
+                            Flexible(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  const Wrap(
+                                    spacing: 4.0,
+                                    crossAxisAlignment:
+                                        WrapCrossAlignment.center,
+                                    children: [
+                                      Icon(Icons.location_on, size: 16.0),
+                                      Text('Near'),
+                                    ],
+                                  ),
+                                  const SizedBox(height: 2.0),
+                                  InkWell(
+                                    onTap: () async {
+                                      await showDialog(
+                                          context: context,
+                                          builder: (context) {
+                                            return const SetExploreLocationDialog();
+                                          }).then((value) {
+                                        setState(() {});
+                                      });
+                                    },
+                                    child:
+                                        context.watch<ExploreBloc>().location !=
+                                                ''
+                                            ? Chip(
+                                                side: BorderSide.none,
+                                                label: Text(context
+                                                    .read<ExploreBloc>()
+                                                    .location),
+                                                visualDensity:
+                                                    VisualDensity.compact,
+                                              )
+                                            : const Chip(
+                                                side: BorderSide.none,
+                                                label: Text('Set Location'),
+                                                visualDensity:
+                                                    VisualDensity.compact,
+                                              ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const Gutter(),
+                          ElevatedButton.icon(
+                              onPressed: () {
+                                context.read<ExploreBloc>().add(LoadExplore(
+                                    placeType:
+                                        _searchController.value.text.trim(),
+                                    city: _cityController.value.text.trim(),
+                                    state: _stateController.value.text.trim()));
+                              },
+                              label: const Text('Explore'),
+                              icon: const Icon(Icons.travel_explore_outlined)),
+                        ],
+                      ),
                       const Gutter(),
-                      ElevatedButton.icon(
-                          onPressed: () {
-                            context.read<ExploreBloc>().add(LoadExplore(
-                                placeType: _searchController.value.text.trim(),
-                                city: _cityController.value.text.trim(),
-                                state: _stateController.value.text.trim()));
-                          },
-                          label: const Text('Try Again'),
-                          icon: const Icon(Icons.refresh)),
+                      Expanded(
+                          child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const Icon(Icons.warning_rounded,
+                              size: 60.0, color: Colors.red),
+                          const Gutter(),
+                          Text(
+                            'Error Exploring...',
+                            style: Theme.of(context).textTheme.headlineSmall,
+                          ),
+                          const Gutter(),
+                          ElevatedButton.icon(
+                              onPressed: () {
+                                context.read<ExploreBloc>().add(LoadExplore(
+                                    placeType:
+                                        _searchController.value.text.trim(),
+                                    city: _cityController.value.text.trim(),
+                                    state: _stateController.value.text.trim()));
+                              },
+                              label: const Text('Retry'),
+                              icon: const Icon(Icons.refresh_rounded)),
+                        ],
+                      )),
+                      const Gutter(),
                     ],
                   )),
                 );
@@ -201,7 +305,8 @@ class _ExplorePageState extends State<ExplorePage> {
                                                         .trim()));
                                       },
                                       label: const Text('Explore'),
-                                      icon: const Icon(Icons.explore)),
+                                      icon: const Icon(
+                                          Icons.travel_explore_outlined)),
                                 ],
                               ),
                             ],
