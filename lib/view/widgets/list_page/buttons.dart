@@ -5,6 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:leggo/bloc/bloc/purchases/purchases_bloc.dart';
 import 'package:leggo/bloc/place/edit_places_bloc.dart';
+import 'package:leggo/bloc/saved_places/bloc/saved_places_bloc.dart';
 import 'package:leggo/cubit/cubit/random_wheel_cubit.dart';
 import 'package:leggo/model/place_list.dart';
 import 'package:leggo/view/widgets/lists/invite_dialog.dart';
@@ -120,23 +121,28 @@ class InviteButton extends StatelessWidget {
             child: Animate(
               effects: const [SlideEffect()],
               child: ElevatedButton(
-                onPressed: placeList != null
-                    ? () {
-                        WidgetsBinding.instance
-                            .addPostFrameCallback((timeStamp) async {
-                          await showDialog(
-                            useRootNavigator: false,
-                            context: context,
-                            builder: (dialogContext) {
-                              return InviteDialog(
-                                  placeList: placeList!,
-                                  dialogContext: dialogContext);
-                            },
-                          );
-                        });
-                        //context.goNamed('random-wheel');
-                      }
-                    : () {},
+                onPressed:
+                    context.read<SavedPlacesBloc>().state.placeList != null
+                        ? () {
+                            print('lsit not null');
+                            WidgetsBinding.instance
+                                .addPostFrameCallback((timeStamp) async {
+                              await showDialog(
+                                useRootNavigator: false,
+                                context: context,
+                                builder: (dialogContext) {
+                                  return InviteDialog(
+                                      placeList: context
+                                          .read<SavedPlacesBloc>()
+                                          .state
+                                          .placeList!,
+                                      dialogContext: dialogContext);
+                                },
+                              );
+                            });
+                            //context.goNamed('random-wheel');
+                          }
+                        : () {},
                 style: ElevatedButton.styleFrom(
                   fixedSize: const Size(60, 35),
                   minimumSize: const Size(30, 20),

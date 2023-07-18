@@ -18,6 +18,28 @@ class SavedPlacesState extends Equatable {
       [placeList, contributors, places, listOwner, placeStream];
 }
 
+class SavedPlacesInitial extends SavedPlacesState {
+  @override
+  final PlaceList? placeList;
+  @override
+  final User? listOwner;
+  @override
+  final List<Place>? places;
+  @override
+  final List<User>? contributors;
+  @override
+  final Stream<List<Place>>? placeStream;
+  const SavedPlacesInitial(
+      {this.placeList,
+      this.contributors,
+      this.places,
+      this.listOwner,
+      this.placeStream});
+  @override
+  List<Object?> get props =>
+      [placeList, contributors, places, listOwner, placeStream];
+}
+
 class SavedPlacesLoading extends SavedPlacesState {}
 
 class SavedPlacesLoaded extends SavedPlacesState {

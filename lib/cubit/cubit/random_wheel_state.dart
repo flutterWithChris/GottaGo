@@ -6,7 +6,7 @@ abstract class RandomWheelState extends Equatable {
   const RandomWheelState({this.places, this.selectedPlace});
 
   @override
-  List<Object> get props => [places!, selectedPlace!];
+  List<Object?> get props => [places, selectedPlace];
 }
 
 class RandomWheelInitial extends RandomWheelState {}

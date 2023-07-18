@@ -322,58 +322,54 @@ class _ViewPlaceSheetState extends State<ViewPlaceSheet> {
                             ],
                           ),
                         ),
-                        Positioned(
-                          top: 0,
-                          child: Padding(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 16.0, vertical: 6.0),
-                            child: Opacity(
-                              opacity: 0.9,
-                              child: Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Chip(
-                                      shape: RoundedRectangleBorder(
-                                          borderRadius:
-                                              BorderRadius.circular(14)),
-                                      label: Wrap(
-                                          crossAxisAlignment:
-                                              WrapCrossAlignment.center,
-                                          spacing: 8.0,
-                                          children: [
-                                            RatingBar.builder(
-                                                allowHalfRating: true,
-                                                itemSize: 14,
-                                                itemCount: 5,
-                                                ignoreGestures: true,
-                                                initialRating:
-                                                    widget.place.rating!,
-                                                itemBuilder: (context, index) {
-                                                  return const Icon(
-                                                    Icons.star,
-                                                    color: Colors.amber,
-                                                  );
-                                                },
-                                                onRatingUpdate: (value) {}),
-                                            Text(widget.place.rating.toString())
-                                          ])),
-                                  const GutterSmall(),
-                                  widget.place.icon != null
-                                      ? Chip(
-                                          shape: RoundedRectangleBorder(
-                                              borderRadius:
-                                                  BorderRadius.circular(14)),
-                                          avatar: CachedNetworkImage(
-                                            imageUrl: widget.place.icon!,
-                                            height: 16,
-                                          ),
-                                          label: Text(capitalizeAllWord(widget
-                                              .place.type!
-                                              .replaceAll('_', ' '))))
-                                      : const SizedBox(),
-                                ],
-                              ),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 16.0, vertical: 6.0),
+                          child: Opacity(
+                            opacity: 0.9,
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Chip(
+                                    shape: RoundedRectangleBorder(
+                                        borderRadius:
+                                            BorderRadius.circular(14)),
+                                    label: Wrap(
+                                        crossAxisAlignment:
+                                            WrapCrossAlignment.center,
+                                        spacing: 8.0,
+                                        children: [
+                                          RatingBar.builder(
+                                              allowHalfRating: true,
+                                              itemSize: 14,
+                                              itemCount: 5,
+                                              ignoreGestures: true,
+                                              initialRating:
+                                                  widget.place.rating!,
+                                              itemBuilder: (context, index) {
+                                                return const Icon(
+                                                  Icons.star,
+                                                  color: Colors.amber,
+                                                );
+                                              },
+                                              onRatingUpdate: (value) {}),
+                                          Text(widget.place.rating.toString())
+                                        ])),
+                                const GutterSmall(),
+                                widget.place.icon != null
+                                    ? Chip(
+                                        shape: RoundedRectangleBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(14)),
+                                        avatar: CachedNetworkImage(
+                                          imageUrl: widget.place.icon!,
+                                          height: 16,
+                                        ),
+                                        label: Text(capitalizeAllWord(widget
+                                            .place.type!
+                                            .replaceAll('_', ' '))))
+                                    : const SizedBox(),
+                              ],
                             ),
                           ),
                         ),

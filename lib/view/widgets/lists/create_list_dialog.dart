@@ -108,7 +108,7 @@ class _CreateListDialogState extends State<CreateListDialog> {
                               context.read<ProfileBloc>().state.user.id!,
                           name: listNameController.value.text,
                         )));
-                    Navigator.pop(context);
+                    Navigator.pop(context, listNameController.value.text);
                   },
                   icon: const Icon(Icons.post_add_outlined),
                   label: const Text('Create List')),

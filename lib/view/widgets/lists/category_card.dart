@@ -6,6 +6,7 @@ import 'package:go_router/go_router.dart';
 import 'package:leggo/bloc/bloc/purchases/purchases_bloc.dart';
 import 'package:leggo/bloc/saved_categories/bloc/saved_lists_bloc.dart';
 import 'package:leggo/bloc/saved_places/bloc/saved_places_bloc.dart';
+import 'package:leggo/cubit/cubit/random_wheel_cubit.dart';
 import 'package:leggo/globals.dart';
 import 'package:leggo/model/place_list.dart';
 import 'package:leggo/repository/place_list_repository.dart';
@@ -160,6 +161,7 @@ class _CategoryCardState extends State<CategoryCard> {
                               context
                                   .read<SavedPlacesBloc>()
                                   .add(LoadPlaces(placeList: widget.placeList));
+                              context.read<RandomWheelCubit>().resetWheel();
                               context.push('/home/placeList-page');
                             },
                             contentPadding: const EdgeInsets.symmetric(

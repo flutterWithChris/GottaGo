@@ -6,28 +6,35 @@ class ExploreState extends Equatable {
   final String? placeType;
   final String? city;
   final String? state;
+  final String? query;
   const ExploreState(
-      {this.googlePlace, this.gptPlace, this.placeType, this.city, this.state});
+      {this.googlePlace,
+      this.gptPlace,
+      this.placeType,
+      this.city,
+      this.state,
+      this.query});
 
   @override
-  List<Object?> get props => [googlePlace, gptPlace, placeType, city, state];
-}
+  List<Object?> get props =>
+      [googlePlace, gptPlace, placeType, city, state, query];
 
-// copyWith
-ExploreState copyWith({
-  GooglePlace? googlePlace,
-  GptPlace? gptPlace,
-  String? placeType,
-  String? city,
-  String? state,
-}) {
-  return ExploreState(
-    googlePlace: googlePlace ?? googlePlace,
-    gptPlace: gptPlace ?? gptPlace,
-    placeType: placeType ?? placeType,
-    city: city ?? city,
-    state: state ?? state,
-  );
+  ExploreState copyWith(
+      {GooglePlace? googlePlace,
+      GptPlace? gptPlace,
+      String? placeType,
+      String? city,
+      String? state,
+      String? query}) {
+    return ExploreState(
+      googlePlace: googlePlace ?? googlePlace,
+      gptPlace: gptPlace ?? gptPlace,
+      placeType: placeType ?? placeType,
+      city: city ?? city,
+      state: state ?? state,
+      query: query ?? query,
+    );
+  }
 }
 
 class ExploreInitial extends ExploreState {
@@ -69,12 +76,15 @@ class ExploreLoaded extends ExploreState {
   final String city;
   @override
   final String state;
+  @override
+  final String query;
 
-  const ExploreLoaded(
-      this.googlePlace, this.gptPlace, this.placeType, this.city, this.state);
+  const ExploreLoaded(this.googlePlace, this.gptPlace, this.placeType,
+      this.city, this.state, this.query);
 
   @override
-  List<Object> get props => [googlePlace, gptPlace, placeType, city, state];
+  List<Object> get props =>
+      [googlePlace, gptPlace, placeType, city, state, query];
 }
 
 class ExploreError extends ExploreState {

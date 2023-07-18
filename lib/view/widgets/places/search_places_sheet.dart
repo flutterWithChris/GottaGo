@@ -568,38 +568,14 @@ class _SearchPlacesSheetState extends State<SearchPlacesSheet> {
                                                 .add(LoadSavedLists());
                                             context.read<SavedPlacesBloc>().add(
                                                   AddPlace(
-                                                    placeList: context
-                                                        .read<SavedPlacesBloc>()
-                                                        .state
-                                                        .placeList!,
-                                                    place: Place(
-                                                      placeId:
-                                                          googlePlace.placeId,
-                                                      name: googlePlace.name,
-                                                      type: googlePlace.type,
-                                                      website:
-                                                          googlePlace.website,
-                                                      city: placeCity,
-                                                      state: placeState,
-                                                      rating:
-                                                          googlePlace.rating,
-                                                      address: googlePlace
-                                                          .formattedAddress,
-                                                      phoneNumber: googlePlace
-                                                          .formattedPhoneNumber,
-                                                      icon: googlePlace.icon,
-                                                      mapsUrl: googlePlace.url,
-                                                      mainPhoto: googlePlace
-                                                              .photos?[0]
-                                                          ['photo_reference'],
-                                                      hours: googlePlace
-                                                          .weekDayText,
-                                                      reviews:
-                                                          googlePlace.reviews,
-                                                      photos:
-                                                          googlePlace.photos,
-                                                    ),
-                                                  ),
+                                                      placeList: context
+                                                          .read<
+                                                              SavedPlacesBloc>()
+                                                          .state
+                                                          .placeList!,
+                                                      place:
+                                                          Place.fromGooglePlace(
+                                                              googlePlace)),
                                                 );
                                             Navigator.pop(context);
                                           },

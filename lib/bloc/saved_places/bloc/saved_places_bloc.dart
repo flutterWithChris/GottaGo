@@ -2,7 +2,9 @@ import 'dart:async';
 
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
+import 'package:flutter/material.dart';
 import 'package:leggo/bloc/saved_categories/bloc/saved_lists_bloc.dart';
+import 'package:leggo/globals.dart';
 import 'package:leggo/model/place.dart';
 import 'package:leggo/model/place_list.dart';
 import 'package:leggo/model/user.dart';
@@ -28,7 +30,7 @@ class SavedPlacesBloc extends Bloc<SavedPlacesEvent, SavedPlacesState> {
   })  : _placeListRepository = placeListRepository,
         _savedListsBloc = savedListsBloc,
         _userRepository = userRepository,
-        super(SavedPlacesLoading()) {
+        super(const SavedPlacesInitial()) {
     final List<Place> savedPlaces = [];
     final List<Place> visitedPlaces = [];
     List<User> contributors = [];
@@ -126,6 +128,10 @@ class SavedPlacesBloc extends Bloc<SavedPlacesEvent, SavedPlacesState> {
         //savedPlaces.insert(0, event.place);
         await Future.delayed(const Duration(milliseconds: 500));
         emit(SavedPlacesUpdated(places: savedPlaces));
+        snackbarKey.currentState!.showSnackBar(SnackBar(
+          content: Text('${event.place.name} added to ${event.placeList.name}'),
+          duration: const Duration(seconds: 2),
+        ));
         add(LoadPlaces(placeList: event.placeList));
       }
       if (event is RemovePlace) {

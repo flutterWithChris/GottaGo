@@ -151,30 +151,30 @@ class _PlaceListButtonBarState extends State<PlaceListButtonBar> {
         padding: const EdgeInsets.symmetric(horizontal: 16.0),
         child: Column(
           children: [
-            Padding(
-              padding: const EdgeInsets.only(left: 8.0, right: 8.0, top: 24.0),
-              child: Theme(
-                data: ThemeData(
-                    inputDecorationTheme: const InputDecorationTheme()),
-                child: SearchBar(
-                    leading: const Icon(Icons.search),
-                    elevation: const MaterialStatePropertyAll(0.0),
-                    overlayColor:
-                        const MaterialStatePropertyAll(Colors.transparent),
-                    backgroundColor:
-                        MaterialStatePropertyAll(Theme.of(context).cardColor),
-                    surfaceTintColor:
-                        const MaterialStatePropertyAll(Colors.transparent),
-                    shape: const MaterialStatePropertyAll(
-                        RoundedRectangleBorder(
-                            borderRadius:
-                                BorderRadius.all(Radius.circular(24.0)),
-                            side: BorderSide.none)),
-                    side: const MaterialStatePropertyAll(
-                      BorderSide(color: Colors.transparent),
-                    )),
-              ),
-            ),
+            // Padding(
+            //   padding: const EdgeInsets.only(left: 8.0, right: 8.0, top: 24.0),
+            //   child: Theme(
+            //     data: ThemeData(
+            //         inputDecorationTheme: const InputDecorationTheme()),
+            //     child: SearchBar(
+            //         leading: const Icon(Icons.search),
+            //         elevation: const MaterialStatePropertyAll(0.0),
+            //         overlayColor:
+            //             const MaterialStatePropertyAll(Colors.transparent),
+            //         backgroundColor:
+            //             MaterialStatePropertyAll(Theme.of(context).cardColor),
+            //         surfaceTintColor:
+            //             const MaterialStatePropertyAll(Colors.transparent),
+            //         shape: const MaterialStatePropertyAll(
+            //             RoundedRectangleBorder(
+            //                 borderRadius:
+            //                     BorderRadius.all(Radius.circular(24.0)),
+            //                 side: BorderSide.none)),
+            //         side: const MaterialStatePropertyAll(
+            //           BorderSide(color: Colors.transparent),
+            //         )),
+            //   ),
+            // ),
             Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 mainAxisSize: MainAxisSize.min,
@@ -274,7 +274,8 @@ class _PlaceListButtonBarState extends State<PlaceListButtonBar> {
                               ? 'Use the random wheel to easily choose a place.'
                               : 'Use the random wheel to easily choose a place.\n(Requires Premium)',
                           child: GoButton(
-                            places: widget.places,
+                            places:
+                                context.read<SavedPlacesBloc>().state.places,
                           ),
                         ),
                         // const SizedBox(q

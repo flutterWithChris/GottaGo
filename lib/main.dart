@@ -26,6 +26,7 @@ import 'package:leggo/cubit/cubit/cubit/view_place_cubit.dart';
 import 'package:leggo/cubit/cubit/login/login_cubit.dart';
 import 'package:leggo/cubit/cubit/random_wheel_cubit.dart';
 import 'package:leggo/cubit/cubit/signup/sign_up_cubit.dart';
+import 'package:leggo/cubit/explore_slideshow/explore_slideshow_cubit.dart';
 import 'package:leggo/firebase_options.dart';
 import 'package:leggo/globals.dart';
 import 'package:leggo/repository/auth_repository.dart';
@@ -182,7 +183,8 @@ class _MyAppState extends State<MyApp> {
                 chatGPTRepository: context.read<ChatGPTRepository>(),
                 placesRepository: context.read<PlacesRepository>()),
             child: Container(),
-          )
+          ),
+          BlocProvider(create: (context) => ExploreSlideshowCubit()),
         ],
         child: MaterialApp.router(
           debugShowCheckedModeBanner: false,
