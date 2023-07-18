@@ -98,7 +98,7 @@ class _ExplorePageState extends State<ExplorePage> {
                                         label: Text('I\'m looking for...'),
                                         floatingLabelBehavior:
                                             FloatingLabelBehavior.always,
-                                        hintText: 'Cafe, Restaurant, etc.',
+                                        hintText: 'Coffee, Sushi, etc.',
                                       ),
                                     ),
                                   ),
