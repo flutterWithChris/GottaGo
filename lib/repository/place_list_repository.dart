@@ -284,6 +284,34 @@ class PlaceListRepository {
     }
   }
 
+  Future<void> addPlaceToListByName(Place place, String placeListName) async {
+    try {
+      String userId = auth.FirebaseAuth.instance.currentUser!.uid;
+      await _firebaseFirestore
+          .collection('place_lists')
+          .where('name', isEqualTo: placeListName)
+          .where('listOwnerId', isEqualTo: userId)
+          .get()
+          .then((value) => value.docs.forEach((element) {
+                _firebaseFirestore
+                    .collection('place_lists')
+                    .doc(element.id)
+                    .collection('places')
+                    .doc(place.placeId)
+                    .set(place.toDocument());
+              }));
+    } on FirebaseException catch (e) {
+      final SnackBar snackBar = SnackBar(
+        content: Text(e.message.toString()),
+        backgroundColor: Colors.redAccent,
+      );
+      snackbarKey.currentState?.showSnackBar(snackBar);
+      (e, stack) =>
+          FirebaseCrashlytics.instance.recordError(e, stack, fatal: true);
+      throw Exception();
+    }
+  }
+
   Future<void> removePlaceFromList(Place place, PlaceList placeList) async {
     try {
       await _firebaseFirestore

@@ -56,3 +56,13 @@ class AddPlaceToList extends ExploreEvent {
   @override
   List<Object> get props => [place, placeList];
 }
+
+class AddPlaceToNewList extends ExploreEvent {
+  final Place place;
+  final String placeListName;
+
+  const AddPlaceToNewList(this.place, this.placeListName);
+
+  @override
+  List<Object> get props => [place, placeListName];
+}

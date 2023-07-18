@@ -23,6 +23,7 @@ class ExploreBloc extends Bloc<ExploreEvent, ExploreState> {
   List<String> negativeQueries = [];
   List<String> positiveQueries = [];
   List<String> queryHistory = [];
+  int? photoIndex;
 
   ExploreBloc({
     required ChatGPTRepository chatGPTRepository,
@@ -81,6 +82,22 @@ class ExploreBloc extends Bloc<ExploreEvent, ExploreState> {
         final PlaceList placeList = event.placeList;
         final Place place = event.place;
         await _placeListRepository.addPlaceToList(place, placeList);
+        snackbarKey.currentState!.showSnackBar(const SnackBar(
+            backgroundColor: Colors.green,
+            behavior: SnackBarBehavior.floating,
+            content: Text('Place Added to List!')));
+      } catch (e) {
+        emit(const ExploreError(message: 'No response'));
+        snackbarKey.currentState!.showSnackBar(const SnackBar(
+            backgroundColor: Colors.red,
+            behavior: SnackBarBehavior.floating,
+            content: Text('Error Adding Place to List...')));
+      }
+    });
+    on<AddPlaceToNewList>((event, emit) async {
+      try {
+        await _placeListRepository.addPlaceToListByName(
+            event.place, event.placeListName);
         snackbarKey.currentState!.showSnackBar(const SnackBar(
             backgroundColor: Colors.green,
             behavior: SnackBarBehavior.floating,

@@ -54,7 +54,7 @@ dependencies:
   cloud_firestore: ^4.0.2
   glassmorphism: ^3.0.0
   salomon_bottom_bar: ^3.3.1
-  google_fonts: ^4.0.3
+  google_fonts: ^5.1.0
   bubble_bottom_bar:
     git:
       url: https://github.com/westdabestdb/bubble_bottom_bar
