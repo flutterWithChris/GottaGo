@@ -14,6 +14,7 @@ import 'package:leggo/model/place_list.dart';
 import 'package:leggo/model/user.dart';
 import 'package:leggo/view/widgets/list_page/dialogs.dart';
 import 'package:leggo/view/widgets/lists/delete_list_dialog.dart';
+import 'package:leggo/view/widgets/lists/invite_dialog.dart';
 import 'package:leggo/view/widgets/premium_offer.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 
@@ -37,7 +38,7 @@ class CategoryPageAppBar extends StatefulWidget {
 
 class _CategoryPageAppBarState extends State<CategoryPageAppBar> {
   EdgeInsets avatarStackPadding = const EdgeInsets.only(right: 0.0);
-  EdgeInsets iconPadding = const EdgeInsets.only(right: 4.0, left: 0.0);
+  EdgeInsets iconPadding = const EdgeInsets.only(right: 4.0, left: 4.0);
 
   @override
   void initState() {
@@ -48,11 +49,7 @@ class _CategoryPageAppBarState extends State<CategoryPageAppBar> {
             if (!mounted) return;
             setState(() {
               Platform.isIOS
-                  ? avatarStackPadding =
-                      const EdgeInsets.symmetric(horizontal: 28.0)
-                  : avatarStackPadding = const EdgeInsets.only(right: 0.0);
-              Platform.isIOS
-                  ? iconPadding = const EdgeInsets.only(left: 0.0)
+                  ? iconPadding = const EdgeInsets.only(left: 4.0)
                   : iconPadding = const EdgeInsets.only(left: 30.0);
             });
           } else if (widget.scrollController.hasClients &&
@@ -60,6 +57,7 @@ class _CategoryPageAppBarState extends State<CategoryPageAppBar> {
             if (!mounted) return;
             setState(() {
               avatarStackPadding = const EdgeInsets.only(right: 4.0);
+              iconPadding = const EdgeInsets.only(right: 4.0, left: 4.0);
             });
           }
         },
@@ -195,6 +193,20 @@ class _CategoryPageAppBarState extends State<CategoryPageAppBar> {
                   }
                   if (state is SavedPlacesLoaded) {
                     return AvatarStack(
+                      infoWidgetBuilder: (surplus) {
+                        return Text(
+                          '+$surplus',
+                          style: Theme.of(context)
+                              .textTheme
+                              .bodyMedium!
+                              .copyWith(
+                                  color: Theme.of(context)
+                                      .textTheme
+                                      .bodyMedium!
+                                      .color!
+                                      .withOpacity(0.5)),
+                        );
+                      },
                       settings: RestrictedPositions(
                           align: StackAlign.right, laying: StackLaying.first),
                       borderWidth: 2.0,
@@ -290,7 +302,50 @@ class _CategoryPageAppBarState extends State<CategoryPageAppBar> {
                           Text('Delete List'),
                         ],
                       ),
-                    )
+                    ),
+                    PopupMenuItem(
+                      child: const Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(Icons.person_add_rounded),
+                          SizedBox(
+                            width: 4.0,
+                          ),
+                          Text('Invite Friend'),
+                        ],
+                      ),
+                      onTap: () {
+                        if (context.read<PurchasesBloc>().state.isSubscribed ==
+                            true) {
+                          WidgetsBinding.instance
+                              .addPostFrameCallback((timeStamp) async {
+                            await showDialog(
+                              useRootNavigator: false,
+                              context: context,
+                              builder: (dialogContext) {
+                                return InviteDialog(
+                                    placeList: context
+                                        .read<SavedPlacesBloc>()
+                                        .state
+                                        .placeList!,
+                                    dialogContext: dialogContext);
+                              },
+                            );
+                          });
+                        } else {
+                          WidgetsBinding.instance
+                              .addPostFrameCallback((timeStamp) async {
+                            await showModalBottomSheet(
+                              isScrollControlled: true,
+                              context: context,
+                              builder: (context) {
+                                return const PremiumOffer();
+                              },
+                            );
+                          });
+                        }
+                      },
+                    ),
                   ]),
         ),
       ],
