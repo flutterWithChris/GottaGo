@@ -225,15 +225,22 @@ class _CategoryPageState extends State<CategoryPage> {
                                       placeList: currentPlaceList,
                                       scrollController: mainScrollController),
                                   RandomPlaceBar(
-                                      keys: [
-                                        _visitedFilterShowcase,
-                                        _inviteCollaboratorShowcase,
-                                        _randomWheelShowcase,
-                                        _checklistShowcase
-                                      ],
-                                      currentPlaceList: currentPlaceList,
-                                      controller: controller,
-                                      places: places),
+                                    keys: [
+                                      _visitedFilterShowcase,
+                                      _inviteCollaboratorShowcase,
+                                      _randomWheelShowcase,
+                                      _checklistShowcase
+                                    ],
+                                    currentPlaceList: context
+                                        .read<SavedPlacesBloc>()
+                                        .state
+                                        .placeList,
+                                    controller: controller,
+                                    places: context
+                                        .read<SavedPlacesBloc>()
+                                        .state
+                                        .places,
+                                  ),
                                   context.watch<SavedPlacesBloc>().state
                                           is SavedPlacesLoaded
                                       ? StreamBuilder<List<Place>>(

@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_iconpicker/flutter_iconpicker.dart';
 import 'package:intl/intl.dart';
+import 'package:leggo/model/google_place.dart';
 import 'package:leggo/model/place.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -40,6 +41,21 @@ String? getTodaysHours(Place place) {
   } else {
     String todaysDay = getTodaysDay();
     String todaysHours = place.hours!
+        .firstWhere((element) => element.toString().contains(todaysDay));
+    if (todaysHours.contains('Closed')) {
+      return 'Closed';
+    }
+    String hoursIsolated = todaysHours.replaceFirst(RegExp('$todaysDay: '), '');
+    return hoursIsolated;
+  }
+}
+
+String? getTodaysHoursFromGooglePlace(GooglePlace googlePlace) {
+  if (googlePlace.weekDayText == null) {
+    return null;
+  } else {
+    String todaysDay = getTodaysDay();
+    String todaysHours = googlePlace.weekDayText!
         .firstWhere((element) => element.toString().contains(todaysDay));
     if (todaysHours.contains('Closed')) {
       return 'Closed';
@@ -118,5 +134,26 @@ class LowerCaseTextFormatter extends TextInputFormatter {
       TextEditingValue oldValue, TextEditingValue newValue) {
     return TextEditingValue(
         text: newValue.text.toLowerCase(), selection: newValue.selection);
+  }
+}
+
+String? parseCityFromGooglePlace(GooglePlace googlePlace) {
+  if (googlePlace.addressComponents == null) {
+    return null;
+  } else {
+    String? city = googlePlace.addressComponents?.firstWhere((element) =>
+        element['types']?[0] == 'locality' ||
+        element['types']?[0] == 'administrative_area_level_3')['short_name'];
+    return city;
+  }
+}
+
+String? parseStateFromGooglePlace(GooglePlace googlePlace) {
+  if (googlePlace.addressComponents == null) {
+    return null;
+  } else {
+    String? state = googlePlace.addressComponents?.firstWhere((element) =>
+        element['types']?[0] == 'administrative_area_level_1')['short_name'];
+    return state;
   }
 }

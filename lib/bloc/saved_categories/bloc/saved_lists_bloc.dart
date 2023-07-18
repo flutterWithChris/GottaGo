@@ -20,9 +20,11 @@ class SavedListsBloc extends Bloc<SavedListsEvent, SavedListsState> {
   StreamSubscription? _savedListsSubscription;
   Stream<List<PlaceList>>? _placeListsStream;
   int placeCount = 0;
+  int placeListCount = 0;
 
   List<PlaceList> myPlaceLists = [];
   List<PlaceList> sharedPlaceLists = [];
+  List<PlaceList> allPlaceLists = [];
   SavedListsBloc({
     required ProfileBloc profileBloc,
     required PlaceListRepository placeListRepository,
@@ -45,7 +47,12 @@ class SavedListsBloc extends Bloc<SavedListsEvent, SavedListsState> {
       }
 
       _placeListsStream = _placeListRepository.getPlaceLists();
-
+      myPlaceLists = await _placeListRepository
+              .getMyPlaceListsFuture(profileBloc.state.user) ??
+          [];
+      // sharedPlaceLists =
+      //     await _placeListRepository.getSharedPlaceListsFuture() ?? [];
+      allPlaceLists = myPlaceLists + sharedPlaceLists;
       emit(SavedListsLoaded(
         placeListsStream: _placeListsStream,
       ));

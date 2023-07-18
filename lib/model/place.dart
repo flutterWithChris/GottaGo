@@ -1,4 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:leggo/globals.dart';
+import 'package:leggo/model/google_place.dart';
 
 class Place {
   final String? name;
@@ -90,6 +92,26 @@ class Place {
       phoneNumber: data.containsKey('phoneNumber') ? snap['phoneNumber'] : null,
       icon: snap['icon'],
       photos: data.containsKey('photos') ? snap['photos'] : null,
+    );
+  }
+
+  factory Place.fromGooglePlace(GooglePlace googlePlace) {
+    return Place(
+      placeId: googlePlace.placeId,
+      name: googlePlace.name,
+      type: googlePlace.type,
+      website: googlePlace.website,
+      city: parseCityFromGooglePlace(googlePlace),
+      state: parseStateFromGooglePlace(googlePlace),
+      rating: googlePlace.rating,
+      address: googlePlace.formattedAddress,
+      phoneNumber: googlePlace.formattedPhoneNumber,
+      icon: googlePlace.icon,
+      mapsUrl: googlePlace.url,
+      mainPhoto: googlePlace.photos?[0]['photo_reference'],
+      hours: googlePlace.weekDayText,
+      reviews: googlePlace.reviews,
+      photos: googlePlace.photos,
     );
   }
 

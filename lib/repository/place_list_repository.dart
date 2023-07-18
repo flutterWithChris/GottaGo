@@ -507,6 +507,36 @@ class PlaceListRepository {
     }
   }
 
+  /// GEt My Place Lists as future
+  Future<List<PlaceList>?> getMyPlaceListsFuture(User user) async {
+    try {
+      final auth.User firebaseUser = auth.FirebaseAuth.instance.currentUser!;
+      List<PlaceList> placeLists = [];
+      if (user.placeListIds != null && user.placeListIds!.isNotEmpty) {
+        for (String placeListId in user.placeListIds!) {
+          placeLists.add(await _firebaseFirestore
+              .collection('place_lists')
+              .doc(placeListId)
+              .get()
+              .then((value) => PlaceList.fromSnapshot(value)));
+        }
+        return placeLists;
+      } else {
+        return null;
+      }
+    } on FirebaseException catch (e) {
+      final SnackBar snackBar = SnackBar(
+        content: Text(e.message.toString()),
+        backgroundColor: Colors.red,
+      );
+      snackbarKey.currentState?.showSnackBar(snackBar);
+      (e, stack) =>
+          FirebaseCrashlytics.instance.recordError(e, stack, fatal: false);
+      throw Exception();
+    }
+    return null;
+  }
+
   Stream<PlaceList> getSharedPlaceLists() {
     try {
       final auth.User firebaseUser = auth.FirebaseAuth.instance.currentUser!;
