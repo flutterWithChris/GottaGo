@@ -475,6 +475,12 @@ class _ExplorePageState extends State<ExplorePage> {
                                         state:
                                             _stateController.value.text.trim(),
                                       ));
+                                  if (isDisliked == false && isLiked == false) {
+                                    context
+                                        .read<ExploreBloc>()
+                                        .queryHistory
+                                        .add(state.gptPlace.name);
+                                  }
                                 },
                                 label: const Text('Explore'),
                                 icon:

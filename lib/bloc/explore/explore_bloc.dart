@@ -56,8 +56,7 @@ class ExploreBloc extends Bloc<ExploreEvent, ExploreState> {
               '${gptPlace.name}, ${gptPlace.city}, ${gptPlace.state}');
           GooglePlace googlePlace =
               await _placesRepository.getPlace(results[0].placeId!);
-          queryHistory.add(gptPlace.name);
-          print('Query History: ${queryHistory.join(', ')}');
+
           emit(ExploreLoaded(googlePlace, gptPlace, event.placeType,
               event.city!, event.state!, searchQuery));
         } else {
@@ -118,15 +117,15 @@ class ExploreBloc extends Bloc<ExploreEvent, ExploreState> {
   ) {
     String basePrompt =
         'Give me 1 place to visit within 1 hour of $city, $state that matches this type: $placeType. Ensure it\'s well-reviewed. Return in JSON format with: name, type, description, city, state. Set the value to null if no data is available.';
-    // if (queryHistory.isNotEmpty) {
-    //   basePrompt += ' Exclude these places: ';
-    //   for (int i = 0; i < queryHistory.length; i++) {
-    //     basePrompt += queryHistory[i];
-    //     if (i != queryHistory.length - 1) {
-    //       basePrompt += ', ';
-    //     }
-    //   }
-    // }
+    if (queryHistory.isNotEmpty) {
+      basePrompt += ' Exclude these places: ';
+      for (int i = 0; i < queryHistory.length; i++) {
+        basePrompt += queryHistory[i];
+        if (i != queryHistory.length - 1) {
+          basePrompt += ', ';
+        }
+      }
+    }
 
     if (negativeQueries.isNotEmpty) {
       basePrompt += ' Exclude these places & places like it: ';
