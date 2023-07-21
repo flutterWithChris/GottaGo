@@ -113,8 +113,6 @@ class _ProfileInfoState extends State<ProfileInfo> {
                   color: FlexColor.bahamaBlueDarkSecondary, size: 30.0);
             }
             if (state is OnboardingLoaded) {
-              print('Name: ${state.user.name}');
-
               return Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: ElevatedButton(
