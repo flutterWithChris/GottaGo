@@ -12,7 +12,11 @@ class SendInvite extends InviteEvent {
   @override
   final PlaceList placeList;
   final String userName;
-  const SendInvite({required this.placeList, required this.userName});
+  final String inviterUsername;
+  const SendInvite(
+      {required this.placeList,
+      required this.userName,
+      required this.inviterUsername});
   @override
   List<Object> get props => [placeList, userName];
 }

@@ -16,7 +16,7 @@ class InviteBloc extends Bloc<InviteEvent, InviteState> {
       if (event is SendInvite) {
         emit(InviteState.sending());
         bool? inviteSent = await _placeListRepository.inviteContributorToList(
-            event.placeList, event.userName);
+            event.placeList, event.userName, event.inviterUsername);
         if (inviteSent == true) {
           emit(InviteState.sent());
           await Future.delayed(

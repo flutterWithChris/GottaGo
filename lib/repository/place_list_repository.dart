@@ -134,7 +134,7 @@ class PlaceListRepository {
   }
 
   Future<bool?> inviteContributorToList(
-      PlaceList placeList, String userName) async {
+      PlaceList placeList, String userName, String senderUsername) async {
     final auth.User firebaseUser = auth.FirebaseAuth.instance.currentUser!;
     try {
       String? userId = await DatabaseRepository().checkUsernameExists(userName);
@@ -144,9 +144,9 @@ class PlaceListRepository {
         UserRepository().getUser(userId).listen((user) async {
           Invite invite = Invite(
               invitedUserId: user.id!,
-              inviteeName: user.name!,
+              inviteeName: user.name ?? user.userName!,
               listOwnerId: firebaseUser.uid,
-              inviterName: firebaseUser.displayName!,
+              inviterName: firebaseUser.displayName ?? senderUsername,
               placeListId: placeList.placeListId!,
               placeListName: placeList.name,
               inviteStatus: 'sent');

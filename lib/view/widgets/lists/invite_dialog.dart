@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:leggo/bloc/bloc/invite/bloc/invite_bloc.dart';
 import 'package:leggo/bloc/bloc/purchases/purchases_bloc.dart';
+import 'package:leggo/bloc/profile_bloc.dart';
 import 'package:leggo/model/place_list.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 
@@ -100,7 +101,13 @@ class InviteDialog extends StatelessWidget {
                             onPressed: () {
                               context.read<InviteBloc>().add(SendInvite(
                                   placeList: placeList,
-                                  userName: emailFieldController.value.text));
+                                  userName: emailFieldController.value.text,
+                                  inviterUsername: context
+                                          .read<ProfileBloc>()
+                                          .state
+                                          .user
+                                          .userName ??
+                                      ''));
                               //Navigator.pop(context);
                             },
                             icon: const Icon(Icons.person_add_alt_1_outlined),
