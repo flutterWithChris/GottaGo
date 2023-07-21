@@ -75,22 +75,45 @@ class ProfilePage extends StatelessWidget {
                     ),
                   )),
                 ),
-                SliverToBoxAdapter(
-                  child: Padding(
-                      padding: const EdgeInsets.only(top: 16.0),
-                      child: Column(
-                        children: [
-                          Text(
-                            state.user.name!,
-                            style: Theme.of(context).textTheme.titleLarge,
+                state.user.name != null
+                    ? SliverToBoxAdapter(
+                        child: Padding(
+                            padding: const EdgeInsets.only(top: 16.0),
+                            child: Column(
+                              children: [
+                                Text(
+                                  state.user.name!,
+                                  style: Theme.of(context).textTheme.titleLarge,
+                                ),
+                                const SizedBox(
+                                  height: 4.0,
+                                ),
+                                Text('@${state.user.userName!}'),
+                              ],
+                            )),
+                      )
+                    : state.user.userName != null
+                        ? SliverToBoxAdapter(
+                            child: Padding(
+                                padding: const EdgeInsets.only(top: 16.0),
+                                child: Column(
+                                  children: [
+                                    Text(
+                                      state.user.userName!,
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .titleLarge,
+                                    ),
+                                    const SizedBox(
+                                      height: 4.0,
+                                    ),
+                                    Text('@${state.user.userName!}'),
+                                  ],
+                                )),
+                          )
+                        : const SliverToBoxAdapter(
+                            child: SizedBox(height: 16.0),
                           ),
-                          const SizedBox(
-                            height: 4.0,
-                          ),
-                          Text('@${state.user.userName!}'),
-                        ],
-                      )),
-                ),
                 SliverFillRemaining(
                   child: Padding(
                     padding: const EdgeInsets.symmetric(

@@ -66,10 +66,11 @@ class SettingsPage extends StatelessWidget {
                                   alignment: Alignment.centerRight,
                                   fit: BoxFit.scaleDown,
                                   child: Text(context
-                                      .read<ProfileBloc>()
-                                      .state
-                                      .user
-                                      .name!))),
+                                          .read<ProfileBloc>()
+                                          .state
+                                          .user
+                                          .name ??
+                                      'N/A'))),
                         ),
                         SettingsTile.navigation(
                           onPressed: (context) async => await showDialog(
