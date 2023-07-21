@@ -6,11 +6,11 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:go_router/go_router.dart';
 import 'package:leggo/bloc/place/edit_places_bloc.dart';
 import 'package:leggo/cubit/cubit/cubit/view_place_cubit.dart';
 import 'package:leggo/globals.dart';
 import 'package:leggo/model/place_list.dart';
-import 'package:leggo/view/widgets/places/view_place_sheet.dart';
 import 'package:roundcheckbox/roundcheckbox.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:showcaseview/showcaseview.dart';
@@ -122,18 +122,19 @@ class _PlaceCardState extends State<PlaceCard>
                         }
                       } else {
                         context.read<ViewPlaceCubit>().viewPlace(widget.place);
-                        await showModalBottomSheet(
-                            isScrollControlled: true,
-                            context: context,
-                            builder: (context) => DraggableScrollableSheet(
-                                expand: false,
-                                initialChildSize: 0.85,
-                                maxChildSize: 0.9,
-                                builder: (context, scrollController) {
-                                  return ViewPlaceSheet(
-                                      place: widget.place,
-                                      scrollController: scrollController);
-                                }));
+                        context.pushNamed('view-place', extra: widget.place);
+                        // await showModalBottomSheet(
+                        //     isScrollControlled: true,
+                        //     context: context,
+                        //     builder: (context) => DraggableScrollableSheet(
+                        //         expand: false,
+                        //         initialChildSize: 0.85,
+                        //         maxChildSize: 0.9,
+                        //         builder: (context, scrollController) {
+                        //           return ViewPlaceSheet(
+                        //               place: widget.place,
+                        //               scrollController: scrollController);
+                        //         }));
                       }
                     },
                     child: Showcase(
@@ -175,32 +176,34 @@ class _PlaceCardState extends State<PlaceCard>
                                                   child: CachedNetworkImage(
                                                     placeholder:
                                                         (context, url) {
-                                                      return AspectRatio(
-                                                        aspectRatio: 16 / 9,
-                                                        child: Center(
-                                                          child: Animate(
-                                                            onPlay:
-                                                                (controller) {
-                                                              controller
-                                                                  .repeat();
-                                                            },
-                                                            effects: const [
-                                                              ShimmerEffect(
-                                                                  duration:
-                                                                      Duration(
-                                                                          seconds:
-                                                                              2))
-                                                            ],
-                                                            child: Container(
-                                                              height: 300,
-                                                              width:
-                                                                  MediaQuery.of(
-                                                                          context)
-                                                                      .size
-                                                                      .width,
-                                                              color: Theme.of(
-                                                                      context)
-                                                                  .primaryColor,
+                                                      return Hero(
+                                                        tag:
+                                                            'gallery-${widget.place.placeId}',
+                                                        child: AspectRatio(
+                                                          aspectRatio: 4 / 3,
+                                                          child: Center(
+                                                            child: Animate(
+                                                              onPlay:
+                                                                  (controller) {
+                                                                controller
+                                                                    .repeat();
+                                                              },
+                                                              effects: const [
+                                                                ShimmerEffect(
+                                                                    duration: Duration(
+                                                                        seconds:
+                                                                            2))
+                                                              ],
+                                                              child: Container(
+                                                                height: 300,
+                                                                width: MediaQuery.of(
+                                                                        context)
+                                                                    .size
+                                                                    .width,
+                                                                color: Theme.of(
+                                                                        context)
+                                                                    .primaryColor,
+                                                              ),
                                                             ),
                                                           ),
                                                         ),
@@ -214,21 +217,26 @@ class _PlaceCardState extends State<PlaceCard>
                                             ],
                                           ),
                                         )
-                                      : AspectRatio(
-                                          aspectRatio: 4 / 3,
-                                          child: Container(
-                                            decoration: BoxDecoration(
-                                              borderRadius:
-                                                  BorderRadius.circular(16.0),
-                                              image: DecorationImage(
-                                                image:
-                                                    CachedNetworkImageProvider(
-                                                  'https://maps.googleapis.com/maps/api/place/photo?maxwidth=1080&maxheight=1920&photo_reference=${widget.place.mainPhoto}&key=${dotenv.get('GOOGLE_PLACES_API_KEY')}',
+                                      : Hero(
+                                          tag:
+                                              'gallery-${widget.place.placeId}',
+                                          child: AspectRatio(
+                                              aspectRatio: 4 / 3,
+                                              child: Container(
+                                                decoration: BoxDecoration(
+                                                  borderRadius:
+                                                      BorderRadius.circular(
+                                                          16.0),
+                                                  image: DecorationImage(
+                                                    image:
+                                                        CachedNetworkImageProvider(
+                                                      'https://maps.googleapis.com/maps/api/place/photo?maxwidth=1080&maxheight=1920&photo_reference=${widget.place.mainPhoto}&key=${dotenv.get('GOOGLE_PLACES_API_KEY')}',
+                                                    ),
+                                                    fit: BoxFit.cover,
+                                                  ),
                                                 ),
-                                                fit: BoxFit.cover,
-                                              ),
-                                            ),
-                                          )),
+                                              )),
+                                        ),
                                   widget.place.photos != null &&
                                           widget.place.photos!.isNotEmpty
                                       ? Positioned(
@@ -421,16 +429,33 @@ class _PlaceCardState extends State<PlaceCard>
                                         crossAxisAlignment:
                                             WrapCrossAlignment.center,
                                         children: [
-                                          Text(
-                                            titleCase(widget.placeName),
-                                            style: Theme.of(context)
-                                                .textTheme
-                                                .bodyLarge!
-                                                .copyWith(
-                                                  fontWeight: FontWeight.bold,
-                                                ),
-                                            maxLines: 1,
-                                            overflow: TextOverflow.ellipsis,
+                                          Hero(
+                                            flightShuttleBuilder:
+                                                (flightContext,
+                                                    animation,
+                                                    flightDirection,
+                                                    fromHeroContext,
+                                                    toHeroContext) {
+                                              return DefaultTextStyle(
+                                                style: DefaultTextStyle.of(
+                                                        fromHeroContext)
+                                                    .style,
+                                                child: toHeroContext.widget,
+                                              );
+                                            },
+                                            tag:
+                                                'placeName-${widget.place.placeId}',
+                                            child: Text(
+                                              titleCase(widget.placeName),
+                                              style: Theme.of(context)
+                                                  .textTheme
+                                                  .bodyLarge!
+                                                  .copyWith(
+                                                    fontWeight: FontWeight.bold,
+                                                  ),
+                                              maxLines: 1,
+                                              overflow: TextOverflow.ellipsis,
+                                            ),
                                           ),
 
                                           // Middle Dot
@@ -446,27 +471,48 @@ class _PlaceCardState extends State<PlaceCard>
 
                                           // Place Type
                                           if (widget.place.type != null)
-                                            Chip(
-                                                side: BorderSide.none,
-                                                visualDensity:
-                                                    VisualDensity.compact,
-                                                label: Text(titleCase(widget
-                                                    .place.type!
-                                                    .replaceAll('_', ' '))),
-                                                backgroundColor:
-                                                    Colors.grey[200],
-                                                labelPadding:
-                                                    const EdgeInsets.symmetric(
-                                                        horizontal: 4.0),
-                                                avatar: const Icon(
-                                                  Icons.local_cafe_outlined,
-                                                  size: 14.0,
-                                                ),
-                                                labelStyle: Theme.of(context)
-                                                    .textTheme
-                                                    .bodySmall
-                                                    ?.copyWith(
-                                                        color: Colors.black)),
+                                            Hero(
+                                              flightShuttleBuilder:
+                                                  (flightContext,
+                                                      animation,
+                                                      flightDirection,
+                                                      fromHeroContext,
+                                                      toHeroContext) {
+                                                return DefaultTextStyle(
+                                                  style: DefaultTextStyle.of(
+                                                          fromHeroContext)
+                                                      .style,
+                                                  child: toHeroContext.widget,
+                                                );
+                                              },
+                                              tag:
+                                                  'placeType-${widget.place.placeId}',
+                                              child: Material(
+                                                color: Colors.transparent,
+                                                child: Chip(
+                                                    side: BorderSide.none,
+                                                    visualDensity:
+                                                        VisualDensity.compact,
+                                                    label: Text(titleCase(widget
+                                                        .place.type!
+                                                        .replaceAll('_', ' '))),
+                                                    backgroundColor:
+                                                        Colors.grey[200],
+                                                    labelPadding:
+                                                        const EdgeInsets.symmetric(
+                                                            horizontal: 4.0),
+                                                    avatar: widget.place.icon != null
+                                                        ? CachedNetworkImage(
+                                                            height: 12,
+                                                            imageUrl: widget
+                                                                .place.icon!)
+                                                        : null,
+                                                    labelStyle: Theme.of(context)
+                                                        .textTheme
+                                                        .bodySmall
+                                                        ?.copyWith(color: Colors.black)),
+                                              ),
+                                            ),
                                           Wrap(
                                             spacing: 5.0,
                                             crossAxisAlignment:
@@ -476,12 +522,29 @@ class _PlaceCardState extends State<PlaceCard>
                                                 Icons.location_pin,
                                                 size: 13,
                                               ),
-                                              Text(
-                                                '${widget.place.city!}, ${widget.place.state}',
-                                                style: Theme.of(context)
-                                                    .textTheme
-                                                    .bodyMedium!
-                                                    .copyWith(),
+                                              Hero(
+                                                flightShuttleBuilder:
+                                                    (flightContext,
+                                                        animation,
+                                                        flightDirection,
+                                                        fromHeroContext,
+                                                        toHeroContext) {
+                                                  return DefaultTextStyle(
+                                                    style: DefaultTextStyle.of(
+                                                            fromHeroContext)
+                                                        .style,
+                                                    child: toHeroContext.widget,
+                                                  );
+                                                },
+                                                tag:
+                                                    'placeLocation-${widget.place.placeId}',
+                                                child: Text(
+                                                  '${widget.place.city!}, ${widget.place.state}',
+                                                  style: Theme.of(context)
+                                                      .textTheme
+                                                      .bodyMedium!
+                                                      .copyWith(),
+                                                ),
                                               ),
                                             ],
                                           ),
@@ -504,25 +567,31 @@ class _PlaceCardState extends State<PlaceCard>
                                             targetPadding:
                                                 const EdgeInsets.all(10.0),
                                             description: 'Get directions here.',
-                                            child: ElevatedButton.icon(
-                                                style: ElevatedButton.styleFrom(
-                                                    //    foregroundColor: Colors.white,
-                                                    fixedSize:
-                                                        const Size(110, 30),
-                                                    elevation: 1.3),
-                                                onPressed: () {
-                                                  Uri googleMapsLink =
-                                                      Uri.parse(widget
-                                                          .place.mapsUrl!);
-                                                  launchUrl(googleMapsLink);
-                                                },
-                                                icon: const Icon(
-                                                  FontAwesomeIcons
-                                                      .locationArrow,
-                                                  size: 18,
-                                                ),
-                                                label: const FittedBox(
-                                                    child: Text('Let\'s Go'))),
+                                            child: Hero(
+                                              tag:
+                                                  'goButton-${widget.place.placeId}',
+                                              child: ElevatedButton.icon(
+                                                  style:
+                                                      ElevatedButton.styleFrom(
+                                                          //    foregroundColor: Colors.white,
+                                                          fixedSize: const Size(
+                                                              110, 36),
+                                                          elevation: 1.3),
+                                                  onPressed: () {
+                                                    Uri googleMapsLink =
+                                                        Uri.parse(widget
+                                                            .place.mapsUrl!);
+                                                    launchUrl(googleMapsLink);
+                                                  },
+                                                  icon: const Icon(
+                                                    FontAwesomeIcons
+                                                        .locationArrow,
+                                                    size: 18,
+                                                  ),
+                                                  label: const FittedBox(
+                                                      child:
+                                                          Text('Let\'s Go'))),
+                                            ),
                                           ),
                                           Showcase(
                                             key: _editButtonsShowcase,

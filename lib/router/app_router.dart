@@ -5,6 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:leggo/bloc/bloc/auth/bloc/auth_bloc.dart';
 import 'package:leggo/bloc/place/edit_places_bloc.dart';
+import 'package:leggo/model/place.dart';
 import 'package:leggo/repository/place_list_repository.dart';
 import 'package:leggo/view/pages/explore.dart';
 import 'package:leggo/view/pages/explore/explore_details.dart';
@@ -14,6 +15,7 @@ import 'package:leggo/view/pages/my_subscription.dart';
 import 'package:leggo/view/pages/profile.dart';
 import 'package:leggo/view/pages/settings.dart';
 import 'package:leggo/view/pages/signup.dart';
+import 'package:leggo/view/pages/view_place_page.dart';
 import 'package:leggo/view/widgets/dialogs/review_card_dialog.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -114,7 +116,7 @@ final GoRouter router = GoRouter(
                     path: 'home/placeList-page/random-wheel',
                     pageBuilder: (context, state) =>
                         const MaterialPage<void>(child: RandomWheelPage()),
-                  )
+                  ),
                 ])
           ]),
       GoRoute(
@@ -142,5 +144,22 @@ final GoRouter router = GoRouter(
                 },
               ),
             )
-          ])
+          ]),
+      GoRoute(
+          path: '/view-place',
+          name: 'view-place',
+          pageBuilder: (context, state) => CustomTransitionPage(
+                transitionDuration: 400.ms,
+                reverseTransitionDuration: 400.ms,
+                child: ViewPlacePage(place: state.extra as Place),
+                transitionsBuilder:
+                    (context, animation, secondaryAnimation, child) {
+                  return SharedAxisTransition(
+                    animation: animation,
+                    secondaryAnimation: secondaryAnimation,
+                    transitionType: SharedAxisTransitionType.scaled,
+                    child: child,
+                  );
+                },
+              ))
     ]);
