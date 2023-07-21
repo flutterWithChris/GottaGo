@@ -116,21 +116,6 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
                           state is SavedListsLoading ||
                           state is SavedListsInitial ||
                           state is SavedListsUpdated) {
-                        if (context.read<ProfileBloc>().state
-                                is ProfileIncomplete &&
-                            ModalRoute.of(context)!.isCurrent) {
-                          WidgetsBinding.instance
-                              .addPostFrameCallback((timeStamp) async {
-                            showModalBottomSheet(
-                                isScrollControlled: true,
-                                isDismissible: false,
-                                enableDrag: false,
-                                context: context,
-                                builder: (context) =>
-                                    const IncompleteProfileDialog());
-                          });
-                        }
-
                         return StreamBuilder<List<PlaceList>>(
                             stream: context
                                 .read<SavedListsBloc>()

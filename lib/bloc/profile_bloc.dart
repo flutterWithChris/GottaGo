@@ -25,13 +25,7 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
     on<LoadProfile>((event, emit) async {
       _userSubscription =
           await _userRepository.getUser(event.userId).listen((user) {
-        if (user.profilePicture == '' ||
-            user.userName == '' ||
-            user.name == '') {
-          emit(ProfileIncomplete(user: user));
-        } else {
-          emit(ProfileLoaded(user: user));
-        }
+        emit(ProfileLoaded(user: user));
       }).asFuture();
     });
     on<ResetProfile>((event, emit) => emit(ProfileLoading()));
